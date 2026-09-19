@@ -5,13 +5,19 @@ import { Plane, Ship, Search, type LucideIcon } from "lucide-react";
 /* ------------------------------------------------------------------ */
 
 export const CONTACT = {
-  brand: "TRACOLI BUSINESS",
-  tagline: "Supply-Chain · Transit · Fret Chine–Afrique",
+  brand: "TRACOLI",
+  brandFull: "TRACOLI BUSINESS",
+  tagline: "Supply-Chain · Le pont entre la Chine et l'Afrique",
+  promise: "Nous recherchons. Nous expédions. Vous vendez.",
   manager: "Mr Hope",
   managerRole: "Responsable Marketing & Service Client",
   phoneDisplay: "+257 69 03 27 65",
   phoneRaw: "25769032765",
   email: "contact@tracoli-business.com",
+  social: {
+    facebook: "https://facebook.com/tracoli",
+    bio: "TRACOLI (supply-chain 🇨🇳) le pont entre la Chine et l'Afrique.",
+  },
   hubs: ["Guangzhou 🇨🇳", "Yiwu 🇨🇳", "Kinshasa 🇨🇩", "Bujumbura 🇧🇮"],
 } as const;
 
@@ -116,19 +122,74 @@ export const STATS: Stat[] = [
   {
     value: "+1 200",
     label: "Conteneurs & colis expédiés",
-    sublabel: "Depuis 2018 sur les corridors Chine–Afrique",
+    sublabel: "Sur le pont Chine ⇄ Afrique depuis 2018",
   },
   {
     value: "99.2%",
     label: "Livraisons dans les délais",
-    sublabel: "Suivi proactif & alertes WhatsApp",
+    sublabel: "Suivi proactif par WhatsApp, sans zone d'ombre",
   },
   {
     value: "4",
     label: "Hubs logistiques",
-    sublabel: "Guangzhou · Yiwu · Kinshasa · Bujumbura",
+    sublabel: "Guangzhou 🇨🇳 · Yiwu 🇨🇳 · Kinshasa 🇨🇩 · Bujumbura 🇧🇮",
   },
 ];
+
+/* ------------------------------------------------------------------ */
+/*  PILIERS DE MARQUE — repris de la promesse officielle TRACOLI       */
+/* ------------------------------------------------------------------ */
+
+export type BrandPillar = {
+  step: string;
+  verb: string;
+  emoji: string;
+  title: string;
+  description: string;
+  accent: ServiceAccent;
+};
+
+export const BRAND_PILLARS: BrandPillar[] = [
+  {
+    step: "01",
+    verb: "Nous recherchons",
+    emoji: "🔍",
+    title: "Sourcing & négociation en Chine",
+    description:
+      "Nous trouvons les bonnes usines à Guangzhou, Yiwu ou Foshan, vérifions la qualité et négocions le meilleur prix pour vous.",
+    accent: "amber",
+  },
+  {
+    step: "02",
+    verb: "Nous expédions",
+    emoji: "📦",
+    title: "Fret aérien & maritime maîtrisé",
+    description:
+      "Entreposage, groupage, dédouanement et livraison porte-à-porte à Kinshasa, Goma ou Bujumbura. Vous suivez tout en direct.",
+    accent: "crimson",
+  },
+  {
+    step: "03",
+    verb: "Vous vendez",
+    emoji: "🤝",
+    title: "Votre marchandise, prête à vendre",
+    description:
+      "Vous récupérez vos produits dédouanés, contrôlés et prêts à être écoulés sur votre marché. Zéro stress logistique.",
+    accent: "navy",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  CLAIM ÉDITORIAL — « Le pont entre la Chine et l'Afrique »          */
+/* ------------------------------------------------------------------ */
+
+export const BRIDGE_CLAIM = {
+  eyebrow: "Notre identité",
+  title: "Le pont entre la Chine et l'Afrique",
+  subtitle: "🇨🇳 ⇄ 🇨🇩 🇧🇮",
+  description:
+    "Depuis nos hubs de Guangzhou et Yiwu, nous relions les usines chinoises aux commerçants et importateurs d'Afrique Centrale et de l'Est. Un seul interlocuteur, toute la chaîne logistique.",
+} as const;
 
 /* ------------------------------------------------------------------ */
 /*  DESTINATIONS (Simulateur)                                          */
