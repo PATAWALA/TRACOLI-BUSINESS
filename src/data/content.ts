@@ -301,3 +301,149 @@ export const NAV_LINKS = [
   { label: "Processus",  href: "#processus" },
   { label: "Devis",      href: "#devis" },
 ] as const;
+
+/* ------------------------------------------------------------------ */
+/*  QUICK ACTIONS — Aiguillage du Hero                                 */
+/* ------------------------------------------------------------------ */
+
+export type QuickAction = {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  cta: string;
+  href: string;
+  variant: "primary" | "dark" | "ghost";
+};
+
+export const QUICK_ACTIONS: QuickAction[] = [
+  {
+    id: "sourcing",
+    emoji: "📦",
+    title: "Sourcing & Achat",
+    description:
+      "Trouvez le bon fournisseur en Chine. Nous négocions, vérifions et achetons pour vous.",
+    cta: "Trouver un produit",
+    href: "#sourcing",
+    variant: "primary",
+  },
+  {
+    id: "fret",
+    emoji: "✈️",
+    title: "Fret & Logistique",
+    description:
+      "Estimez votre expédition aérienne ou maritime en quelques clics, tarif indicatif immédiat.",
+    cta: "Estimer mon expédition",
+    href: "#logistique",
+    variant: "dark",
+  },
+  {
+    id: "tracking",
+    emoji: "📍",
+    title: "Suivi de Colis",
+    description:
+      "Suivez votre marchandise en temps réel, de Guangzhou jusqu'à votre entrepôt.",
+    cta: "Tracer ma marchandise",
+    href: "#tracking",
+    variant: "ghost",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  SOURCING WIZARD — Données                                          */
+/* ------------------------------------------------------------------ */
+
+export type ProductTag = {
+  id: string;
+  emoji: string;
+  label: string;
+  hint: string;
+};
+
+export const PRODUCT_TAGS: ProductTag[] = [
+  { id: "electronics", emoji: "⚡", label: "Électronique",       hint: "Appareils, gadgets, téléphonie" },
+  { id: "battery",     emoji: "🔋", label: "Contient batterie",  hint: "Restrictions transport aérien" },
+  { id: "fragile",     emoji: "🧊", label: "Fragile",            hint: "Emballage renforcé requis" },
+  { id: "standard",    emoji: "📦", label: "Standard",           hint: "Marchandise générale" },
+];
+
+/* ------------------------------------------------------------------ */
+/*  LOGISTICS WIZARD — Données                                         */
+/* ------------------------------------------------------------------ */
+
+export const SHIPPING_OPTIONS = [
+  {
+    id: "air",
+    emoji: "✈️",
+    title: "Fret Aérien",
+    tagline: "Rapide",
+    delay: "5 – 7 jours",
+    priceHint: "12$ – 15$ / KG",
+    description: "Idéal pour les marchandises urgentes, légères et à forte valeur.",
+    features: ["Dédouanement inclus", "Suivi WhatsApp direct", "Consolidation Guangzhou"],
+    recommended: false,
+  },
+  {
+    id: "sea",
+    emoji: "🚢",
+    title: "Fret Maritime",
+    tagline: "Économique",
+    delay: "35 – 45 jours",
+    priceHint: "À partir de 250$ / CBM",
+    description: "Le meilleur coût au volume pour vos conteneurs et gros volumes.",
+    features: ["Groupage LCL ou FCL", "Entreposage gratuit", "Dédouanement portuaire"],
+    recommended: true,
+  },
+] as const;
+
+export const DEPARTURE_HUBS = ["Guangzhou 🇨🇳", "Yiwu 🇨🇳", "Foshan 🇨🇳", "Shenzhen 🇨🇳"] as const;
+
+/* ------------------------------------------------------------------ */
+/*  TRACKING — Statuts de démonstration                                */
+/* ------------------------------------------------------------------ */
+
+export type TrackingStageStatus = "done" | "active" | "pending";
+
+export type TrackingStage = {
+  id: string;
+  label: string;
+  location: string;
+  date: string;
+  status: TrackingStageStatus;
+  detail?: string;
+};
+
+export const DEMO_TRACKING: TrackingStage[] = [
+  {
+    id: "received",
+    label: "Reçu à l'entrepôt",
+    location: "Guangzhou 🇨🇳",
+    date: "12 Jan · 09:34",
+    status: "done",
+    detail: "Colis pesé, mesuré et étiqueté CTN-2041",
+  },
+  {
+    id: "transit",
+    label: "En transit",
+    location: "Vol AF-8821 · En vol",
+    date: "16 Jan · 22:10",
+    status: "active",
+    detail: "Progression 65% — arrivée estimée à Kinshasa le 20 Jan",
+  },
+  {
+    id: "customs",
+    label: "Dédouanement",
+    location: "Kinshasa 🇨🇩",
+    date: "ETA 20 Jan",
+    status: "pending",
+    detail: "Documents pré-transmis à notre transitaire partenaire",
+  },
+  {
+    id: "ready",
+    label: "Prêt pour retrait",
+    location: "Entrepôt TRACOLI Kinshasa",
+    date: "ETA 21 Jan",
+    status: "pending",
+    detail: "Vous recevrez un WhatsApp dès disponibilité",
+  },
+];
