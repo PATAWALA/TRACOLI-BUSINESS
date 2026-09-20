@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { CONTACT, NAV_LINKS, waLink } from "@/data/content";
+import { CONTACT, NAV_LINKS } from "@/data/content";
 import { useLocale } from "@/hooks/useLocale";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 
@@ -27,9 +27,6 @@ export default function Header() {
     };
   }, [open]);
 
-  /* CTA — ouvre WhatsApp directement (conversion immédiate) */
-  const ctaMessage = `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager}, ${locale === "fr" ? "je souhaite demander une cotation pour mon projet d'importation." : "I would like to request a quote for my import project."}`;
-
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
@@ -39,7 +36,7 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-20 lg:px-8">
-        {/* Logo → accueil */}
+        {/* ---------- Logo → Accueil ---------- */}
         <Link
           href="/"
           className="group flex items-center gap-3"
@@ -65,7 +62,7 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Nav desktop — Link Next.js */}
+        {/* ---------- Nav desktop ---------- */}
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV_LINKS.map((l) => (
             <Link
@@ -78,21 +75,20 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Actions desktop */}
+        {/* ---------- Actions desktop ---------- */}
         <div className="hidden items-center gap-3 lg:flex">
           <LocaleSwitcher />
 
-          <a
-            href={waLink(ctaMessage)}
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* CTA → section #devis (hub de conversion) */}
+          <Link
+            href="/#devis"
             className="rounded-xl bg-tracoli-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
           >
             {locale === "fr" ? "Demander une cotation" : "Request a quote"}
-          </a>
+          </Link>
         </div>
 
-        {/* Burger mobile */}
+        {/* ---------- Burger + Locale mobile ---------- */}
         <div className="flex items-center gap-2 lg:hidden">
           <LocaleSwitcher />
           <button
@@ -106,7 +102,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Drawer mobile */}
+      {/* ---------- Drawer mobile ---------- */}
       <div
         className={`overflow-hidden border-t border-ink-200 bg-white transition-[max-height,opacity] duration-300 lg:hidden ${
           open ? "max-h-[440px] opacity-100" : "max-h-0 opacity-0"
@@ -123,16 +119,16 @@ export default function Header() {
               {l.label[locale]}
             </Link>
           ))}
+
           <div className="pt-3">
-            <a
-              href={waLink(ctaMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* CTA mobile → section #devis */}
+            <Link
+              href="/#devis"
               onClick={() => setOpen(false)}
               className="block rounded-xl bg-tracoli-500 px-4 py-3 text-center text-sm font-bold text-white"
             >
               {locale === "fr" ? "Demander une cotation" : "Request a quote"}
-            </a>
+            </Link>
           </div>
         </div>
       </div>
