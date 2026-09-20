@@ -1,8 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { SERVICES, CONTACT, waLink } from "@/data/content";
+import { SERVICES } from "@/data/content";
 import { useLocale } from "@/hooks/useLocale";
+
+/* Mapping service.id → slug de la page détail */
+const SLUG_MAP: Record<string, string> = {
+  sourcing: "sourcing-negotiation",
+  inspection: "inspection-conformite",
+  freight: "fret-international",
+  customs: "dedouanement-livraison",
+};
 
 export default function ServicesSection() {
   const { locale } = useLocale();
@@ -10,7 +19,7 @@ export default function ServicesSection() {
   return (
     <section id="services" className="scroll-mt-24 bg-ink-50 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Titre */}
+        {/* ---------- TITRE ---------- */}
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
             {locale === "fr" ? "Nos services" : "Our services"}
@@ -27,10 +36,12 @@ export default function ServicesSection() {
           </p>
         </div>
 
-        {/* Grille */}
+        {/* ---------- GRILLE ---------- */}
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {SERVICES.map((service) => {
             const Icon = service.icon;
+            const slug = SLUG_MAP[service.id];
+
             return (
               <article
                 key={service.id}
@@ -64,18 +75,14 @@ export default function ServicesSection() {
                   ))}
                 </ul>
 
-                {/* CTA discret */}
-                <a
-                  href={waLink(
-                    `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager}, ${locale === "fr" ? "je souhaite plus d'informations sur votre service" : "I would like more information about your service"} : ${service.title[locale]}.`
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto flex items-center gap-1.5 pt-6 text-[12.5px] font-bold text-tracoli-500 transition-colors hover:text-tracoli-600"
+                {/* CTA → Page détail du service */}
+                <Link
+                  href={`/services/${slug}`}
+                  className="mt-auto flex items-center gap-1.5 pt-6 text-[12.5px] font-bold text-tracoli-500 transition-colors group-hover:text-tracoli-600"
                 >
-                  {locale === "fr" ? "En savoir plus" : "Learn more"}
+                  {locale === "fr" ? "Découvrir le service" : "Discover the service"}
                   <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                </a>
+                </Link>
               </article>
             );
           })}
