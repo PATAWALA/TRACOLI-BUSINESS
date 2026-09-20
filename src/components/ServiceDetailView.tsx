@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,17 +9,38 @@ import {
   HelpCircle,
   Target,
   TrendingUp,
+  Search,
+  ShieldCheck,
+  Plane,
+  FileCheck2,
 } from "lucide-react";
-import { CONTACT, waLink, type ServiceDetail } from "@/data/content";
+import { CONTACT, getServiceBySlug, waLink } from "@/data/content";
 import { useLocale } from "@/hooks/useLocale";
 
-export default function ServiceDetailView({ service }: { service: ServiceDetail }) {
+/* ------------------------------------------------------------------ */
+/*  Map des icônes (côté client) — pas de sérialisation                */
+/* ------------------------------------------------------------------ */
+
+const ICON_MAP = {
+  "sourcing-negotiation": Search,
+  "inspection-conformite": ShieldCheck,
+  "fret-international": Plane,
+  "dedouanement-livraison": FileCheck2,
+} as const;
+
+export default function ServiceDetailView({ slug }: { slug: string }) {
   const { locale } = useLocale();
-  const Icon = service.icon;
+  const service = getServiceBySlug(slug);
+
+  if (!service) notFound();
+
+  const Icon = ICON_MAP[slug as keyof typeof ICON_MAP] ?? Search;
 
   return (
     <main className="pt-16 lg:pt-20">
-      {/* ---------- HERO ---------- */}
+      {/* ==================================================================
+          HERO
+          ================================================================== */}
       <section className="relative overflow-hidden border-b border-ink-200 bg-gradient-to-b from-white via-ink-50 to-white py-16 lg:py-24">
         <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.3]" />
 
@@ -50,7 +72,7 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
             </p>
           </div>
 
-          {/* Stat */}
+          {/* Stat clé */}
           <div className="mt-10 inline-flex items-center gap-4 rounded-2xl border border-ink-200 bg-white px-6 py-5 shadow-card">
             <span className="grid size-12 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
               <TrendingUp className="size-5" />
@@ -67,7 +89,9 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
         </div>
       </section>
 
-      {/* ---------- PROCESSUS ---------- */}
+      {/* ==================================================================
+          PROCESSUS
+          ================================================================== */}
       <section className="bg-white py-16 lg:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -95,7 +119,9 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
         </div>
       </section>
 
-      {/* ---------- INCLUS + BÉNÉFICES ---------- */}
+      {/* ==================================================================
+          INCLUS + BÉNÉFICES
+          ================================================================== */}
       <section className="bg-ink-50 py-16 lg:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
@@ -139,7 +165,9 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
         </div>
       </section>
 
-      {/* ---------- FAQ ---------- */}
+      {/* ==================================================================
+          FAQ
+          ================================================================== */}
       <section className="bg-white py-16 lg:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
@@ -153,11 +181,11 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
                 key={i}
                 className="group rounded-2xl border border-ink-200 bg-white p-5 shadow-card transition-all open:border-tracoli-500/40 open:shadow-card-lg"
               >
-                <summary className="flex cursor-pointer items-center justify-between gap-3 list-none">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                   <span className="text-[14px] font-bold text-ink-900">
                     {item.question[locale]}
                   </span>
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-tracoli-50 text-tracoli-500 transition-transform group-open:rotate-45">
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-tracoli-50 text-[14px] font-bold text-tracoli-500 transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
@@ -170,7 +198,9 @@ export default function ServiceDetailView({ service }: { service: ServiceDetail 
         </div>
       </section>
 
-      {/* ---------- CTA FINAL → retour #devis ---------- */}
+      {/* ==================================================================
+          CTA FINAL → retour /#devis (hub de conversion)
+          ================================================================== */}
       <section className="bg-gradient-to-b from-white to-ink-50 py-16 lg:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl border border-tracoli-200 bg-white p-8 text-center shadow-card-lg sm:p-12">
