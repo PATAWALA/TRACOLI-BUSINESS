@@ -12,10 +12,9 @@ export default function AboutSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* ============================================================
-              COLONNE GAUCHE — IMAGE
+              IMAGE — 1er sur mobile, à gauche sur desktop
               ============================================================ */}
-          <div className="relative order-2 lg:order-1">
-            {/* Halo décoratif */}
+          <div className="relative">
             <div className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-tracoli-500/10 via-transparent to-transparent blur-2xl" />
 
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-ink-200 shadow-card-lg sm:aspect-[4/3] lg:aspect-[4/5]">
@@ -32,10 +31,8 @@ export default function AboutSection() {
                 className="object-cover"
               />
 
-              {/* Overlay subtil */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/30 via-transparent to-transparent" />
 
-              {/* Badge flottant */}
               <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-white/90 px-3.5 py-2 backdrop-blur-sm">
                 <p className="text-[10px] font-bold tracking-wide text-ink-500 uppercase">
                   {locale === "fr" ? "Depuis 2018" : "Since 2018"}
@@ -50,9 +47,9 @@ export default function AboutSection() {
           </div>
 
           {/* ============================================================
-              COLONNE DROITE — TEXTE + STATS
+              TEXTE — 2e sur mobile, à droite sur desktop
               ============================================================ */}
-          <div className="order-1 lg:order-2">
+          <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
               {ABOUT.eyebrow[locale]}
             </span>
@@ -71,7 +68,6 @@ export default function AboutSection() {
               ))}
             </div>
 
-            {/* Stats compactes */}
             <div className="mt-8 grid grid-cols-3 gap-4 border-t border-ink-200 pt-6">
               {STATS.map((s) => (
                 <div key={s.label.fr}>
