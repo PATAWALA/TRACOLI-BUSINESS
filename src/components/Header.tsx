@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { CONTACT, NAV_LINKS } from "@/data/content";
 import { useLocale } from "@/hooks/useLocale";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+
 
 export default function Header() {
   const { locale } = useLocale();
@@ -52,13 +52,9 @@ export default function Header() {
               className="size-full object-cover"
             />
           </span>
-          <span className="hidden leading-none sm:block">
-            <span className="block text-[14px] font-extrabold tracking-tight text-ink-900">
-              TRACOLI BUSINESS
-            </span>
-            <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.14em] text-tracoli-500 uppercase">
-              Trade Connectors Logistics International
-            </span>
+          {/* Nom en rouge */}
+          <span className="hidden text-[14px] font-extrabold tracking-tight text-tracoli-500 sm:block">
+            TRACOLI BUSINESS
           </span>
         </Link>
 
