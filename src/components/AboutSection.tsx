@@ -10,87 +10,80 @@ export default function AboutSection() {
   return (
     <section id="about" className="scroll-mt-24 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* ---------- TITRE + IMAGE ---------- */}
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-            {ABOUT.eyebrow[locale]}
-          </span>
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* ============================================================
+              COLONNE GAUCHE — IMAGE
+              ============================================================ */}
+          <div className="relative order-2 lg:order-1">
+            {/* Halo décoratif */}
+            <div className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-tracoli-500/10 via-transparent to-transparent blur-2xl" />
 
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl lg:text-[2.75rem]">
-            {ABOUT.title[locale]}
-          </h2>
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border border-ink-200 shadow-card-lg sm:aspect-[4/3] lg:aspect-[4/5]">
+              <Image
+                src="/about1.jpg"
+                alt={
+                  locale === "fr"
+                    ? "L'équipe TRACOLI BUSINESS en opération"
+                    : "TRACOLI BUSINESS team at work"
+                }
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
 
-          <p className="mx-auto mt-4 max-w-2xl text-[14.5px] font-semibold text-tracoli-500">
-            {IDENTITY.motto[locale]}
-          </p>
-        </div>
+              {/* Overlay subtil */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/30 via-transparent to-transparent" />
 
-        {/* ---------- IMAGE PRINCIPALE ---------- */}
-        <div className="relative mt-12">
-          <div className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-tracoli-500/10 via-transparent to-transparent blur-2xl" />
-
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-ink-200 shadow-card-lg">
-            <Image
-              src="/about1.jpg"
-              alt={
-                locale === "fr"
-                  ? "L'équipe TRACOLI BUSINESS en opération"
-                  : "TRACOLI BUSINESS team at work"
-              }
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 1152px"
-              className="object-cover"
-            />
-
-            {/* Overlay dégradé subtil en bas pour lisibilité si texte par-dessus */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/30 via-transparent to-transparent" />
-
-            {/* Badge flottant */}
-            <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-white/90 px-3.5 py-2 backdrop-blur-sm sm:bottom-6 sm:left-6">
-              <p className="text-[10px] font-bold tracking-wide text-ink-500 uppercase">
-                {locale === "fr" ? "Depuis 2018" : "Since 2018"}
-              </p>
-              <p className="text-[12.5px] font-extrabold text-ink-900">
-                {locale === "fr"
-                  ? "Corridor Asie ⇄ Afrique"
-                  : "Asia ⇄ Africa corridor"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ---------- PARAGRAPHES + STATS ---------- */}
-        <div className="mt-14 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-          {/* Paragraphes */}
-          <div className="space-y-5 text-[14.5px] leading-relaxed text-ink-600">
-            {ABOUT.paragraphs.map((p, i) => (
-              <p key={i}>{p[locale]}</p>
-            ))}
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 self-start rounded-2xl border border-ink-200 bg-ink-50 p-6 lg:grid-cols-1 lg:gap-5">
-            {STATS.map((s, i) => (
-              <div
-                key={s.label.fr}
-                className={`${
-                  i < STATS.length - 1
-                    ? "border-b border-ink-200 pb-4 lg:pb-5"
-                    : ""
-                }`}
-              >
-                <p className="text-2xl font-extrabold tracking-tight text-tracoli-500">
-                  {s.value}
+              {/* Badge flottant */}
+              <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-white/90 px-3.5 py-2 backdrop-blur-sm">
+                <p className="text-[10px] font-bold tracking-wide text-ink-500 uppercase">
+                  {locale === "fr" ? "Depuis 2018" : "Since 2018"}
                 </p>
-                <p className="mt-1 text-[11.5px] font-semibold text-ink-800">
-                  {s.label[locale]}
-                </p>
-                <p className="mt-0.5 hidden text-[11px] text-ink-500 lg:block">
-                  {s.sublabel[locale]}
+                <p className="text-[12.5px] font-extrabold text-ink-900">
+                  {locale === "fr"
+                    ? "Corridor Asie ⇄ Afrique"
+                    : "Asia ⇄ Africa corridor"}
                 </p>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {/* ============================================================
+              COLONNE DROITE — TEXTE + STATS
+              ============================================================ */}
+          <div className="order-1 lg:order-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
+              {ABOUT.eyebrow[locale]}
+            </span>
+
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
+              {ABOUT.title[locale]}
+            </h2>
+
+            <p className="mt-3 text-[13.5px] font-semibold text-tracoli-500">
+              {IDENTITY.motto[locale]}
+            </p>
+
+            <div className="mt-6 space-y-4 text-[14.5px] leading-relaxed text-ink-600">
+              {ABOUT.paragraphs.map((p, i) => (
+                <p key={i}>{p[locale]}</p>
+              ))}
+            </div>
+
+            {/* Stats compactes */}
+            <div className="mt-8 grid grid-cols-3 gap-4 border-t border-ink-200 pt-6">
+              {STATS.map((s) => (
+                <div key={s.label.fr}>
+                  <p className="text-xl font-extrabold tracking-tight text-tracoli-500 sm:text-2xl">
+                    {s.value}
+                  </p>
+                  <p className="mt-1 text-[11.5px] font-semibold text-ink-800">
+                    {s.label[locale]}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
