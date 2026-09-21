@@ -1458,7 +1458,7 @@ export const getResourceBySlug = (slug: string): Resource | undefined =>
 export type NavLink = { label: { fr: string; en: string }; href: string };
 
 export const NAV_LINKS: NavLink[] = [
-  { label: { fr: "À propos", en: "About" }, href: "/a-propos" },
+  { label: { fr: "Qui sommes-nous ?", en: "Who are we?" }, href: "/a-propos" },
   { label: { fr: "Services", en: "Services" }, href: "/#services" },
   { label: { fr: "Ressources", en: "Resources" }, href: "/ressources" },
   { label: { fr: "Processus", en: "Process" }, href: "/#processus" },
