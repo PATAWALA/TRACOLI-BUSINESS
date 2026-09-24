@@ -33,6 +33,7 @@ export * from "./services/details";
 /* ================================================================== */
 export * from "./resources/hero";
 export * from "./resources/items";
+export * from "./products/items";
 
 /* ================================================================== */
 /*  ABOUT                                                              */
