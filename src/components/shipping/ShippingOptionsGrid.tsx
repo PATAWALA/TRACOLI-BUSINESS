@@ -1,96 +1,85 @@
 "use client";
 
-import { Plane, Ship, Check } from "lucide-react";
+import { Plane, Ship, Clock } from "lucide-react";
 import { FREIGHT_RATES } from "@/data/logistics/rates";
 import { useLocale } from "@/hooks/useLocale";
 
 export default function ShippingOptionsGrid() {
   const { locale } = useLocale();
+
   const options = [
     {
       id: "air",
       icon: Plane,
-      ...FREIGHT_RATES.air,
+      rate: FREIGHT_RATES.air,
+      tagline: { fr: "Rapide", en: "Fast" },
       recommended: false,
-      features: {
-        fr: ["Dédouanement inclus", "Suivi WhatsApp direct", "Consolidation Guangzhou"],
-        en: ["Customs included", "Direct WhatsApp tracking", "Guangzhou consolidation"],
-      },
     },
     {
       id: "sea",
       icon: Ship,
-      ...FREIGHT_RATES.sea,
+      rate: FREIGHT_RATES.sea,
+      tagline: { fr: "Économique", en: "Economical" },
       recommended: true,
-      features: {
-        fr: ["Groupage LCL ou FCL", "Entreposage gratuit", "Dédouanement portuaire"],
-        en: ["LCL or FCL consolidation", "Free warehousing", "Port customs clearance"],
-      },
     },
   ] as const;
 
   return (
     <section className="bg-white py-12 lg:py-16">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h2 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl lg:text-3xl">
             {locale === "fr" ? "Deux modes d'expédition" : "Two shipping modes"}
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
-            {locale === "fr"
-              ? "Choisissez selon votre arbitrage vitesse / coût."
-              : "Choose based on your speed / cost trade-off."}
-          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           {options.map((opt) => {
             const Icon = opt.icon;
+            const { rate } = opt;
+
             return (
               <div
                 key={opt.id}
-                className={`relative flex flex-col rounded-3xl border p-6 lg:p-8 ${
+                className={`relative flex flex-col rounded-2xl border p-5 lg:p-6 ${
                   opt.recommended
-                    ? "border-tracoli-200 bg-gradient-to-br from-tracoli-50 via-white to-white shadow-card-lg"
+                    ? "border-tracoli-200 bg-gradient-to-br from-tracoli-50 via-white to-white shadow-card"
                     : "border-ink-200 bg-white shadow-card"
                 }`}
               >
                 {opt.recommended && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-tracoli-500 px-3 py-1 text-[9.5px] font-bold tracking-wide text-white uppercase">
+                  <span className="absolute -top-2.5 right-5 rounded-full bg-tracoli-500 px-2.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase">
                     {locale === "fr" ? "Meilleur coût" : "Best value"}
                   </span>
                 )}
 
-                <span className="grid size-14 place-items-center rounded-2xl bg-tracoli-500 text-white">
-                  <Icon className="size-6" strokeWidth={2} />
-                </span>
-
-                <h3 className="mt-5 text-xl font-extrabold tracking-tight text-ink-900">
-                  {opt.label[locale]}
-                </h3>
-
-                <p className="mt-2 text-[13px] text-ink-500">
-                  {locale === "fr" ? "Délai" : "Lead time"} :{" "}
-                  <span className="font-bold text-ink-900">{opt.delay[locale]}</span>
-                </p>
-
-                <p className="mt-4 text-2xl font-extrabold tracking-tight text-tracoli-500">
-                  {opt.min} - {opt.max} USD
-                  <span className="ml-1 text-[13px] font-semibold text-ink-500">
-                    / {opt.unit}
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
+                    <Icon className="size-5" />
                   </span>
-                </p>
+                  <div>
+                    <h3 className="text-[15px] font-extrabold tracking-tight text-ink-900">
+                      {rate.label[locale]}
+                    </h3>
+                    <p className="text-[11.5px] font-semibold text-ink-500">
+                      {opt.tagline[locale]}
+                    </p>
+                  </div>
+                </div>
 
-                <ul className="mt-5 space-y-2 border-t border-ink-200 pt-5">
-                  {opt.features[locale].map((f) => (
-                    <li key={f} className="flex items-start gap-2.5 text-[12.5px] text-ink-700">
-                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-emerald-100">
-                        <Check className="size-2.5 text-emerald-600" strokeWidth={3} />
-                      </span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-5 flex items-end gap-2">
+                  <span className="text-2xl font-extrabold tracking-tight text-tracoli-500">
+                    {rate.min} – {rate.max}
+                  </span>
+                  <span className="pb-1 text-[12px] font-semibold text-ink-500">
+                    USD / {rate.unit}
+                  </span>
+                </div>
+
+                <p className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold text-ink-600">
+                  <Clock className="size-3.5 text-tracoli-500" />
+                  {rate.delay[locale]}
+                </p>
               </div>
             );
           })}
