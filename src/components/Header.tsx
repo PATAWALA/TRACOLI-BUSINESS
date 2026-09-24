@@ -1,16 +1,15 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
-import { CONTACT, NAV_LINKS } from "@/data/content";
+import { NAV_LINKS } from "@/data/config/navigation";
+import { CONTACT } from "@/data/config/contact";
 import { useLocale } from "@/hooks/useLocale";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 
-
 export default function Header() {
   const { locale } = useLocale();
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -20,29 +19,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
         scrolled
-          ? "border-b border-ink-200 bg-white/90 backdrop-blur-xl"
-          : "border-b border-transparent bg-white/60 backdrop-blur-md"
+          ? "border-b border-ink-200 bg-white/95 backdrop-blur-xl"
+          : "border-b border-transparent bg-white/70 backdrop-blur-md"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-20 lg:px-8">
-        {/* ---------- Logo → Accueil ---------- */}
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:h-16 sm:px-6 lg:h-20 lg:px-8">
+        {/* ---------- Logo ---------- */}
         <Link
           href="/"
-          className="group flex items-center gap-3"
+          className="group flex min-w-0 items-center gap-2 sm:gap-3"
           aria-label={CONTACT.brandFull}
         >
-          <span className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm transition-all group-hover:border-tracoli-500/40 lg:size-11">
+          <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg border border-ink-200 bg-white shadow-sm transition-all group-hover:border-tracoli-500/40 sm:size-10 lg:size-11 lg:rounded-xl">
             <Image
               src="/logo.jpg"
               alt={`Logo ${CONTACT.brand}`}
@@ -52,8 +44,7 @@ export default function Header() {
               className="size-full object-cover"
             />
           </span>
-          {/* Nom en rouge */}
-          <span className="hidden text-[14px] font-extrabold tracking-tight text-tracoli-500 sm:block">
+          <span className="hidden truncate text-[13px] font-extrabold tracking-tight text-tracoli-500 sm:block sm:text-[14px]">
             TRACOLI BUSINESS
           </span>
         </Link>
@@ -74,8 +65,6 @@ export default function Header() {
         {/* ---------- Actions desktop ---------- */}
         <div className="hidden items-center gap-3 lg:flex">
           <LocaleSwitcher />
-
-          {/* CTA → section #devis (hub de conversion) */}
           <Link
             href="/#devis"
             className="rounded-xl bg-tracoli-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
@@ -84,48 +73,9 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* ---------- Burger + Locale mobile ---------- */}
+        {/* ---------- Mobile : locale switcher uniquement ---------- */}
         <div className="flex items-center gap-2 lg:hidden">
           <LocaleSwitcher />
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Fermer" : "Ouvrir le menu"}
-            className="grid size-10 place-items-center rounded-xl border border-ink-200 bg-white text-ink-900"
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* ---------- Drawer mobile ---------- */}
-      <div
-        className={`overflow-hidden border-t border-ink-200 bg-white transition-[max-height,opacity] duration-300 lg:hidden ${
-          open ? "max-h-[440px] opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="space-y-1 px-4 py-4">
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="block rounded-xl px-3.5 py-3 text-[15px] font-medium text-ink-800 transition-colors hover:bg-ink-100"
-            >
-              {l.label[locale]}
-            </Link>
-          ))}
-
-          <div className="pt-3">
-            {/* CTA mobile → section #devis */}
-            <Link
-              href="/#devis"
-              onClick={() => setOpen(false)}
-              className="block rounded-xl bg-tracoli-500 px-4 py-3 text-center text-sm font-bold text-white"
-            >
-              {locale === "fr" ? "Demander une cotation" : "Request a quote"}
-            </Link>
-          </div>
         </div>
       </div>
     </header>
