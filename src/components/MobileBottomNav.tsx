@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -22,54 +21,25 @@ const ICON_MAP: Record<string, LucideIcon> = {
   info: Info,
 };
 
+/* ------------------------------------------------------------------ */
+/*  Mapping : chemin d'URL → id de l'onglet actif                      */
+/* ------------------------------------------------------------------ */
+
+function getActiveFromPath(pathname: string): string {
+  if (pathname === "/") return "home";
+  if (pathname.startsWith("/sourcer")) return "source";
+  if (pathname.startsWith("/expedier")) return "ship";
+  if (pathname.startsWith("/suivre")) return "track";
+  if (pathname.startsWith("/a-propos")) return "about";
+  if (pathname.startsWith("/services/")) return "source"; // services = sous-catégorie sourcing
+  if (pathname.startsWith("/ressources")) return "about";  // ressources = à propos élargi
+  return "";
+}
+
 export default function MobileBottomNav() {
   const { locale } = useLocale();
   const pathname = usePathname();
-  const [activeSection, setActiveSection] = useState<string>("home");
-
-  /* ---------- Scroll spy sur la home ---------- */
-  useEffect(() => {
-    if (pathname !== "/") {
-      setActiveSection(pathname === "/a-propos" ? "about" : "");
-      return;
-    }
-
-    const sections: { id: string; nav: string }[] = [
-      { id: "top", nav: "home" },
-      { id: "sourcing", nav: "source" },
-      { id: "logistique", nav: "ship" },
-      { id: "tracking", nav: "track" },
-    ];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        const match = sections.find((s) => s.id === visible.target.id);
-        if (match) setActiveSection(match.nav);
-      },
-      {
-        rootMargin: "-45% 0px -45% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-      }
-    );
-
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  /* ---------- Helper : item actif ? ---------- */
-  const isActive = (id: string): boolean => {
-    if (pathname === "/a-propos") return id === "about";
-    if (pathname !== "/") return false;
-    return activeSection === id;
-  };
+  const activeId = getActiveFromPath(pathname);
 
   return (
     <nav
@@ -80,40 +50,48 @@ export default function MobileBottomNav() {
       <ul className="mx-auto flex max-w-lg items-stretch justify-between px-1">
         {BOTTOM_NAV_ITEMS.map((item) => {
           const Icon = ICON_MAP[item.icon];
-          const active = isActive(item.id);
+          const active = activeId === item.id;
 
           return (
             <li key={item.id} className="flex-1">
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className="group relative flex min-h-[60px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-colors active:scale-[0.96]"
+                className="group relative flex min-h-[60px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-all duration-300 active:scale-[0.94]"
               >
-                {/* Indicateur actif (petit trait en haut) */}
+                {/* ---------- Indicateur actif (trait en haut, animé) ---------- */}
                 <span
-                  className={`absolute top-0 left-1/2 h-[3px] -translate-x-1/2 rounded-b-full bg-tracoli-500 transition-all duration-300 ${
+                  className={`absolute top-0 left-1/2 h-[3px] -translate-x-1/2 rounded-b-full bg-tracoli-500 transition-all duration-300 ease-out ${
                     active ? "w-8 opacity-100" : "w-0 opacity-0"
                   }`}
                 />
 
-                {/* Icône */}
+                {/* ---------- Bulle de fond animée (scale in) ---------- */}
                 <span
-                  className={`relative grid size-6 place-items-center transition-transform ${
-                    active ? "-translate-y-0.5" : ""
+                  className={`absolute inset-x-1 inset-y-1 rounded-xl bg-tracoli-50 transition-all duration-300 ease-out ${
+                    active ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                  }`}
+                  aria-hidden
+                />
+
+                {/* ---------- Icône (translate + scale au click) ---------- */}
+                <span
+                  className={`relative z-10 grid size-6 place-items-center transition-all duration-300 ease-out ${
+                    active ? "-translate-y-0.5 scale-110" : "translate-y-0 scale-100"
                   }`}
                 >
                   <Icon
-                    className={`size-[22px] transition-colors ${
-                      active ? "text-tracoli-500" : "text-ink-400"
+                    className={`size-[22px] transition-all duration-300 ease-out ${
+                      active ? "text-tracoli-500" : "text-ink-400 group-hover:text-ink-600"
                     }`}
-                    strokeWidth={active ? 2.4 : 2}
+                    strokeWidth={active ? 2.5 : 2}
                   />
                 </span>
 
-                {/* Label */}
+                {/* ---------- Label ---------- */}
                 <span
-                  className={`text-[10.5px] font-semibold tracking-tight transition-colors ${
-                    active ? "text-tracoli-500" : "text-ink-500"
+                  className={`relative z-10 text-[10.5px] font-semibold tracking-tight transition-all duration-300 ease-out ${
+                    active ? "text-tracoli-500" : "text-ink-500 group-hover:text-ink-700"
                   }`}
                 >
                   {item.label[locale]}
