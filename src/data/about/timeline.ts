@@ -1,0 +1,6 @@
+export const ABOUT_TIMELINE = [
+  { year: "2018", title: { fr: "Création de TRACOLI Business", en: "TRACOLI Business founded" }, description: { fr: "Lancement des premières opérations de groupage entre Guangzhou et Bujumbura.", en: "Launch of the first consolidation operations between Guangzhou and Bujumbura." } },
+  { year: "2020", title: { fr: "Ouverture du hub de Kinshasa", en: "Kinshasa hub opening" }, description: { fr: "Déploiement de nos propres capacités d'entreposage et de dédouanement en RDC.", en: "Deployment of our own warehousing and customs clearance capabilities in the DRC." } },
+  { year: "2022", title: { fr: "Extension Afrique de l'Est", en: "East Africa expansion" }, description: { fr: "Couverture complète de l'Ouganda, la Tanzanie et le Kenya via Mombasa et Dar es Salaam.", en: "Full coverage of Uganda, Tanzania and Kenya via Mombasa and Dar es Salaam." } },
+  { year: "2024", title: { fr: "1 200+ expéditions livrées", en: "1,200+ shipments delivered" }, description: { fr: "Un cap symbolique qui confirme la fiabilité du modèle TRACOLI sur le corridor Asie–Afrique.", en: "A symbolic milestone confirming the reliability of the TRACOLI model on the Asia–Africa corridor." } },
+] as const;

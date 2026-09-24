@@ -12,6 +12,7 @@ export default function LocaleSwitcher() {
           key={l}
           type="button"
           onClick={() => setLocale(l)}
+          aria-label={l === "fr" ? "Français" : "English"}
           className={`rounded-md px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase transition-colors ${
             locale === l
               ? "bg-tracoli-500 text-white"

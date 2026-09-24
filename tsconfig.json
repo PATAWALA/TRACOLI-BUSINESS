@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/data/content": ["./src/data/index.ts"],
+      "@/data": ["./src/data/index.ts"]
     }
   },
   "include": [

@@ -14,11 +14,13 @@ import {
   Plane,
   FileCheck2,
 } from "lucide-react";
-import { CONTACT, getServiceBySlug, waLink } from "@/data/content";
+import { SERVICE_DETAILS } from "@/data/services/details";
+import { CONTACT } from "@/data/config/contact";
+import { waLink } from "@/data/shared/helpers";
 import { useLocale } from "@/hooks/useLocale";
 
 /* ------------------------------------------------------------------ */
-/*  Map des icônes (côté client) — pas de sérialisation                */
+/*  Map des icônes (côté client)                                       */
 /* ------------------------------------------------------------------ */
 
 const ICON_MAP = {
@@ -30,7 +32,7 @@ const ICON_MAP = {
 
 export default function ServiceDetailView({ slug }: { slug: string }) {
   const { locale } = useLocale();
-  const service = getServiceBySlug(slug);
+  const service = SERVICE_DETAILS.find((s) => s.slug === slug);
 
   if (!service) notFound();
 
@@ -172,7 +174,9 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
             <HelpCircle className="size-6 text-tracoli-500" />
-            {locale === "fr" ? "Questions fréquentes" : "Frequently asked questions"}
+            {locale === "fr"
+              ? "Questions fréquentes"
+              : "Frequently asked questions"}
           </h2>
 
           <div className="mt-8 space-y-4">
@@ -199,9 +203,9 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
       </section>
 
       {/* ==================================================================
-          CTA FINAL → retour /#devis (hub de conversion)
+          CTA FINAL
           ================================================================== */}
-      <section className="bg-gradient-to-b from-white to-ink-50 py-16 lg:py-24">
+      <section className="bg-gradient-to-b from-white to-ink-50 py-16 pb-24 lg:py-24 lg:pb-28">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl border border-tracoli-200 bg-white p-8 text-center shadow-card-lg sm:p-12">
             <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-tracoli-500/10 blur-3xl" />
@@ -221,7 +225,7 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                 <Link
                   href="/#devis"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+                  className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
                 >
                   {locale === "fr" ? "Envoyer mon projet" : "Send my project"}
                   <ArrowRight className="size-3.5" />
@@ -232,7 +236,7 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-[13px] font-bold text-ink-800 transition-colors hover:border-ink-300"
+                  className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-[13px] font-bold text-ink-800 transition-colors hover:border-ink-300"
                 >
                   {locale === "fr" ? "Discuter sur WhatsApp" : "Chat on WhatsApp"}
                 </a>
