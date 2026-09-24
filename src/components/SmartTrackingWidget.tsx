@@ -11,7 +11,8 @@ import {
   MapPin,
   ExternalLink,
 } from "lucide-react";
-import { CONTACT, waLink } from "@/data/content";
+import { CONTACT } from "@/data/config/contact";
+import { waLink } from "@/data/shared/helpers";
 import { useLocale } from "@/hooks/useLocale";
 
 type StageStatus = "done" | "active" | "pending";
@@ -88,37 +89,31 @@ export default function SmartTrackingWidget() {
   };
 
   return (
-    <section id="tracking" className="scroll-mt-24 bg-ink-50 py-20 lg:py-28">
+    <section className="bg-white py-10 pb-24 lg:py-14 lg:pb-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-            {locale === "fr" ? "Suivi en temps réel" : "Real-time tracking"}
-          </span>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
-            {locale === "fr" ? "Où est ma marchandise ?" : "Where is my shipment?"}
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[14.5px] text-ink-500">
-            {locale === "fr"
-              ? "Saisissez votre numéro de suivi TRACOLI pour consulter l'avancement."
-              : "Enter your TRACOLI tracking number to view progress."}
-          </p>
-        </div>
-
-        <form onSubmit={onSearch} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
+        {/* ==================== CHAMP DE RECHERCHE ==================== */}
+        <form
+          onSubmit={onSearch}
+          className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row"
+        >
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-ink-400" />
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder={locale === "fr" ? "Entrez votre numéro de suivi" : "Enter your tracking number"}
-              className="w-full rounded-xl border border-ink-200 bg-white py-3.5 pr-4 pl-11 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
+              placeholder={
+                locale === "fr"
+                  ? "Numéro de suivi (ex : CTN-2041)"
+                  : "Tracking number (e.g. CTN-2041)"
+              }
+              className="w-full min-h-[52px] rounded-xl border border-ink-200 bg-white py-3.5 pr-4 pl-11 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
             />
           </div>
           <button
             type="submit"
             disabled={loading || !code.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -134,6 +129,7 @@ export default function SmartTrackingWidget() {
           </button>
         </form>
 
+        {/* ==================== RÉSULTAT — TIMELINE ==================== */}
         <AnimatePresence mode="wait">
           {result && (
             <motion.div
@@ -144,6 +140,7 @@ export default function SmartTrackingWidget() {
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="mt-10 overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-card-lg"
             >
+              {/* Header résultat */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-200 bg-gradient-to-r from-white to-ink-50 px-6 py-5">
                 <div>
                   <p className="text-[11px] font-bold tracking-wide text-ink-500 uppercase">
@@ -162,6 +159,7 @@ export default function SmartTrackingWidget() {
                 </span>
               </div>
 
+              {/* Timeline */}
               <div className="p-6 sm:p-8">
                 <ol className="relative">
                   {DEMO_STAGES.map((stage, i) => {
@@ -184,26 +182,34 @@ export default function SmartTrackingWidget() {
                               : "border-ink-200 bg-white text-ink-400"
                           }`}
                         >
-                          {stage.status === "done" && <Check className="size-4" strokeWidth={3} />}
+                          {stage.status === "done" && (
+                            <Check className="size-4" strokeWidth={3} />
+                          )}
                           {stage.status === "active" && (
                             <span className="relative flex size-3">
                               <span className="absolute inline-flex size-full animate-ping rounded-full bg-tracoli-500 opacity-60" />
                               <span className="relative inline-flex size-3 rounded-full bg-tracoli-500" />
                             </span>
                           )}
-                          {stage.status === "pending" && <Clock className="size-3.5" />}
+                          {stage.status === "pending" && (
+                            <Clock className="size-3.5" />
+                          )}
                         </span>
 
                         <div className="min-w-0 flex-1 pt-0.5">
                           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                             <p
                               className={`text-[14px] font-extrabold tracking-tight ${
-                                stage.status === "pending" ? "text-ink-500" : "text-ink-900"
+                                stage.status === "pending"
+                                  ? "text-ink-500"
+                                  : "text-ink-900"
                               }`}
                             >
                               {stage.label[locale]}
                             </p>
-                            <p className="text-[11.5px] font-semibold text-ink-400">{stage.date}</p>
+                            <p className="text-[11.5px] font-semibold text-ink-400">
+                              {stage.date}
+                            </p>
                           </div>
 
                           <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-ink-500">
@@ -221,7 +227,11 @@ export default function SmartTrackingWidget() {
                                 <motion.div
                                   initial={{ width: 0 }}
                                   animate={{ width: "65%" }}
-                                  transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                  transition={{
+                                    duration: 1.2,
+                                    delay: 0.3,
+                                    ease: [0.22, 1, 0.36, 1],
+                                  }}
                                   className="h-full rounded-full bg-tracoli-500"
                                 />
                               </div>
@@ -238,6 +248,7 @@ export default function SmartTrackingWidget() {
                   })}
                 </ol>
 
+                {/* Actions */}
                 <div className="mt-6 flex flex-col gap-3 border-t border-ink-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-[12px] text-ink-500">
                     {locale === "fr"
@@ -254,10 +265,15 @@ export default function SmartTrackingWidget() {
                       className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-tracoli-500 px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
                     >
                       <ExternalLink className="size-3.5" />
-                      {locale === "fr" ? `Contacter ${CONTACT.manager}` : `Contact ${CONTACT.manager}`}
+                      {locale === "fr"
+                        ? `Contacter ${CONTACT.manager}`
+                        : `Contact ${CONTACT.manager}`}
                     </a>
                     <button
-                      onClick={() => { setResult(null); setCode(""); }}
+                      onClick={() => {
+                        setResult(null);
+                        setCode("");
+                      }}
                       className="rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-[12.5px] font-semibold text-ink-700 hover:bg-ink-50"
                     >
                       {locale === "fr" ? "Nouvelle recherche" : "New search"}
@@ -269,23 +285,28 @@ export default function SmartTrackingWidget() {
           )}
         </AnimatePresence>
 
+        {/* ==================== ÉTAT VIDE ==================== */}
         {!result && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mx-auto mt-10 max-w-xl rounded-2xl border border-dashed border-ink-300 bg-white/60 p-6 text-center"
+            className="mx-auto mt-10 max-w-xl rounded-2xl border border-dashed border-ink-300 bg-ink-50/60 p-6 text-center"
           >
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-ink-100 text-ink-500">
+            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white text-ink-500">
               <Package className="size-5" />
             </span>
             <p className="mt-4 text-[13.5px] font-semibold text-ink-800">
-              {locale === "fr" ? "Aucun envoi en cours de consultation" : "No shipment currently viewed"}
+              {locale === "fr"
+                ? "Aucun envoi en cours de consultation"
+                : "No shipment currently viewed"}
             </p>
             <p className="mt-1 text-[12px] text-ink-500">
               {locale === "fr" ? "Démonstration : saisissez" : "Demo: enter"}{" "}
               <span className="font-mono font-bold text-tracoli-500">CTN-2041</span>{" "}
-              {locale === "fr" ? "pour voir la timeline interactive." : "to see the interactive timeline."}
+              {locale === "fr"
+                ? "pour voir la timeline interactive."
+                : "to see the interactive timeline."}
             </p>
           </motion.div>
         )}

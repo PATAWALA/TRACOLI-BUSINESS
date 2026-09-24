@@ -9,14 +9,14 @@ import {
   Loader2,
   ShieldCheck,
   UserCheck,
+  Plane,
+  Ship,
 } from "lucide-react";
-import {
-  FLAT_DESTINATIONS,
-  FREIGHT_RATES,
-  CONTACT,
-  waLink,
-  type ShippingMode,
-} from "@/data/content";
+import { FLAT_DESTINATIONS } from "@/data/logistics/destinations";
+import { FREIGHT_RATES } from "@/data/logistics/rates";
+import { CONTACT } from "@/data/config/contact";
+import { waLink } from "@/data/shared/helpers";
+import type { ShippingMode } from "@/data/shared/types";
 import { useLocale } from "@/hooks/useLocale";
 
 type Step = 1 | 2 | 3;
@@ -29,9 +29,14 @@ const STEP_LABELS = {
 const nf = new Intl.NumberFormat("fr-FR");
 
 const inputCls =
-  "w-full rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
+  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
 
-const DEPARTURE_HUBS = ["Guangzhou, China", "Yiwu, China", "Foshan, China", "Shenzhen, China"];
+const DEPARTURE_HUBS = [
+  "Guangzhou, China",
+  "Yiwu, China",
+  "Foshan, China",
+  "Shenzhen, China",
+];
 
 export default function LogisticsWizard() {
   const { locale } = useLocale();
@@ -46,11 +51,14 @@ export default function LogisticsWizard() {
 
   const rate = FREIGHT_RATES[mode];
   const destination =
-    FLAT_DESTINATIONS.find((d) => d.id === destinationId) ?? FLAT_DESTINATIONS[0];
-  const country = locale === "fr" ? destination.countryFr : destination.countryEn;
+    FLAT_DESTINATIONS.find((d) => d.id === destinationId) ??
+    FLAT_DESTINATIONS[0];
+  const country =
+    locale === "fr" ? destination.countryFr : destination.countryEn;
 
   const qty = Math.max(0, Number(quantity) || 0);
-  const factor = mode === "air" ? destination.airFactor : destination.seaFactor;
+  const factor =
+    mode === "air" ? destination.airFactor : destination.seaFactor;
   const low = Math.round(qty * rate.min * factor);
   const high = Math.round(qty * rate.max * factor);
 
@@ -71,8 +79,12 @@ export default function LogisticsWizard() {
       `${locale === "fr" ? "Mode" : "Mode"} : ${rate.label[locale]}\n` +
       `${locale === "fr" ? "Dédouanement" : "Customs"} : ${
         customsManagedByTracoli
-          ? locale === "fr" ? "Géré par TRACOLI" : "Managed by TRACOLI"
-          : locale === "fr" ? "Géré par le client" : "Managed by client"
+          ? locale === "fr"
+            ? "Géré par TRACOLI"
+            : "Managed by TRACOLI"
+          : locale === "fr"
+          ? "Géré par le client"
+          : "Managed by client"
       }\n` +
       `${locale === "fr" ? "Départ" : "Departure"} : ${departure}\n` +
       `${locale === "fr" ? "Arrivée" : "Destination"} : ${destination.city} (${country})\n` +
@@ -82,9 +94,10 @@ export default function LogisticsWizard() {
     );
   };
 
+  /* ==================== VUE SUCCÈS ==================== */
   if (done) {
     return (
-      <Shell id="logistique" locale={locale}>
+      <Shell locale={locale}>
         <div className="rounded-3xl border border-emerald-200 bg-emerald-50/60 p-8 text-center sm:p-12">
           <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-emerald-100">
             <Check className="size-8 text-emerald-600" strokeWidth={3} />
@@ -97,7 +110,8 @@ export default function LogisticsWizard() {
               {locale === "fr" ? "Estimation de fret" : "Freight estimate"}
             </p>
             <p className="mt-2 text-3xl font-extrabold text-ink-900">
-              {nf.format(low)} USD <span className="text-ink-400">-</span> {nf.format(high)} USD
+              {nf.format(low)} USD <span className="text-ink-400">-</span>{" "}
+              {nf.format(high)} USD
             </p>
             <p className="mt-2 text-[13px] text-ink-500">
               {qty} {rate.unit} · {destination.city} · {rate.delay[locale]}
@@ -108,13 +122,16 @@ export default function LogisticsWizard() {
               href={waLink(summary())}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl bg-tracoli-500 px-6 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
+              className="inline-flex min-h-[52px] items-center justify-center rounded-xl bg-tracoli-500 px-6 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
             >
               {locale === "fr" ? "Valider sur WhatsApp" : "Confirm via WhatsApp"}
             </a>
             <button
-              onClick={() => { setDone(false); setStep(1); }}
-              className="rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+              onClick={() => {
+                setDone(false);
+                setStep(1);
+              }}
+              className="inline-flex min-h-[52px] items-center justify-center rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
             >
               {locale === "fr" ? "Nouvelle estimation" : "New estimate"}
             </button>
@@ -124,8 +141,9 @@ export default function LogisticsWizard() {
     );
   }
 
+  /* ==================== VUE WIZARD ==================== */
   return (
-    <Shell id="logistique" locale={locale}>
+    <Shell locale={locale}>
       <div className="rounded-3xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8 lg:p-10">
         {/* Progression */}
         <div className="mb-8">
@@ -155,11 +173,13 @@ export default function LogisticsWizard() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* ÉTAPE 1 */}
+            {/* ==================== ÉTAPE 1 ==================== */}
             {step === 1 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
-                  {locale === "fr" ? "Quel mode d'expédition ?" : "Which shipping mode?"}
+                  {locale === "fr"
+                    ? "Quel mode d'expédition ?"
+                    : "Which shipping mode?"}
                 </h3>
                 <p className="mt-2 text-[13.5px] text-ink-500">
                   {locale === "fr"
@@ -167,49 +187,55 @@ export default function LogisticsWizard() {
                     : "Choose based on your speed / cost trade-off."}
                 </p>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   {(Object.keys(FREIGHT_RATES) as ShippingMode[]).map((m) => {
                     const opt = FREIGHT_RATES[m];
                     const active = mode === m;
                     const isSea = m === "sea";
+                    const Icon = m === "air" ? Plane : Ship;
+
                     return (
                       <button
                         key={m}
                         type="button"
                         onClick={() => setMode(m)}
-                        className={`group relative flex flex-col rounded-2xl border-2 p-5 text-left transition-all active:scale-[0.98] ${
+                        className={`group relative flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
                           active
                             ? "border-tracoli-500 bg-tracoli-50 shadow-[var(--shadow-red)]"
                             : "border-ink-200 bg-white hover:border-ink-300"
                         }`}
                       >
                         {isSea && (
-                          <span className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full bg-tracoli-500 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase">
+                          <span className="absolute -top-2.5 right-3 rounded-full bg-tracoli-500 px-2 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase">
                             {locale === "fr" ? "Recommandé" : "Recommended"}
                           </span>
                         )}
 
-                        <p
-                          className={`text-[15px] font-extrabold tracking-tight ${
-                            active ? "text-tracoli-600" : "text-ink-900"
+                        <span
+                          className={`grid size-11 shrink-0 place-items-center rounded-xl transition-colors ${
+                            active
+                              ? "bg-tracoli-500 text-white"
+                              : "bg-ink-100 text-ink-500"
                           }`}
                         >
-                          {opt.label[locale]}
-                        </p>
-                        <p className="mt-1 text-[11.5px] font-semibold text-ink-500">
-                          {opt.delay[locale]}
-                        </p>
+                          <Icon className="size-5" />
+                        </span>
 
-                        <p
-                          className={`mt-4 text-[13px] font-bold ${
-                            active ? "text-tracoli-600" : "text-ink-700"
-                          }`}
-                        >
-                          {opt.min} USD - {opt.max} USD / {opt.unit}
-                        </p>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={`text-[14px] font-extrabold tracking-tight ${
+                              active ? "text-tracoli-600" : "text-ink-900"
+                            }`}
+                          >
+                            {opt.label[locale]}
+                          </p>
+                          <p className="mt-0.5 text-[11.5px] font-semibold text-ink-500">
+                            {opt.delay[locale]}
+                          </p>
+                        </div>
 
                         {active && (
-                          <span className="absolute top-4 left-4 grid size-5 place-items-center rounded-full bg-tracoli-500 text-white">
+                          <span className="grid size-5 shrink-0 place-items-center rounded-full bg-tracoli-500 text-white">
                             <Check className="size-3" strokeWidth={3} />
                           </span>
                         )}
@@ -220,11 +246,13 @@ export default function LogisticsWizard() {
               </div>
             )}
 
-            {/* ÉTAPE 2 */}
+            {/* ==================== ÉTAPE 2 ==================== */}
             {step === 2 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
-                  {locale === "fr" ? "Qui gère le dédouanement ?" : "Who handles customs clearance?"}
+                  {locale === "fr"
+                    ? "Qui gère le dédouanement ?"
+                    : "Who handles customs clearance?"}
                 </h3>
                 <p className="mt-2 text-[13.5px] text-ink-500">
                   {locale === "fr"
@@ -244,7 +272,9 @@ export default function LogisticsWizard() {
                   >
                     <span
                       className={`mt-0.5 grid size-10 shrink-0 place-items-center rounded-xl ${
-                        customsManagedByTracoli ? "bg-tracoli-500 text-white" : "bg-ink-100 text-ink-600"
+                        customsManagedByTracoli
+                          ? "bg-tracoli-500 text-white"
+                          : "bg-ink-100 text-ink-600"
                       }`}
                     >
                       <ShieldCheck className="size-4" />
@@ -253,7 +283,9 @@ export default function LogisticsWizard() {
                       <div className="flex flex-wrap items-center gap-2">
                         <p
                           className={`text-[14px] font-extrabold ${
-                            customsManagedByTracoli ? "text-tracoli-600" : "text-ink-900"
+                            customsManagedByTracoli
+                              ? "text-tracoli-600"
+                              : "text-ink-900"
                           }`}
                         >
                           {locale === "fr"
@@ -283,7 +315,9 @@ export default function LogisticsWizard() {
                   >
                     <span
                       className={`mt-0.5 grid size-10 shrink-0 place-items-center rounded-xl ${
-                        !customsManagedByTracoli ? "bg-tracoli-500 text-white" : "bg-ink-100 text-ink-600"
+                        !customsManagedByTracoli
+                          ? "bg-tracoli-500 text-white"
+                          : "bg-ink-100 text-ink-600"
                       }`}
                     >
                       <UserCheck className="size-4" />
@@ -291,7 +325,9 @@ export default function LogisticsWizard() {
                     <div className="min-w-0 flex-1">
                       <p
                         className={`text-[14px] font-extrabold ${
-                          !customsManagedByTracoli ? "text-tracoli-600" : "text-ink-900"
+                          !customsManagedByTracoli
+                            ? "text-tracoli-600"
+                            : "text-ink-900"
                         }`}
                       >
                         {locale === "fr"
@@ -309,11 +345,13 @@ export default function LogisticsWizard() {
               </div>
             )}
 
-            {/* ÉTAPE 3 */}
+            {/* ==================== ÉTAPE 3 ==================== */}
             {step === 3 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
-                  {locale === "fr" ? "Détails de votre expédition" : "Your shipment details"}
+                  {locale === "fr"
+                    ? "Détails de votre expédition"
+                    : "Your shipment details"}
                 </h3>
                 <p className="mt-2 text-[13.5px] text-ink-500">
                   {locale === "fr"
@@ -333,14 +371,18 @@ export default function LogisticsWizard() {
                         className={`${inputCls} appearance-none`}
                       >
                         {DEPARTURE_HUBS.map((hub) => (
-                          <option key={hub} value={hub}>{hub}</option>
+                          <option key={hub} value={hub}>
+                            {hub}
+                          </option>
                         ))}
                       </select>
                     </div>
 
                     <div>
                       <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
-                        {locale === "fr" ? "Ville d'arrivée" : "Destination city"}
+                        {locale === "fr"
+                          ? "Ville d'arrivée"
+                          : "Destination city"}
                       </label>
                       <select
                         value={destinationId}
@@ -349,7 +391,9 @@ export default function LogisticsWizard() {
                       >
                         {FLAT_DESTINATIONS.map((d) => (
                           <option key={d.id} value={d.id}>
-                            {d.city} — {locale === "fr" ? d.countryFr : d.countryEn} ({d.code})
+                            {d.city} —{" "}
+                            {locale === "fr" ? d.countryFr : d.countryEn} (
+                            {d.code})
                           </option>
                         ))}
                       </select>
@@ -359,8 +403,12 @@ export default function LogisticsWizard() {
                   <div>
                     <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
                       {mode === "air"
-                        ? locale === "fr" ? "Poids total (KG)" : "Total weight (KG)"
-                        : locale === "fr" ? "Volume total (CBM)" : "Total volume (CBM)"}
+                        ? locale === "fr"
+                          ? "Poids total (KG)"
+                          : "Total weight (KG)"
+                        : locale === "fr"
+                        ? "Volume total (CBM)"
+                        : "Total volume (CBM)"}
                     </label>
                     <div className="relative">
                       <input
@@ -385,13 +433,18 @@ export default function LogisticsWizard() {
                       className="rounded-2xl border border-tracoli-200 bg-tracoli-50 p-5"
                     >
                       <p className="text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-                        {locale === "fr" ? "Estimation instantanée" : "Instant estimate"}
+                        {locale === "fr"
+                          ? "Estimation instantanée"
+                          : "Instant estimate"}
                       </p>
                       <p className="mt-2 text-2xl font-extrabold text-ink-900">
-                        {nf.format(low)} USD <span className="text-ink-400">-</span> {nf.format(high)} USD
+                        {nf.format(low)} USD{" "}
+                        <span className="text-ink-400">-</span>{" "}
+                        {nf.format(high)} USD
                       </p>
                       <p className="mt-1 text-[12px] text-ink-500">
-                        {qty} {rate.unit} · {destination.city} · {rate.delay[locale]}
+                        {qty} {rate.unit} · {destination.city} ·{" "}
+                        {rate.delay[locale]}
                       </p>
                     </motion.div>
                   )}
@@ -401,13 +454,13 @@ export default function LogisticsWizard() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation */}
+        {/* ==================== NAVIGATION ==================== */}
         <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink-200 pt-6">
           <button
             type="button"
             onClick={back}
             disabled={step === 1}
-            className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
           >
             <ArrowLeft className="size-3.5" />
             {locale === "fr" ? "Retour" : "Back"}
@@ -417,7 +470,7 @@ export default function LogisticsWizard() {
             <button
               type="button"
               onClick={next}
-              className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
             >
               {locale === "fr" ? "Continuer" : "Continue"}
               <ArrowRight className="size-3.5" />
@@ -427,7 +480,7 @@ export default function LogisticsWizard() {
               type="button"
               onClick={submit}
               disabled={submitting || qty < rate.minQty}
-              className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -436,7 +489,9 @@ export default function LogisticsWizard() {
                 </>
               ) : (
                 <>
-                  {locale === "fr" ? "Obtenir mon tarif de fret" : "Get my freight rate"}
+                  {locale === "fr"
+                    ? "Obtenir mon tarif de fret"
+                    : "Get my freight rate"}
                   <ArrowRight className="size-3.5" />
                 </>
               )}
@@ -449,21 +504,29 @@ export default function LogisticsWizard() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Shell — Conteneur de section                                       */
+/* ------------------------------------------------------------------ */
 
-function Shell({ children, id, locale }: { children: ReactNode; id: string; locale: "fr" | "en" }) {
+function Shell({
+  children,
+  locale,
+}: {
+  children: ReactNode;
+  locale: "fr" | "en";
+}) {
   return (
-    <section id={id} className="scroll-mt-24 bg-white py-20 lg:py-28">
+    <section className="bg-white py-12 pb-24 lg:py-20 lg:pb-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+        <div className="mb-8 text-center lg:mb-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
             {locale === "fr" ? "Formulaire de fret" : "Freight form"}
           </span>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
+          <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl lg:text-4xl">
             {locale === "fr"
               ? "Estimez votre fret en 3 étapes"
               : "Estimate your freight in 3 steps"}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[14.5px] text-ink-500">
+          <p className="mx-auto mt-3 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
             {locale === "fr"
               ? "Mode, dédouanement, destination. Vous obtenez un tarif indicatif immédiat."
               : "Mode, customs, destination. Get an immediate indicative rate."}
