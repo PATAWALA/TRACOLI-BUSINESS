@@ -1,31 +1,60 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
-import { Phone, Mail, MapPin, ArrowUpRight, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
-import {
-  CONTACT,
-  IDENTITY,
-  SERVICES,
-  DESTINATIONS,
-  NAV_LINKS,
-  FOOTER,
-  waLink,
-} from "@/data/content";
+import { CONTACT } from "@/data/config/contact";
+import { IDENTITY } from "@/data/config/identity";
+import { NAV_LINKS } from "@/data/config/navigation";
+import { SERVICES } from "@/data/services/list";
+import { DESTINATIONS } from "@/data/logistics/destinations";
+import { waLink } from "@/data/shared/helpers";
 import { useLocale } from "@/hooks/useLocale";
+
+/* ------------------------------------------------------------------ */
+/*  Footer — Caché sur mobile (bottom nav gère), visible desktop       */
+/* ------------------------------------------------------------------ */
+
+const FOOTER = {
+  tagline: {
+    fr: "Trade Connectors Logistics International",
+    en: "Trade Connectors Logistics International",
+  },
+  zonesTitle: {
+    fr: "Zones desservies",
+    en: "Regions served",
+  },
+  legal: {
+    fr: "Tous droits réservés.",
+    en: "All rights reserved.",
+  },
+  credit: {
+    fr: "Développé par Abdoulaye Patawala — Architecte Web",
+    en: "Developed by Abdoulaye Patawala — Web Architect",
+  },
+} as const;
+
+const SLUG_MAP: Record<string, string> = {
+  sourcing: "sourcing-negotiation",
+  inspection: "inspection-conformite",
+  freight: "fret-international",
+  customs: "dedouanement-livraison",
+};
 
 export default function Footer() {
   const { locale } = useLocale();
-
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-ink-200 bg-ink-50">
+    <footer className="hidden border-t border-ink-200 bg-ink-50 lg:block">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-10">
-          {/* ---------- Marque ---------- */}
+          {/* ============================================================
+              COLONNE 1 — Marque + Contact
+              ============================================================ */}
           <div>
-            <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
                 <Image
                   src="/logo.jpg"
@@ -36,14 +65,14 @@ export default function Footer() {
                 />
               </span>
               <span className="leading-none">
-                <span className="block text-[14px] font-extrabold tracking-tight text-ink-900">
+                <span className="block text-[14px] font-extrabold tracking-tight text-tracoli-500">
                   TRACOLI BUSINESS
                 </span>
-                <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.14em] text-tracoli-500 uppercase">
+                <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.14em] text-ink-500 uppercase">
                   {FOOTER.tagline[locale]}
                 </span>
               </span>
-            </div>
+            </Link>
 
             <p className="mt-5 max-w-sm text-[12.5px] leading-relaxed text-ink-500">
               {locale === "fr"
@@ -69,7 +98,7 @@ export default function Footer() {
 
               <a
                 href={waLink(
-                  `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager}, ${locale === "fr" ? "je vous contacte depuis le site TRACOLI" : "I am contacting you from the TRACOLI website"}.`
+                  `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager}, ${locale === "fr" ? "je vous contacte depuis le site TRACOLI." : "I'm contacting you from the TRACOLI website."}`
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -117,7 +146,9 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* ---------- Services ---------- */}
+          {/* ============================================================
+              COLONNE 2 — Services
+              ============================================================ */}
           <div>
             <h3 className="text-[11px] font-bold tracking-[0.14em] text-tracoli-500 uppercase">
               {locale === "fr" ? "Services" : "Services"}
@@ -125,37 +156,39 @@ export default function Footer() {
             <ul className="mt-5 space-y-3">
               {SERVICES.map((s) => (
                 <li key={s.id}>
-                  <a
-                    href="#services"
+                  <Link
+                    href={`/services/${SLUG_MAP[s.id]}`}
                     className="group inline-flex items-center gap-1.5 text-[12.5px] text-ink-600 transition-colors hover:text-ink-900"
                   >
                     {s.title[locale]}
                     <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                  </a>
+                  </Link>
                 </li>
               ))}
               <li>
-                <a
-                  href="#logistique"
+                <Link
+                  href="/expedier"
                   className="group inline-flex items-center gap-1.5 text-[12.5px] text-ink-600 transition-colors hover:text-ink-900"
                 >
                   {locale === "fr" ? "Estimation de fret" : "Freight estimate"}
                   <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#tracking"
+                <Link
+                  href="/suivre"
                   className="group inline-flex items-center gap-1.5 text-[12.5px] text-ink-600 transition-colors hover:text-ink-900"
                 >
                   {locale === "fr" ? "Suivi de colis" : "Shipment tracking"}
                   <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* ---------- Navigation ---------- */}
+          {/* ============================================================
+              COLONNE 3 — Navigation
+              ============================================================ */}
           <div>
             <h3 className="text-[11px] font-bold tracking-[0.14em] text-tracoli-500 uppercase">
               {locale === "fr" ? "Navigation" : "Navigation"}
@@ -163,29 +196,36 @@ export default function Footer() {
             <ul className="mt-5 space-y-3">
               {NAV_LINKS.map((l) => (
                 <li key={l.href}>
-                  <a
+                  <Link
                     href={l.href}
                     className="group inline-flex items-center gap-1.5 text-[12.5px] text-ink-600 transition-colors hover:text-ink-900"
                   >
                     {l.label[locale]}
                     <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* ---------- Zones desservies ---------- */}
+          {/* ============================================================
+              COLONNE 4 — Zones desservies
+              ============================================================ */}
           <div>
             <h3 className="text-[11px] font-bold tracking-[0.14em] text-tracoli-500 uppercase">
               {FOOTER.zonesTitle[locale]}
             </h3>
             <ul className="mt-5 space-y-3">
               {DESTINATIONS.map((c) => (
-                <li key={c.id} className="flex items-start gap-2.5 text-[12.5px] text-ink-600">
+                <li
+                  key={c.id}
+                  className="flex items-start gap-2.5 text-[12.5px] text-ink-600"
+                >
                   <MapPin className="mt-0.5 size-3.5 shrink-0 text-ink-400" />
                   <span className="leading-snug">
-                    <span className="font-semibold text-ink-800">{c.country[locale]}</span>
+                    <span className="font-semibold text-ink-800">
+                      {c.country[locale]}
+                    </span>
                     {" — "}
                     {c.cities.map((city) => city.name).join(", ")}
                   </span>
@@ -195,7 +235,9 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ---------- Barre légale ---------- */}
+        {/* ============================================================
+            Barre légale
+            ============================================================ */}
         <div className="mt-14 flex flex-col gap-4 border-t border-ink-200 pt-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11.5px] text-ink-500">
             © {year} {IDENTITY.legalName}. {FOOTER.legal[locale]}
