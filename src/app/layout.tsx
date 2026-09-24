@@ -38,11 +38,35 @@ export const metadata: Metadata = {
   authors: [{ name: "TRACOLI BUSINESS" }],
   creator: "TRACOLI BUSINESS",
   publisher: "TRACOLI BUSINESS",
+
+  /* ---------- ICÔNES / FAVICONS ---------- */
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon.png", sizes: "any", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/maskable-icon-512x512.png",
+        color: "#E50209",
+      },
+    ],
+  },
+
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
+
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -53,11 +77,13 @@ export const metadata: Metadata = {
     description:
       "Nous trouvons vos fournisseurs en Chine, sécurisons vos achats et organisons votre livraison jusqu'à destination.",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "TRACOLI BUSINESS — Sourcing & Logistique Chine–Afrique",
     description: "Votre sourcing Chine → Afrique, simplement.",
   },
+
   robots: {
     index: true,
     follow: true,
@@ -72,7 +98,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#E60000",
+  themeColor: "#E50209",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
