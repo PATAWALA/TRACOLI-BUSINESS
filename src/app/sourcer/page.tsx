@@ -5,7 +5,6 @@ import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
 import PageCTA from "@/components/layout/PageCTA";
 import QuickStats from "@/components/sourcing/QuickStats";
-import CategoriesExplorer from "@/components/sourcing/CategoriesExplorer";
 import CatalogSection from "@/components/sourcing/CatalogSection";
 import CustomRequestBanner from "@/components/sourcing/CustomRequestBanner";
 import SourcingWizard from "@/components/SourcingWizard";
@@ -38,19 +37,15 @@ export default function SourcingPage() {
         <QuickStats />
       </PageSection>
 
+      {/* Catalogue — filtres + grille produits (une seule section) */}
       <PageSection variant="alt">
-        <CategoriesExplorer />
-      </PageSection>
-
-      <PageSection>
         <CatalogSection />
       </PageSection>
 
-      <PageSection variant="alt">
+      <PageSection>
         <CustomRequestBanner />
       </PageSection>
 
-      {/* Wizard — enveloppé dans Suspense pour useSearchParams */}
       <Suspense fallback={null}>
         <SourcingWizard />
       </Suspense>
