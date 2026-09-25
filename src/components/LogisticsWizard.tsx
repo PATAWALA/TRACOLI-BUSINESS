@@ -183,8 +183,8 @@ export default function LogisticsWizard() {
                 </h3>
                 <p className="mt-2 text-[13.5px] text-ink-500">
                   {locale === "fr"
-                    ? "Choisissez selon votre arbitrage vitesse / coût."
-                    : "Choose based on your speed / cost trade-off."}
+                    ? "Sélectionnez le mode pour votre envoi. Vous pourrez affiner les détails à l'étape suivante."
+                    : "Select the mode for your shipment. You can refine details at the next step."}
                 </p>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -221,6 +221,7 @@ export default function LogisticsWizard() {
                           <Icon className="size-5" />
                         </span>
 
+                        {/* Nom du mode UNIQUEMENT — pas de délai ni prix */}
                         <div className="min-w-0 flex-1">
                           <p
                             className={`text-[14px] font-extrabold tracking-tight ${
@@ -228,9 +229,6 @@ export default function LogisticsWizard() {
                             }`}
                           >
                             {opt.label[locale]}
-                          </p>
-                          <p className="mt-0.5 text-[11.5px] font-semibold text-ink-500">
-                            {opt.delay[locale]}
                           </p>
                         </div>
 
@@ -243,6 +241,13 @@ export default function LogisticsWizard() {
                     );
                   })}
                 </div>
+
+                {/* Note discrète → renvoie à la section du dessus */}
+                <p className="mt-4 text-center text-[11.5px] text-ink-400">
+                  {locale === "fr"
+                    ? "Tarifs et délais détaillés affichés dans la section « Deux modes d'expédition » ci-dessus."
+                    : "Detailed rates and lead times shown in the section « Two shipping modes » above."}
+                </p>
               </div>
             )}
 
@@ -426,6 +431,7 @@ export default function LogisticsWizard() {
                     </div>
                   </div>
 
+                  {/* Estimation live — sans répéter le délai */}
                   {qty >= rate.minQty && (
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -443,8 +449,7 @@ export default function LogisticsWizard() {
                         {nf.format(high)} USD
                       </p>
                       <p className="mt-1 text-[12px] text-ink-500">
-                        {qty} {rate.unit} · {destination.city} ·{" "}
-                        {rate.delay[locale]}
+                        {qty} {rate.unit} · {destination.city}
                       </p>
                     </motion.div>
                   )}
