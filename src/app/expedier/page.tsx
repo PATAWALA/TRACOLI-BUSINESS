@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import { Plane } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
 import PageCTA from "@/components/layout/PageCTA";
 import ShippingOptionsGrid from "@/components/shipping/ShippingOptionsGrid";
 import DestinationsGrid from "@/components/shipping/DestinationsGrid";
 import LogisticsWizard from "@/components/LogisticsWizard";
-import { Plane } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Expédier une marchandise",
@@ -17,7 +17,7 @@ export default function ShippingPage() {
   return (
     <main className="pt-14 sm:pt-16 lg:pt-20">
       <PageHero
-        icon={Plane}
+        icon={<Plane className="size-3" />}
         badge={{ fr: "Expédition", en: "Shipping" }}
         title={{
           fr: "Expédiez votre marchandise vers l'Afrique",

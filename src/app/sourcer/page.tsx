@@ -1,49 +1,72 @@
 import type { Metadata } from "next";
+import { Search } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
 import PageCTA from "@/components/layout/PageCTA";
-import SmartTrackingWidget from "@/components/SmartTrackingWidget";
-import { MapPin } from "lucide-react";
+import QuickStats from "@/components/sourcing/QuickStats";
+import CategoriesExplorer from "@/components/sourcing/CategoriesExplorer";
+import FeaturedProducts from "@/components/sourcing/FeaturedProducts";
+import ProductsByCategory from "@/components/sourcing/ProductsByCategory";
+import CustomRequestBanner from "@/components/sourcing/CustomRequestBanner";
+import SourcingWizard from "@/components/SourcingWizard";
 
 export const metadata: Metadata = {
-  title: "Suivre ma marchandise",
+  title: "Sourcer un produit en Chine",
   description:
-    "Suivez votre marchandise en temps réel depuis la Chine jusqu'à votre entrepôt en Afrique.",
+    "Trouvez le fournisseur idéal en Chine. Envoyez-nous une photo ou un lien et recevez une cotation sous 24h.",
 };
 
-export default function TrackingPage() {
+export default function SourcingPage() {
   return (
     <main className="pt-14 sm:pt-16 lg:pt-20">
       <PageHero
-        icon={MapPin}
-        badge={{ fr: "Suivi en temps réel", en: "Real-time tracking" }}
+        icon={<Search className="size-3" />}
+        badge={{ fr: "Sourcing en Chine", en: "Sourcing in China" }}
         title={{
-          fr: "Où est ma marchandise ?",
-          en: "Where is my shipment?",
+          fr: "Trouvez le fournisseur idéal pour votre produit",
+          en: "Find the ideal supplier for your product",
         }}
         description={{
-          fr: "Saisissez votre numéro de suivi TRACOLI pour consulter l'avancement de votre envoi, de Guangzhou jusqu'à votre entrepôt.",
-          en: "Enter your TRACOLI tracking number to view the progress of your shipment, from Guangzhou to your warehouse.",
+          fr: "Vous avez un produit en tête ? Envoyez-nous une photo ou un lien. Nos équipes en Chine identifient les meilleurs fournisseurs, négocient les prix et sécurisent votre commande.",
+          en: "Got a product in mind? Send us a photo or a link. Our teams in China identify the best suppliers, negotiate prices and secure your order.",
         }}
+        ctaLabel={{ fr: "Lancer une recherche", en: "Start a search" }}
+        ctaHref="#sourcing"
       />
 
       <PageSection tight>
-        <SmartTrackingWidget />
+        <QuickStats />
       </PageSection>
+
+      <PageSection variant="alt">
+        <CategoriesExplorer />
+      </PageSection>
+
+      <PageSection>
+        <FeaturedProducts />
+      </PageSection>
+
+      <PageSection variant="alt">
+        <ProductsByCategory />
+      </PageSection>
+
+      <PageSection>
+        <CustomRequestBanner />
+      </PageSection>
+
+      <SourcingWizard />
 
       <PageCTA
         title={{
-          fr: "Besoin d'aide pour localiser un colis ?",
-          en: "Need help locating a shipment?",
+          fr: "Besoin d'un autre produit ?",
+          en: "Looking for another product?",
         }}
         description={{
-          fr: "Notre équipe vous répond directement sur WhatsApp pour tout renseignement.",
-          en: "Our team replies directly on WhatsApp for any inquiry.",
+          fr: "Envoyez-nous votre besoin par WhatsApp. Nos acheteurs en Chine vous répondent sous 24h.",
+          en: "Send us your requirement via WhatsApp. Our buyers in China reply within 24h.",
         }}
-        primaryLabel={{
-          fr: "Contacter le service client",
-          en: "Contact customer service",
-        }}
+        primaryLabel={{ fr: "Contacter un acheteur", en: "Contact a buyer" }}
+        primaryHref="/#devis"
       />
     </main>
   );
