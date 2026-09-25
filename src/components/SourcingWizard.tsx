@@ -25,35 +25,12 @@ import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
 import { useLocale } from "@/hooks/useLocale";
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
 const STEP_LABELS = {
-  fr: ["Le produit", "Les spécificités", "Votre contact"],
-  en: ["The product", "Specifications", "Your contact"],
+  fr: ["Le produit", "Votre contact"],
+  en: ["The product", "Your contact"],
 };
-
-const TAGS = [
-  {
-    id: "electronics",
-    label: { fr: "Électronique", en: "Electronics" },
-    hint: { fr: "Appareils, gadgets, téléphonie", en: "Devices, gadgets, telecom" },
-  },
-  {
-    id: "battery",
-    label: { fr: "Contient une batterie", en: "Contains a battery" },
-    hint: { fr: "Restrictions transport aérien", en: "Air transport restrictions" },
-  },
-  {
-    id: "fragile",
-    label: { fr: "Fragile", en: "Fragile" },
-    hint: { fr: "Emballage renforcé requis", en: "Reinforced packaging required" },
-  },
-  {
-    id: "standard",
-    label: { fr: "Standard", en: "Standard" },
-    hint: { fr: "Marchandise générale", en: "General goods" },
-  },
-] as const;
 
 const inputCls =
   "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
@@ -71,8 +48,6 @@ export default function SourcingWizard() {
   const [prefilledProduct, setPrefilledProduct] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const [tags, setTags] = useState<Set<string>>(new Set());
 
   const [name, setName] = useState("");
   const [destinationId, setDestinationId] = useState(FLAT_DESTINATIONS[0].id);
@@ -106,21 +81,12 @@ export default function SourcingWizard() {
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) =>
     handleFile(e.target.files?.[0] ?? undefined);
 
-  const toggleTag = (id: string) =>
-    setTags((prev) => {
-      const n = new Set(prev);
-      if (n.has(id)) n.delete(id);
-      else n.add(id);
-      return n;
-    });
-
   const canProceed = () => {
     if (step === 1) return true;
-    if (step === 2) return true;
     return name.trim() !== "" && whatsapp.trim() !== "";
   };
 
-  const next = () => setStep((s) => Math.min(3, s + 1) as Step);
+  const next = () => setStep((s) => Math.min(2, s + 1) as Step);
   const back = () => setStep((s) => Math.max(1, s - 1) as Step);
 
   const submit = async () => {
@@ -136,15 +102,11 @@ export default function SourcingWizard() {
     setImagePreview(null);
     setProductUrl("");
     setPrefilledProduct(null);
-    setTags(new Set());
     setName("");
     setWhatsapp("");
   };
 
   const summary = () => {
-    const tagLabels = TAGS.filter((t) => tags.has(t.id))
-      .map((t) => t.label[locale])
-      .join(", ");
     const country =
       locale === "fr" ? destination.countryFr : destination.countryEn;
 
@@ -155,7 +117,6 @@ export default function SourcingWizard() {
         ? `${locale === "fr" ? "Produit" : "Product"} : ${prefilledProduct}\n`
         : "") +
       `${locale === "fr" ? "Produit (URL)" : "Product (URL)"} : ${productUrl || "-"}\n` +
-      `${locale === "fr" ? "Spécificités" : "Specifications"} : ${tagLabels || "-"}\n` +
       `${locale === "fr" ? "Nom" : "Name"} : ${name}\n` +
       `${locale === "fr" ? "Destination" : "Destination"} : ${destination.city} (${country})\n` +
       `WhatsApp : ${whatsapp}\n`
@@ -175,8 +136,8 @@ export default function SourcingWizard() {
           </h3>
           <p className="mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-ink-600">
             {locale === "fr"
-              ? "Un acheteur TRACOLI analyse votre demande et revient vers vous sous 24 heures."
-              : "A TRACOLI buyer is reviewing your request and will get back to you within 24 hours."}
+              ? "Un acheteur TRACOLI analyse votre demande et revient vers vous sous 24 heures. Nous prendrons en charge toutes les vérifications nécessaires."
+              : "A TRACOLI buyer is reviewing your request and will get back to you within 24 hours. We'll handle all necessary verifications."}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
@@ -207,12 +168,12 @@ export default function SourcingWizard() {
         <div className="mb-8">
           <div className="mb-3 flex items-center justify-between text-[11px] font-bold tracking-wide uppercase">
             <span className="text-tracoli-500">
-              {locale === "fr" ? `Étape ${step} sur 3` : `Step ${step} of 3`}
+              {locale === "fr" ? `Étape ${step} sur 2` : `Step ${step} of 2`}
             </span>
             <span className="text-ink-400">{STEP_LABELS[locale][step - 1]}</span>
           </div>
           <div className="flex gap-1.5">
-            {[1, 2, 3].map((n) => (
+            {[1, 2].map((n) => (
               <div
                 key={n}
                 className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${
@@ -241,8 +202,8 @@ export default function SourcingWizard() {
                 </h3>
                 <p className="mt-2 text-[13.5px] text-ink-500">
                   {locale === "fr"
-                    ? "Envoyez-nous une photo ou un lien. Plus de contexte, cotation plus précise."
-                    : "Send us a photo or a link. The more context, the more precise the quote."}
+                    ? "Envoyez-nous une photo ou un lien. Nous nous occupons de toutes les vérifications et contraintes techniques."
+                    : "Send us a photo or a link. We handle all verifications and technical constraints."}
                 </p>
 
                 {/* Bandeau produit pré-rempli */}
@@ -352,61 +313,19 @@ export default function SourcingWizard() {
                     />
                   </div>
                 </div>
+
+                {/* Note rassurante */}
+                <p className="mt-5 flex items-start gap-2 rounded-xl bg-ink-50 p-3 text-[11.5px] leading-relaxed text-ink-500">
+                  <Package className="mt-0.5 size-3.5 shrink-0 text-tracoli-500" />
+                  {locale === "fr"
+                    ? "Pas besoin de préciser les contraintes techniques. Nos équipes vérifient la nature du produit, les restrictions de transport et les formalités douanières."
+                    : "No need to specify technical constraints. Our teams verify the nature of the product, transport restrictions and customs formalities."}
+                </p>
               </div>
             )}
 
             {/* ==================== ÉTAPE 2 ==================== */}
             {step === 2 && (
-              <div>
-                <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
-                  {locale === "fr"
-                    ? "Avez-vous des spécificités ?"
-                    : "Any specific requirements?"}
-                </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
-                  {locale === "fr"
-                    ? "Sélectionnez tout ce qui s'applique pour anticiper les contraintes de transport."
-                    : "Select all that apply to anticipate transport constraints."}
-                </p>
-
-                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {TAGS.map((tag) => {
-                    const active = tags.has(tag.id);
-                    return (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => toggleTag(tag.id)}
-                        className={`relative flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all active:scale-[0.97] ${
-                          active
-                            ? "border-tracoli-500 bg-tracoli-50 shadow-[var(--shadow-red)]"
-                            : "border-ink-200 bg-white hover:border-ink-300"
-                        }`}
-                      >
-                        <span
-                          className={`text-[12.5px] leading-tight font-bold ${
-                            active ? "text-tracoli-600" : "text-ink-800"
-                          }`}
-                        >
-                          {tag.label[locale]}
-                        </span>
-                        <span className="text-[10.5px] leading-tight text-ink-500">
-                          {tag.hint[locale]}
-                        </span>
-                        {active && (
-                          <span className="absolute -top-2 -right-2 grid size-5 place-items-center rounded-full bg-tracoli-500 text-white">
-                            <Check className="size-3" strokeWidth={3} />
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* ==================== ÉTAPE 3 ==================== */}
-            {step === 3 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   {locale === "fr" ? "Comment vous joindre ?" : "How can we reach you?"}
@@ -481,7 +400,7 @@ export default function SourcingWizard() {
             {locale === "fr" ? "Retour" : "Back"}
           </button>
 
-          {step < 3 ? (
+          {step < 2 ? (
             <button
               type="button"
               onClick={next}
@@ -548,13 +467,13 @@ function Shell({
           </span>
           <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl lg:text-4xl">
             {locale === "fr"
-              ? "Faites sourcer votre produit en 3 étapes"
-              : "Source your product in 3 steps"}
+              ? "Faites sourcer votre produit en 2 étapes"
+              : "Source your product in 2 steps"}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
             {locale === "fr"
-              ? "Décrivez votre besoin. Nous identifions le fournisseur, négocions le prix et gérons l'expédition."
-              : "Describe your need. We identify the supplier, negotiate the price and manage shipment."}
+              ? "Décrivez votre besoin. Nous identifions le fournisseur, vérifions la qualité et gérons l'expédition."
+              : "Describe your need. We identify the supplier, verify quality and manage shipment."}
           </p>
         </div>
         {children}
