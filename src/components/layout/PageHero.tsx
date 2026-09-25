@@ -1,10 +1,10 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { useLocale } from "@/hooks/useLocale";
 
 type PageHeroProps = {
-  icon: LucideIcon;
+  icon: ReactNode; // ✅ JSX, pas une fonction
   badge: { fr: string; en: string };
   title: { fr: string; en: string };
   description: { fr: string; en: string };
@@ -13,7 +13,7 @@ type PageHeroProps = {
 };
 
 export default function PageHero({
-  icon: Icon,
+  icon,
   badge,
   title,
   description,
@@ -28,7 +28,10 @@ export default function PageHero({
 
       <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
         <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-          <Icon className="size-3" />
+          {/* ✅ Le ReactNode est rendu directement, sans sérialisation */}
+          <span className="grid size-3 place-items-center text-tracoli-500">
+            {icon}
+          </span>
           {badge[locale]}
         </span>
 
