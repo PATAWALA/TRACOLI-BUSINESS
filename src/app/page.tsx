@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { Search } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
 import PageCTA from "@/components/layout/PageCTA";
-import CategoriesGrid from "@/components/sourcing/CategoriesGrid";
-import ProductsGrid from "@/components/sourcing/ProductsGrid";
+import QuickStats from "@/components/sourcing/QuickStats";
+import CategoriesExplorer from "@/components/sourcing/CategoriesExplorer";
+import FeaturedProducts from "@/components/sourcing/FeaturedProducts";
+import ProductsByCategory from "@/components/sourcing/ProductsByCategory";
+import CustomRequestBanner from "@/components/sourcing/CustomRequestBanner";
 import SourcingWizard from "@/components/SourcingWizard";
-import { Search } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Sourcer un produit en Chine",
@@ -16,6 +19,7 @@ export const metadata: Metadata = {
 export default function SourcingPage() {
   return (
     <main className="pt-14 sm:pt-16 lg:pt-20">
+      {/* ==================== HERO ==================== */}
       <PageHero
         icon={Search}
         badge={{ fr: "Sourcing en Chine", en: "Sourcing in China" }}
@@ -31,16 +35,35 @@ export default function SourcingPage() {
         ctaHref="#sourcing"
       />
 
-      <PageSection>
-        <CategoriesGrid />
+      {/* ==================== STATS ==================== */}
+      <PageSection tight>
+        <QuickStats />
       </PageSection>
 
+      {/* ==================== CATÉGORIES ==================== */}
       <PageSection variant="alt">
-        <ProductsGrid />
+        <CategoriesExplorer />
       </PageSection>
 
+      {/* ==================== PRODUITS POPULAIRES ==================== */}
+      <PageSection>
+        <FeaturedProducts />
+      </PageSection>
+
+      {/* ==================== CATALOGUE PAR CATÉGORIE ==================== */}
+      <PageSection variant="alt">
+        <ProductsByCategory />
+      </PageSection>
+
+      {/* ==================== RECHERCHE PERSONNALISÉE ==================== */}
+      <PageSection>
+        <CustomRequestBanner />
+      </PageSection>
+
+      {/* ==================== WIZARD ==================== */}
       <SourcingWizard />
 
+      {/* ==================== CTA FINAL ==================== */}
       <PageCTA
         title={{
           fr: "Besoin d'un autre produit ?",
