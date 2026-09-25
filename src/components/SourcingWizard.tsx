@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useRef, type DragEvent, type ChangeEvent, type ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  type DragEvent,
+  type ChangeEvent,
+  type ReactNode,
+} from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -10,8 +18,11 @@ import {
   Link2,
   Check,
   Loader2,
+  Package,
 } from "lucide-react";
-import { FLAT_DESTINATIONS, CONTACT, waLink } from "@/data/content";
+import { FLAT_DESTINATIONS } from "@/data/logistics/destinations";
+import { CONTACT } from "@/data/config/contact";
+import { waLink } from "@/data/shared/helpers";
 import { useLocale } from "@/hooks/useLocale";
 
 type Step = 1 | 2 | 3;
@@ -45,16 +56,19 @@ const TAGS = [
 ] as const;
 
 const inputCls =
-  "w-full rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
+  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
 
 export default function SourcingWizard() {
   const { locale } = useLocale();
+  const searchParams = useSearchParams();
+
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [productUrl, setProductUrl] = useState("");
+  const [prefilledProduct, setPrefilledProduct] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -64,12 +78,23 @@ export default function SourcingWizard() {
   const [destinationId, setDestinationId] = useState(FLAT_DESTINATIONS[0].id);
   const [whatsapp, setWhatsapp] = useState("");
 
+  /* ---------- Pré-remplissage depuis URL params ---------- */
+  useEffect(() => {
+    const productName = searchParams.get("sourcing-product");
+    const productImageUrl = searchParams.get("sourcing-product-url");
+
+    if (productName) setPrefilledProduct(productName);
+    if (productImageUrl) setImagePreview(productImageUrl);
+  }, [searchParams]);
+
   const destination =
-    FLAT_DESTINATIONS.find((d) => d.id === destinationId) ?? FLAT_DESTINATIONS[0];
+    FLAT_DESTINATIONS.find((d) => d.id === destinationId) ??
+    FLAT_DESTINATIONS[0];
 
   const handleFile = (file: File | undefined) => {
     if (!file || !file.type.startsWith("image/")) return;
     setImagePreview(URL.createObjectURL(file));
+    setPrefilledProduct(null);
   };
 
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -105,14 +130,30 @@ export default function SourcingWizard() {
     setDone(true);
   };
 
+  const reset = () => {
+    setDone(false);
+    setStep(1);
+    setImagePreview(null);
+    setProductUrl("");
+    setPrefilledProduct(null);
+    setTags(new Set());
+    setName("");
+    setWhatsapp("");
+  };
+
   const summary = () => {
     const tagLabels = TAGS.filter((t) => tags.has(t.id))
       .map((t) => t.label[locale])
       .join(", ");
-    const country = locale === "fr" ? destination.countryFr : destination.countryEn;
+    const country =
+      locale === "fr" ? destination.countryFr : destination.countryEn;
+
     return (
       `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager},\n\n` +
       `${locale === "fr" ? "DEMANDE DE SOURCING" : "SOURCING REQUEST"} — ${CONTACT.brand}\n\n` +
+      (prefilledProduct
+        ? `${locale === "fr" ? "Produit" : "Product"} : ${prefilledProduct}\n`
+        : "") +
       `${locale === "fr" ? "Produit (URL)" : "Product (URL)"} : ${productUrl || "-"}\n` +
       `${locale === "fr" ? "Spécificités" : "Specifications"} : ${tagLabels || "-"}\n` +
       `${locale === "fr" ? "Nom" : "Name"} : ${name}\n` +
@@ -121,6 +162,7 @@ export default function SourcingWizard() {
     );
   };
 
+  /* ==================== VUE SUCCÈS ==================== */
   if (done) {
     return (
       <Shell id="sourcing" variant="alt" locale={locale}>
@@ -141,21 +183,13 @@ export default function SourcingWizard() {
               href={waLink(summary())}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl bg-tracoli-500 px-6 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
+              className="inline-flex min-h-[52px] items-center justify-center rounded-xl bg-tracoli-500 px-6 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
             >
               {locale === "fr" ? "Envoyer sur WhatsApp" : "Send via WhatsApp"}
             </a>
             <button
-              onClick={() => {
-                setDone(false);
-                setStep(1);
-                setImagePreview(null);
-                setProductUrl("");
-                setTags(new Set());
-                setName("");
-                setWhatsapp("");
-              }}
-              className="rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+              onClick={reset}
+              className="inline-flex min-h-[52px] items-center justify-center rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
             >
               {locale === "fr" ? "Nouvelle demande" : "New request"}
             </button>
@@ -165,6 +199,7 @@ export default function SourcingWizard() {
     );
   }
 
+  /* ==================== VUE WIZARD ==================== */
   return (
     <Shell id="sourcing" variant="alt" locale={locale}>
       <div className="rounded-3xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8 lg:p-10">
@@ -196,7 +231,7 @@ export default function SourcingWizard() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* ÉTAPE 1 */}
+            {/* ==================== ÉTAPE 1 ==================== */}
             {step === 1 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
@@ -210,12 +245,44 @@ export default function SourcingWizard() {
                     : "Send us a photo or a link. The more context, the more precise the quote."}
                 </p>
 
+                {/* Bandeau produit pré-rempli */}
+                {prefilledProduct && (
+                  <div className="mt-5 flex items-center gap-3 rounded-2xl border border-tracoli-200 bg-tracoli-50 p-4">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-tracoli-500">
+                      <Package className="size-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10.5px] font-bold tracking-wide text-tracoli-600 uppercase">
+                        {locale === "fr" ? "Produit sélectionné" : "Selected product"}
+                      </p>
+                      <p className="truncate text-[13.5px] font-extrabold text-ink-900">
+                        {prefilledProduct}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPrefilledProduct(null);
+                        setImagePreview(null);
+                      }}
+                      className="grid size-7 shrink-0 place-items-center rounded-full bg-white text-ink-400 transition-colors hover:text-ink-700"
+                      aria-label={locale === "fr" ? "Retirer" : "Remove"}
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Drop zone */}
                 <div
-                  onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragging(true);
+                  }}
                   onDragLeave={() => setDragging(false)}
                   onDrop={onDrop}
                   onClick={() => fileRef.current?.click()}
-                  className={`mt-6 cursor-pointer rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
+                  className={`mt-5 cursor-pointer rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
                     dragging
                       ? "border-tracoli-500 bg-tracoli-50"
                       : "border-ink-200 bg-ink-50 hover:border-ink-300 hover:bg-ink-100/60"
@@ -232,10 +299,18 @@ export default function SourcingWizard() {
                   {imagePreview ? (
                     <div className="relative mx-auto aspect-square w-full max-w-[200px] overflow-hidden rounded-xl border border-ink-200">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={imagePreview} alt="Aperçu produit" className="size-full object-cover" />
+                      <img
+                        src={imagePreview}
+                        alt="Aperçu produit"
+                        className="size-full object-cover"
+                      />
                       <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setImagePreview(null); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImagePreview(null);
+                          setPrefilledProduct(null);
+                        }}
                         className="absolute top-2 right-2 grid size-7 place-items-center rounded-full bg-ink-900/80 text-white backdrop-blur"
                       >
                         <X className="size-3.5" />
@@ -258,6 +333,7 @@ export default function SourcingWizard() {
                   )}
                 </div>
 
+                {/* URL optionnelle */}
                 <div className="mt-5">
                   <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
                     {locale === "fr" ? "Lien du produit" : "Product link"}{" "}
@@ -279,7 +355,7 @@ export default function SourcingWizard() {
               </div>
             )}
 
-            {/* ÉTAPE 2 */}
+            {/* ==================== ÉTAPE 2 ==================== */}
             {step === 2 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
@@ -308,7 +384,7 @@ export default function SourcingWizard() {
                         }`}
                       >
                         <span
-                          className={`text-[12.5px] font-bold leading-tight ${
+                          className={`text-[12.5px] leading-tight font-bold ${
                             active ? "text-tracoli-600" : "text-ink-800"
                           }`}
                         >
@@ -329,7 +405,7 @@ export default function SourcingWizard() {
               </div>
             )}
 
-            {/* ÉTAPE 3 */}
+            {/* ==================== ÉTAPE 3 ==================== */}
             {step === 3 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
@@ -350,7 +426,9 @@ export default function SourcingWizard() {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder={locale === "fr" ? "ex : Jean Mukendi" : "e.g. John Mukendi"}
+                      placeholder={
+                        locale === "fr" ? "ex : Jean Mukendi" : "e.g. John Mukendi"
+                      }
                       className={inputCls}
                     />
                   </div>
@@ -366,7 +444,8 @@ export default function SourcingWizard() {
                     >
                       {FLAT_DESTINATIONS.map((d) => (
                         <option key={d.id} value={d.id}>
-                          {d.city} — {locale === "fr" ? d.countryFr : d.countryEn} ({d.code})
+                          {d.city} — {locale === "fr" ? d.countryFr : d.countryEn} (
+                          {d.code})
                         </option>
                       ))}
                     </select>
@@ -396,7 +475,7 @@ export default function SourcingWizard() {
             type="button"
             onClick={back}
             disabled={step === 1}
-            className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
           >
             <ArrowLeft className="size-3.5" />
             {locale === "fr" ? "Retour" : "Back"}
@@ -407,7 +486,7 @@ export default function SourcingWizard() {
               type="button"
               onClick={next}
               disabled={!canProceed()}
-              className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {locale === "fr" ? "Continuer" : "Continue"}
               <ArrowRight className="size-3.5" />
@@ -417,7 +496,7 @@ export default function SourcingWizard() {
               type="button"
               onClick={submit}
               disabled={!canProceed() || submitting}
-              className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -426,7 +505,9 @@ export default function SourcingWizard() {
                 </>
               ) : (
                 <>
-                  {locale === "fr" ? "Demander une cotation Sourcing" : "Request a sourcing quote"}
+                  {locale === "fr"
+                    ? "Demander une cotation Sourcing"
+                    : "Request a sourcing quote"}
                   <ArrowRight className="size-3.5" />
                 </>
               )}
@@ -438,6 +519,8 @@ export default function SourcingWizard() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Shell — Conteneur de section                                       */
 /* ------------------------------------------------------------------ */
 
 function Shell({
@@ -454,19 +537,21 @@ function Shell({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 py-20 lg:py-28 ${variant === "alt" ? "bg-ink-50" : "bg-white"}`}
+      className={`scroll-mt-20 py-12 pb-24 lg:scroll-mt-24 lg:py-20 lg:pb-20 ${
+        variant === "alt" ? "bg-ink-50" : "bg-white"
+      }`}
     >
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+        <div className="mb-8 text-center lg:mb-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
             {locale === "fr" ? "Formulaire de sourcing" : "Sourcing form"}
           </span>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
+          <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl lg:text-4xl">
             {locale === "fr"
               ? "Faites sourcer votre produit en 3 étapes"
               : "Source your product in 3 steps"}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[14.5px] text-ink-500">
+          <p className="mx-auto mt-3 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
             {locale === "fr"
               ? "Décrivez votre besoin. Nous identifions le fournisseur, négocions le prix et gérons l'expédition."
               : "Describe your need. We identify the supplier, negotiate the price and manage shipment."}

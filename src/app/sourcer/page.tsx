@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Search } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
 import PageCTA from "@/components/layout/PageCTA";
 import QuickStats from "@/components/sourcing/QuickStats";
 import CategoriesExplorer from "@/components/sourcing/CategoriesExplorer";
-import FeaturedProducts from "@/components/sourcing/FeaturedProducts";
-import ProductsByCategory from "@/components/sourcing/ProductsByCategory";
+import CatalogSection from "@/components/sourcing/CatalogSection";
 import CustomRequestBanner from "@/components/sourcing/CustomRequestBanner";
 import SourcingWizard from "@/components/SourcingWizard";
 
@@ -43,18 +43,17 @@ export default function SourcingPage() {
       </PageSection>
 
       <PageSection>
-        <FeaturedProducts />
+        <CatalogSection />
       </PageSection>
 
       <PageSection variant="alt">
-        <ProductsByCategory />
-      </PageSection>
-
-      <PageSection>
         <CustomRequestBanner />
       </PageSection>
 
-      <SourcingWizard />
+      {/* Wizard — enveloppé dans Suspense pour useSearchParams */}
+      <Suspense fallback={null}>
+        <SourcingWizard />
+      </Suspense>
 
       <PageCTA
         title={{
