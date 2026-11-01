@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Search, Filter } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import PageHeader from "@/components/admin/ui/PageHeader";
+import DataTable, { type Column } from "@/components/admin/ui/DataTable";
+import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
 import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
-const STATUS_OPTIONS: { value: LeadStatus | "all"; label: string }[] = [
+const FILTERS: { value: LeadStatus | "all"; label: string }[] = [
   { value: "all", label: "Tous" },
   { value: "nouveau", label: "Nouveau" },
   { value: "contacte", label: "Contacté" },
@@ -16,22 +18,16 @@ const STATUS_OPTIONS: { value: LeadStatus | "all"; label: string }[] = [
   { value: "perdu", label: "Perdu" },
 ];
 
-const STATUS_COLORS: Record<LeadStatus, string> = {
-  nouveau: "bg-blue-100 text-blue-700",
-  contacte: "bg-amber-100 text-amber-700",
-  en_cours: "bg-purple-100 text-purple-700",
-  gagne: "bg-emerald-100 text-emerald-700",
-  perdu: "bg-ink-100 text-ink-500",
-};
-
 export default function AdminLeadsPage() {
+  const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    async function fetchLeads() {
+    async function load() {
+      setLoading(true);
       let query = supabase
         .from("leads")
         .select("*")
@@ -46,7 +42,7 @@ export default function AdminLeadsPage() {
       setLoading(false);
     }
 
-    fetchLeads();
+    load();
   }, [filter]);
 
   const filtered = search
@@ -58,98 +54,104 @@ export default function AdminLeadsPage() {
       )
     : leads;
 
+  const columns: Column<Lead>[] = [
+    {
+      key: "reference",
+      label: "Référence",
+      render: (row) => (
+        <span className="text-[13px] font-bold text-tracoli-600">
+          {row.reference}
+        </span>
+      ),
+    },
+    {
+      key: "full_name",
+      label: "Client",
+      render: (row) => (
+        <span className="text-[13px] font-semibold text-ink-900">
+          {row.full_name}
+        </span>
+      ),
+    },
+    {
+      key: "phone",
+      label: "Téléphone",
+      hideOnMobile: true,
+      render: (row) => (
+        <span className="text-[13px] text-ink-600">{row.phone}</span>
+      ),
+    },
+    {
+      key: "product_type",
+      label: "Produit",
+      hideOnMobile: true,
+      render: (row) => (
+        <span className="text-[13px] text-ink-500">
+          {row.product_type ?? "—"}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      label: "Statut",
+      render: (row) => <LeadStatusBadge status={row.status as LeadStatus} />,
+    },
+    {
+      key: "created_at",
+      label: "Date",
+      hideOnMobile: true,
+      render: (row) => (
+        <span className="text-[13px] text-ink-500">
+          {new Date(row.created_at).toLocaleDateString("fr-FR")}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Gestion des Leads"
+        description="Toutes les demandes entrantes de vos clients."
+      />
+
+      {/* Filters bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-xs flex-1">
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-400" />
           <input
             type="text"
-            placeholder="Rechercher un lead…"
+            placeholder="Rechercher…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-ink-200 bg-white py-2.5 pr-4 pl-10 text-sm text-ink-900 focus:border-tracoli-500 focus:ring-1 focus:ring-tracoli-500 focus:outline-none"
+            className="w-full rounded-xl border border-ink-200 bg-white py-2.5 pr-4 pl-10 text-sm text-ink-900 transition-all focus:border-tracoli-500 focus:ring-1 focus:ring-tracoli-500 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Filter className="size-4 text-ink-400" />
-          {STATUS_OPTIONS.map((opt) => (
+        <div className="flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => (
             <button
-              key={opt.value}
-              onClick={() => {
-                setFilter(opt.value);
-                setLoading(true);
-              }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                filter === opt.value
-                  ? "bg-tracoli-500 text-white"
-                  : "bg-white text-ink-600 hover:bg-ink-50"
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all ${
+                filter === f.value
+                  ? "bg-tracoli-500 text-white shadow-sm"
+                  : "bg-white text-ink-500 ring-1 ring-ink-200 hover:bg-ink-50"
               }`}
             >
-              {opt.label}
+              {f.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-ink-200 bg-white shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-ink-100 bg-ink-50/50">
-              <th className="px-4 py-3 text-xs font-bold tracking-wider text-ink-500 uppercase">Référence</th>
-              <th className="px-4 py-3 text-xs font-bold tracking-wider text-ink-500 uppercase">Nom</th>
-              <th className="px-4 py-3 text-xs font-bold tracking-wider text-ink-500 uppercase">Téléphone</th>
-              <th className="px-4 py-3 text-xs font-bold tracking-wider text-ink-500 uppercase">Statut</th>
-              <th className="px-4 py-3 text-xs font-bold tracking-wider text-ink-500 uppercase">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-ink-400">
-                  Chargement…
-                </td>
-              </tr>
-            ) : filtered.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-ink-400">
-                  Aucun lead trouvé.
-                </td>
-              </tr>
-            ) : (
-              filtered.map((lead, i) => (
-                <motion.tr
-                  key={lead.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.02 }}
-                  className="border-b border-ink-100 transition-colors last:border-0 hover:bg-ink-50/50"
-                >
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/leads/${lead.id}`}
-                      className="font-bold text-tracoli-600 hover:underline"
-                    >
-                      {lead.reference}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 font-semibold text-ink-900">{lead.full_name}</td>
-                  <td className="px-4 py-3 text-ink-600">{lead.phone}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-block rounded-lg px-2.5 py-1 text-xs font-bold ${STATUS_COLORS[lead.status]}`}>
-                      {lead.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-ink-500">
-                    {new Date(lead.created_at).toLocaleDateString("fr-FR")}
-                  </td>
-                </motion.tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={filtered}
+        loading={loading}
+        emptyMessage="Aucun lead trouvé."
+        onRowClick={(row) => router.push(`/admin/leads/${row.id}`)}
+      />
     </div>
   );
 }

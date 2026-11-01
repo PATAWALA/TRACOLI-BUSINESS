@@ -1,101 +1,163 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Users, Package, Mail, TrendingUp, ArrowRight } from "lucide-react";
+import { Users, TrendingUp, Package, Mail, ArrowRight } from "lucide-react";
+import StatCard from "@/components/admin/ui/StatCard";
+import DataTable, { type Column } from "@/components/admin/ui/DataTable";
+import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
 import { supabase } from "@/lib/supabase/client";
+import type { Lead, LeadStatus } from "@/types/database.types";
 
 interface Stats {
-  leads: number;
+  totalLeads: number;
+  newLeads: number;
   orders: number;
   emails: number;
-  newLeads: number;
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats>({
-    leads: 0,
+    totalLeads: 0,
+    newLeads: 0,
     orders: 0,
     emails: 0,
-    newLeads: 0,
   });
+  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
-      const [leadsRes, ordersRes, emailsRes, newRes] = await Promise.all([
-        supabase.from("leads").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id", { count: "exact", head: true }),
-        supabase.from("email_captures").select("id", { count: "exact", head: true }),
-        supabase.from("leads").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
-      ]);
+    async function load() {
+      const [leadsRes, newRes, ordersRes, emailsRes, recentRes] =
+        await Promise.all([
+          supabase.from("leads").select("id", { count: "exact", head: true }),
+          supabase
+            .from("leads")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "nouveau"),
+          supabase.from("orders").select("id", { count: "exact", head: true }),
+          supabase
+            .from("email_captures")
+            .select("id", { count: "exact", head: true }),
+          supabase
+            .from("leads")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(5),
+        ]);
 
       setStats({
-        leads: leadsRes.count ?? 0,
+        totalLeads: leadsRes.count ?? 0,
+        newLeads: newRes.count ?? 0,
         orders: ordersRes.count ?? 0,
         emails: emailsRes.count ?? 0,
-        newLeads: newRes.count ?? 0,
       });
+      setRecentLeads((recentRes.data as Lead[]) ?? []);
       setLoading(false);
     }
 
-    fetchStats();
+    load();
   }, []);
 
-  const cards = [
-    { label: "Total Leads", value: stats.leads, icon: Users, color: "text-blue-600 bg-blue-50" },
-    { label: "Nouveaux Leads", value: stats.newLeads, icon: TrendingUp, color: "text-tracoli-600 bg-tracoli-50" },
-    { label: "Commandes", value: stats.orders, icon: Package, color: "text-emerald-600 bg-emerald-50" },
-    { label: "Emails captés", value: stats.emails, icon: Mail, color: "text-amber-600 bg-amber-50" },
+  const columns: Column<Lead>[] = [
+    {
+      key: "reference",
+      label: "Référence",
+      render: (row) => (
+        <span className="text-[13px] font-bold text-tracoli-600">
+          {row.reference}
+        </span>
+      ),
+    },
+    {
+      key: "full_name",
+      label: "Client",
+      render: (row) => (
+        <span className="text-[13px] font-semibold text-ink-900">
+          {row.full_name}
+        </span>
+      ),
+    },
+    {
+      key: "phone",
+      label: "Téléphone",
+      hideOnMobile: true,
+      render: (row) => (
+        <span className="text-[13px] text-ink-600">{row.phone}</span>
+      ),
+    },
+    {
+      key: "status",
+      label: "Statut",
+      render: (row) => <LeadStatusBadge status={row.status as LeadStatus} />,
+    },
+    {
+      key: "created_at",
+      label: "Date",
+      hideOnMobile: true,
+      render: (row) => (
+        <span className="text-[13px] text-ink-500">
+          {new Date(row.created_at).toLocaleDateString("fr-FR")}
+        </span>
+      ),
+    },
   ];
 
   return (
     <div className="space-y-8">
+      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((card, i) => (
-          <motion.div
-            key={card.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
-            className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">{card.label}</p>
-              <div className={`grid size-9 place-items-center rounded-xl ${card.color}`}>
-                <card.icon className="size-4" />
-              </div>
-            </div>
-            <p className="mt-3 text-3xl font-extrabold tracking-tight text-ink-900">
-              {loading ? "—" : card.value}
-            </p>
-          </motion.div>
-        ))}
+        <StatCard
+          label="Total Leads"
+          value={loading ? "—" : stats.totalLeads}
+          icon={Users}
+          color="bg-blue-50 text-blue-600"
+          delay={0}
+        />
+        <StatCard
+          label="Nouveaux Leads"
+          value={loading ? "—" : stats.newLeads}
+          icon={TrendingUp}
+          color="bg-tracoli-50 text-tracoli-600"
+          delay={0.05}
+        />
+        <StatCard
+          label="Commandes"
+          value={loading ? "—" : stats.orders}
+          icon={Package}
+          color="bg-emerald-50 text-emerald-600"
+          delay={0.1}
+        />
+        <StatCard
+          label="Emails captés"
+          value={loading ? "—" : stats.emails}
+          icon={Mail}
+          color="bg-amber-50 text-amber-600"
+          delay={0.15}
+        />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Link
-          href="/admin/leads"
-          className="group flex items-center justify-between rounded-2xl border border-ink-200 bg-white p-5 shadow-sm transition-all hover:border-tracoli-300 hover:shadow-md"
-        >
-          <div>
-            <p className="text-sm font-bold text-ink-900">Voir tous les leads</p>
-            <p className="mt-1 text-xs text-ink-500">Gérer les demandes entrantes</p>
-          </div>
-          <ArrowRight className="size-5 text-ink-400 transition-transform group-hover:translate-x-1 group-hover:text-tracoli-500" />
-        </Link>
-
-        <Link
-          href="/demande"
-          className="group flex items-center justify-between rounded-2xl border border-ink-200 bg-white p-5 shadow-sm transition-all hover:border-tracoli-300 hover:shadow-md"
-        >
-          <div>
-            <p className="text-sm font-bold text-ink-900">Formulaire client</p>
-            <p className="mt-1 text-xs text-ink-500">Voir le formulaire public</p>
-          </div>
-          <ArrowRight className="size-5 text-ink-400 transition-transform group-hover:translate-x-1 group-hover:text-tracoli-500" />
-        </Link>
+      {/* Recent leads */}
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-ink-800">Derniers leads</h2>
+          <Link
+            href="/admin/leads"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-tracoli-500 transition-colors hover:text-tracoli-600"
+          >
+            Voir tous
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
+        <DataTable
+          columns={columns}
+          data={recentLeads}
+          loading={loading}
+          emptyMessage="Aucun lead pour le moment."
+          onRowClick={(row) => router.push(`/admin/leads/${row.id}`)}
+        />
       </div>
     </div>
   );
