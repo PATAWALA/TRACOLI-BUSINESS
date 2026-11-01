@@ -55,7 +55,7 @@ export default function HomeShipping() {
               alt="Remise de colis TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-contain drop-shadow-xl"
+              className="object-contain mix-blend-multiply"
             />
           </motion.div>
         </div>

@@ -83,7 +83,7 @@ export default function HomeHero() {
                 fill
                 priority
                 sizes="(max-width: 1024px) 90vw, 45vw"
-                className="object-contain drop-shadow-xl"
+                className="object-contain mix-blend-multiply"
               />
             </div>
           </motion.div>

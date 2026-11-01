@@ -22,7 +22,7 @@ export default function HomeTracking() {
               alt="Coursier moto TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-contain drop-shadow-xl"
+              className="object-contain mix-blend-multiply"
             />
           </motion.div>
 

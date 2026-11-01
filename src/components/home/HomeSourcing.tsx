@@ -22,7 +22,7 @@ export default function HomeSourcing() {
               alt="Entrepôt logistique TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-contain"
+              className="object-contain mix-blend-multiply"
             />
           </motion.div>
 
