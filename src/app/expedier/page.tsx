@@ -18,16 +18,10 @@ export default function ShippingPage() {
     <main className="pt-14 sm:pt-16 lg:pt-20">
       <PageHero
         icon={<Plane className="size-3" />}
-        badge={{ fr: "Expédition", en: "Shipping" }}
-        title={{
-          fr: "Expédiez votre marchandise vers l'Afrique",
-          en: "Ship your goods to Africa",
-        }}
-        description={{
-          fr: "Fret aérien ou maritime, dédouanement et livraison porte-à-porte dans 5 pays d'Afrique Centrale et de l'Est.",
-          en: "Air or sea freight, customs clearance and door-to-door delivery in 5 Central and East African countries.",
-        }}
-        ctaLabel={{ fr: "Estimer mon fret", en: "Estimate my freight" }}
+        badge="Expédition"
+        title="Expédiez votre marchandise vers l'Afrique"
+        description="Fret aérien ou maritime, dédouanement et livraison porte-à-porte dans 5 pays d'Afrique Centrale et de l'Est."
+        ctaLabel="Estimer mon fret"
         ctaHref="#logistique"
       />
 
@@ -42,18 +36,9 @@ export default function ShippingPage() {
       <LogisticsWizard />
 
       <PageCTA
-        title={{
-          fr: "Une question sur votre envoi ?",
-          en: "A question about your shipment?",
-        }}
-        description={{
-          fr: "Contactez notre équipe pour une cotation personnalisée sous 2 heures ouvrées.",
-          en: "Contact our team for a personalized quote within 2 business hours.",
-        }}
-        primaryLabel={{
-          fr: "Demander une cotation",
-          en: "Request a quote",
-        }}
+        title="Une question sur votre envoi ?"
+        description="Contactez notre équipe pour une cotation personnalisée sous 2 heures ouvrées."
+        primaryLabel="Demander une cotation"
       />
     </main>
   );

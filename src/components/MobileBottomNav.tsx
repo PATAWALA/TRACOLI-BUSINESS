@@ -12,7 +12,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { BOTTOM_NAV_ITEMS } from "@/data/config/navigation";
-import { useLocale } from "@/hooks/useLocale";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   home: Home,
@@ -34,7 +33,6 @@ function getActiveFromPath(pathname: string): string {
 }
 
 export default function MobileBottomNav() {
-  const { locale } = useLocale();
   const pathname = usePathname();
   const activeId = getActiveFromPath(pathname);
 
@@ -56,7 +54,6 @@ export default function MobileBottomNav() {
                 aria-current={active ? "page" : undefined}
                 className="group relative z-10 flex min-h-[60px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-transform active:scale-[0.94]"
               >
-                {/* Bulle de fond avec layoutId (glisse entre onglets) */}
                 {active && (
                   <motion.span
                     layoutId="bottomNavActive"
@@ -66,14 +63,12 @@ export default function MobileBottomNav() {
                   />
                 )}
 
-                {/* Trait supérieur */}
                 <span
                   className={`absolute top-0 left-1/2 h-[3px] -translate-x-1/2 rounded-b-full bg-tracoli-500 transition-all duration-300 ${
                     active ? "w-8 opacity-100" : "w-0 opacity-0"
                   }`}
                 />
 
-                {/* Icône */}
                 <span
                   className={`relative grid size-6 place-items-center transition-transform duration-300 ${
                     active ? "-translate-y-0.5 scale-110" : ""
@@ -87,13 +82,12 @@ export default function MobileBottomNav() {
                   />
                 </span>
 
-                {/* Label */}
                 <span
                   className={`relative text-[10.5px] font-semibold tracking-tight transition-colors duration-300 ${
                     active ? "text-tracoli-500" : "text-ink-500"
                   }`}
                 >
-                  {item.label[locale]}
+                  {item.label}
                 </span>
               </Link>
             </li>

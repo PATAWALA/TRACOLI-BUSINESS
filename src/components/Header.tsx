@@ -5,11 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { NAV_LINKS } from "@/data/config/navigation";
 import { CONTACT } from "@/data/config/contact";
-import { useLocale } from "@/hooks/useLocale";
-import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 export default function Header() {
-  const { locale } = useLocale();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -28,7 +25,6 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:h-16 sm:px-6 lg:h-20 lg:px-8">
-        {/* ---------- Logo ---------- */}
         <Link
           href="/"
           className="group flex min-w-0 items-center gap-2 sm:gap-3"
@@ -49,7 +45,6 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* ---------- Nav desktop ---------- */}
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV_LINKS.map((l) => (
             <Link
@@ -57,25 +52,18 @@ export default function Header() {
               href={l.href}
               className="rounded-lg px-3.5 py-2 text-[13.5px] font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900"
             >
-              {l.label[locale]}
+              {l.label}
             </Link>
           ))}
         </nav>
 
-        {/* ---------- Actions desktop ---------- */}
         <div className="hidden items-center gap-3 lg:flex">
-          <LocaleSwitcher />
           <Link
-            href="/#devis"
+            href="/sourcer"
             className="rounded-xl bg-tracoli-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
           >
-            {locale === "fr" ? "Demander une cotation" : "Request a quote"}
+            Demander une cotation
           </Link>
-        </div>
-
-        {/* ---------- Mobile : locale switcher uniquement ---------- */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <LocaleSwitcher />
         </div>
       </div>
     </header>

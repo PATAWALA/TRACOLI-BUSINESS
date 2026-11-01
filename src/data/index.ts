@@ -2,7 +2,6 @@
 /*  SHARED                                                             */
 /* ================================================================== */
 export * from "./shared/types";
-export * from "./shared/i18n";
 export * from "./shared/helpers";
 
 /* ================================================================== */
@@ -51,11 +50,11 @@ export * from "./logistics/rates";
 export * from "./logistics/forms";
 
 /* ================================================================== */
-/*  FOOTER (à conserver ici temporairement)                            */
+/*  FOOTER                                                             */
 /* ================================================================== */
 export const FOOTER = {
-  tagline: { fr: "Trade Connectors Logistics International", en: "Trade Connectors Logistics International" },
-  zonesTitle: { fr: "Zones desservies", en: "Regions served" },
-  legal: { fr: "Tous droits réservés.", en: "All rights reserved." },
-  credit: { fr: "Développé par Abdoulaye Patawala — Architecte Web", en: "Developed by Abdoulaye Patawala — Web Architect" },
+  tagline: "Trade Connectors Logistics International",
+  zonesTitle: "Zones desservies",
+  legal: "Tous droits réservés.",
+  credit: "Développé par Abdoulaye Patawala — Architecte Web",
 } as const;

@@ -6,22 +6,22 @@ export const FREIGHT_RATES: Record<
     min: number;
     max: number;
     unit: "kg" | "CBM";
-    label: { fr: string; en: string };
+    label: string;
     minQty: number;
     step: number;
-    delay: { fr: string; en: string };
+    delay: string;
   }
 > = {
   air: {
     min: 12, max: 15, unit: "kg",
-    label: { fr: "Fret aérien express", en: "Air express freight" },
+    label: "Fret aérien express",
     minQty: 1, step: 0.5,
-    delay: { fr: "5 à 8 jours", en: "5 to 8 days" },
+    delay: "5 à 8 jours",
   },
   sea: {
     min: 250, max: 320, unit: "CBM",
-    label: { fr: "Fret maritime groupage", en: "Sea groupage freight" },
+    label: "Fret maritime groupage",
     minQty: 1, step: 1,
-    delay: { fr: "35 à 45 jours", en: "35 to 45 days" },
+    delay: "35 à 45 jours",
   },
 };

@@ -13,68 +13,54 @@ import {
 } from "lucide-react";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
-import { useLocale } from "@/hooks/useLocale";
 
 type StageStatus = "done" | "active" | "pending";
 
 type Stage = {
   id: string;
-  label: { fr: string; en: string };
+  label: string;
   location: string;
   date: string;
   status: StageStatus;
-  detail: { fr: string; en: string };
+  detail: string;
 };
 
 const DEMO_STAGES: Stage[] = [
   {
     id: "received",
-    label: { fr: "Reçu à l'entrepôt", en: "Received at warehouse" },
+    label: "Reçu à l'entrepôt",
     location: "Guangzhou, China",
     date: "12 Jan · 09:34",
     status: "done",
-    detail: {
-      fr: "Colis pesé, mesuré et étiqueté CTN-2041",
-      en: "Parcel weighed, measured and labelled CTN-2041",
-    },
+    detail: "Colis pesé, mesuré et étiqueté CTN-2041",
   },
   {
     id: "transit",
-    label: { fr: "En transit", en: "In transit" },
+    label: "En transit",
     location: "Flight AF-8821",
     date: "16 Jan · 22:10",
     status: "active",
-    detail: {
-      fr: "Progression 65% — arrivée estimée le 20 Jan",
-      en: "Progress 65% — estimated arrival on 20 Jan",
-    },
+    detail: "Progression 65% — arrivée estimée le 20 Jan",
   },
   {
     id: "customs",
-    label: { fr: "Dédouanement", en: "Customs clearance" },
+    label: "Dédouanement",
     location: "Kinshasa, DRC",
     date: "ETA 20 Jan",
     status: "pending",
-    detail: {
-      fr: "Documents pré-transmis à notre transitaire partenaire",
-      en: "Documents pre-submitted to our partner freight forwarder",
-    },
+    detail: "Documents pré-transmis à notre transitaire partenaire",
   },
   {
     id: "ready",
-    label: { fr: "Prêt pour retrait", en: "Ready for pickup" },
+    label: "Prêt pour retrait",
     location: "TRACOLI warehouse",
     date: "ETA 21 Jan",
     status: "pending",
-    detail: {
-      fr: "Vous recevrez une confirmation WhatsApp dès disponibilité",
-      en: "You will receive a WhatsApp confirmation upon availability",
-    },
+    detail: "Vous recevrez une confirmation WhatsApp dès disponibilité",
   },
 ];
 
 export default function SmartTrackingWidget() {
-  const { locale } = useLocale();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -91,7 +77,6 @@ export default function SmartTrackingWidget() {
   return (
     <section className="bg-white py-10 pb-24 lg:py-14 lg:pb-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        {/* ==================== CHAMP DE RECHERCHE ==================== */}
         <form
           onSubmit={onSearch}
           className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row"
@@ -102,11 +87,7 @@ export default function SmartTrackingWidget() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder={
-                locale === "fr"
-                  ? "Numéro de suivi (ex : CTN-2041)"
-                  : "Tracking number (e.g. CTN-2041)"
-              }
+              placeholder="Numéro de suivi (ex : CTN-2041)"
               className="w-full min-h-[52px] rounded-xl border border-ink-200 bg-white py-3.5 pr-4 pl-11 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
             />
           </div>
@@ -118,18 +99,17 @@ export default function SmartTrackingWidget() {
             {loading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                {locale === "fr" ? "Recherche..." : "Searching..."}
+                Recherche...
               </>
             ) : (
               <>
                 <Search className="size-4" />
-                {locale === "fr" ? "Tracer" : "Track"}
+                Tracer
               </>
             )}
           </button>
         </form>
 
-        {/* ==================== RÉSULTAT — TIMELINE ==================== */}
         <AnimatePresence mode="wait">
           {result && (
             <motion.div
@@ -140,11 +120,10 @@ export default function SmartTrackingWidget() {
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="mt-10 overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-card-lg"
             >
-              {/* Header résultat */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-200 bg-gradient-to-r from-white to-ink-50 px-6 py-5">
                 <div>
                   <p className="text-[11px] font-bold tracking-wide text-ink-500 uppercase">
-                    {locale === "fr" ? "Numéro de suivi" : "Tracking number"}
+                    Numéro de suivi
                   </p>
                   <p className="mt-0.5 font-mono text-[15px] font-extrabold text-ink-900">
                     {result}
@@ -155,11 +134,10 @@ export default function SmartTrackingWidget() {
                     <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
                     <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
                   </span>
-                  {locale === "fr" ? "En transit" : "In transit"}
+                  En transit
                 </span>
               </div>
 
-              {/* Timeline */}
               <div className="p-6 sm:p-8">
                 <ol className="relative">
                   {DEMO_STAGES.map((stage, i) => {
@@ -205,7 +183,7 @@ export default function SmartTrackingWidget() {
                                   : "text-ink-900"
                               }`}
                             >
-                              {stage.label[locale]}
+                              {stage.label}
                             </p>
                             <p className="text-[11.5px] font-semibold text-ink-400">
                               {stage.date}
@@ -218,7 +196,7 @@ export default function SmartTrackingWidget() {
                           </p>
 
                           <p className="mt-2 text-[12.5px] leading-relaxed text-ink-500">
-                            {stage.detail[locale]}
+                            {stage.detail}
                           </p>
 
                           {stage.status === "active" && (
@@ -236,9 +214,7 @@ export default function SmartTrackingWidget() {
                                 />
                               </div>
                               <p className="mt-1.5 text-[11px] font-bold text-tracoli-600">
-                                {locale === "fr"
-                                  ? "65% du trajet parcouru"
-                                  : "65% of the journey completed"}
+                                65% du trajet parcouru
                               </p>
                             </div>
                           )}
@@ -248,26 +224,21 @@ export default function SmartTrackingWidget() {
                   })}
                 </ol>
 
-                {/* Actions */}
                 <div className="mt-6 flex flex-col gap-3 border-t border-ink-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-[12px] text-ink-500">
-                    {locale === "fr"
-                      ? "Une question sur ce colis ?"
-                      : "A question about this shipment?"}
+                    Une question sur ce colis ?
                   </p>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <a
                       href={waLink(
-                        `${locale === "fr" ? "Bonjour" : "Hello"} ${CONTACT.manager}, ${locale === "fr" ? "je souhaite des informations sur mon colis" : "I would like information about my shipment"} ${result}.`
+                        `Bonjour ${CONTACT.manager}, je souhaite des informations sur mon colis ${result}.`
                       )}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-tracoli-500 px-4 py-2.5 text-[12.5px] font-bold text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600"
                     >
                       <ExternalLink className="size-3.5" />
-                      {locale === "fr"
-                        ? `Contacter ${CONTACT.manager}`
-                        : `Contact ${CONTACT.manager}`}
+                      Contacter {CONTACT.manager}
                     </a>
                     <button
                       onClick={() => {
@@ -276,7 +247,7 @@ export default function SmartTrackingWidget() {
                       }}
                       className="rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-[12.5px] font-semibold text-ink-700 hover:bg-ink-50"
                     >
-                      {locale === "fr" ? "Nouvelle recherche" : "New search"}
+                      Nouvelle recherche
                     </button>
                   </div>
                 </div>
@@ -285,7 +256,6 @@ export default function SmartTrackingWidget() {
           )}
         </AnimatePresence>
 
-        {/* ==================== ÉTAT VIDE ==================== */}
         {!result && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -297,16 +267,12 @@ export default function SmartTrackingWidget() {
               <Package className="size-5" />
             </span>
             <p className="mt-4 text-[13.5px] font-semibold text-ink-800">
-              {locale === "fr"
-                ? "Aucun envoi en cours de consultation"
-                : "No shipment currently viewed"}
+              Aucun envoi en cours de consultation
             </p>
             <p className="mt-1 text-[12px] text-ink-500">
-              {locale === "fr" ? "Démonstration : saisissez" : "Demo: enter"}{" "}
+              Démonstration : saisissez{" "}
               <span className="font-mono font-bold text-tracoli-500">CTN-2041</span>{" "}
-              {locale === "fr"
-                ? "pour voir la timeline interactive."
-                : "to see the interactive timeline."}
+              pour voir la timeline interactive.
             </p>
           </motion.div>
         )}

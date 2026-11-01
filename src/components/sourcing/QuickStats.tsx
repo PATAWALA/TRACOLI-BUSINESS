@@ -1,32 +1,13 @@
 "use client";
 
 import { Users, Package, Globe, Clock } from "lucide-react";
-import { useLocale } from "@/hooks/useLocale";
 
 export default function QuickStats() {
-  const { locale } = useLocale();
-
   const stats = [
-    {
-      icon: Users,
-      value: "500+",
-      label: { fr: "Fournisseurs audités", en: "Audited suppliers" },
-    },
-    {
-      icon: Package,
-      value: "1 800+",
-      label: { fr: "Produits sourcés", en: "Products sourced" },
-    },
-    {
-      icon: Globe,
-      value: "5",
-      label: { fr: "Pays desservis", en: "Countries served" },
-    },
-    {
-      icon: Clock,
-      value: "24h",
-      label: { fr: "Réponse max", en: "Max response" },
-    },
+    { icon: Users, value: "5", label: "Pays desservis" },
+    { icon: Package, value: "Guangzhou", label: "Hub principal" },
+    { icon: Globe, value: "14", label: "Villes couvertes" },
+    { icon: Clock, value: "24h", label: "Réponse max" },
   ];
 
   return (
@@ -35,7 +16,7 @@ export default function QuickStats() {
         const Icon = s.icon;
         return (
           <div
-            key={s.label.fr}
+            key={s.label}
             className="flex items-center gap-3 rounded-2xl border border-ink-200 bg-white p-4 shadow-card"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
@@ -46,7 +27,7 @@ export default function QuickStats() {
                 {s.value}
               </p>
               <p className="mt-1 text-[10.5px] font-semibold text-ink-500">
-                {s.label[locale]}
+                {s.label}
               </p>
             </div>
           </div>

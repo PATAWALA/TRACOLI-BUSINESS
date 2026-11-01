@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { LocaleProvider } from "@/hooks/useLocale";
 import Header from "@/components/Header";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
@@ -39,7 +38,6 @@ export const metadata: Metadata = {
   creator: "TRACOLI BUSINESS",
   publisher: "TRACOLI BUSINESS",
 
-  /* ---------- ICÔNES / FAVICONS ---------- */
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -70,7 +68,6 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    alternateLocale: "en_US",
     url: BASE_URL,
     siteName: "TRACOLI BUSINESS",
     title: "TRACOLI BUSINESS — Sourcing & Logistique Chine–Afrique",
@@ -112,12 +109,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className={jakarta.variable}>
       <body className="bg-white text-ink-900 antialiased">
-        <LocaleProvider>
-          <Header />
-          {children}
-          <Footer />
-          <MobileBottomNav />
-        </LocaleProvider>
+        <Header />
+        {children}
+        <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   );

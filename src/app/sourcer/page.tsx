@@ -20,16 +20,10 @@ export default function SourcingPage() {
     <main className="pt-14 sm:pt-16 lg:pt-20">
       <PageHero
         icon={<Search className="size-3" />}
-        badge={{ fr: "Sourcing en Chine", en: "Sourcing in China" }}
-        title={{
-          fr: "Trouvez le fournisseur idéal pour votre produit",
-          en: "Find the ideal supplier for your product",
-        }}
-        description={{
-          fr: "Vous avez un produit en tête ? Envoyez-nous une photo ou un lien. Nos équipes en Chine identifient les meilleurs fournisseurs, négocient les prix et sécurisent votre commande.",
-          en: "Got a product in mind? Send us a photo or a link. Our teams in China identify the best suppliers, negotiate prices and secure your order.",
-        }}
-        ctaLabel={{ fr: "Lancer une recherche", en: "Start a search" }}
+        badge="Sourcing en Chine"
+        title="Trouvez le fournisseur idéal pour votre produit"
+        description="Vous avez un produit en tête ? Envoyez-nous une photo ou un lien. Nos équipes en Chine identifient les meilleurs fournisseurs, négocient les prix et sécurisent votre commande."
+        ctaLabel="Lancer une recherche"
         ctaHref="#sourcing"
       />
 
@@ -51,15 +45,9 @@ export default function SourcingPage() {
       </Suspense>
 
       <PageCTA
-        title={{
-          fr: "Besoin d'un autre produit ?",
-          en: "Looking for another product?",
-        }}
-        description={{
-          fr: "Envoyez-nous votre besoin par WhatsApp. Nos acheteurs en Chine vous répondent sous 24h.",
-          en: "Send us your requirement via WhatsApp. Our buyers in China reply within 24h.",
-        }}
-        primaryLabel={{ fr: "Contacter un acheteur", en: "Contact a buyer" }}
+        title="Besoin d'un autre produit ?"
+        description="Envoyez-nous votre besoin par WhatsApp. Nos acheteurs en Chine vous répondent sous 24h."
+        primaryLabel="Contacter un acheteur"
         primaryHref="/#devis"
       />
     </main>

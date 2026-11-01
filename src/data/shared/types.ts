@@ -1,54 +1,47 @@
 import type { LucideIcon } from "lucide-react";
 
-/* ---------- Locale ---------- */
-export type Locale = "fr" | "en";
-
-/* ---------- Types utilitaires ---------- */
-export type Bilingual = { fr: string; en: string };
-export type BilingualList = { fr: string[]; en: string[] };
-
 /* ---------- Options de formulaire ---------- */
-export type Option = { value: string; label: Bilingual };
+export type Option = { value: string; label: string };
 
 /* ---------- Services ---------- */
 export type Service = {
   id: string;
   icon: LucideIcon;
-  title: Bilingual;
-  description: Bilingual;
-  features: BilingualList;
+  title: string;
+  description: string;
+  features: string[];
 };
 
 export type ServiceFaq = {
-  question: Bilingual;
-  answer: Bilingual;
+  question: string;
+  answer: string;
 };
 
 export type ServiceDetail = {
   slug: string;
   icon: LucideIcon;
-  title: Bilingual;
-  subtitle: Bilingual;
-  description: Bilingual;
-  hero: Bilingual;
+  title: string;
+  subtitle: string;
+  description: string;
+  hero: string;
   processSteps: {
     step: string;
-    title: Bilingual;
-    description: Bilingual;
+    title: string;
+    description: string;
   }[];
-  includes: BilingualList;
-  benefits: BilingualList;
+  includes: string[];
+  benefits: string[];
   faq: ServiceFaq[];
   stat: {
     value: string;
-    label: Bilingual;
+    label: string;
   };
 };
 
 /* ---------- Destinations ---------- */
 export type DestinationCountry = {
   id: string;
-  country: Bilingual;
+  country: string;
   code: string;
   cities: { id: string; name: string }[];
   airFactor: number;
@@ -58,8 +51,7 @@ export type DestinationCountry = {
 export type FlatDestination = {
   id: string;
   city: string;
-  countryFr: string;
-  countryEn: string;
+  country: string;
   code: string;
   airFactor: number;
   seaFactor: number;
@@ -68,15 +60,15 @@ export type FlatDestination = {
 /* ---------- Stats & Processus ---------- */
 export type Stat = {
   value: string;
-  label: Bilingual;
-  sublabel: Bilingual;
+  label: string;
+  sublabel: string;
 };
 
 export type ProcessStep = {
   step: string;
-  title: Bilingual;
-  description: Bilingual;
-  meta: Bilingual;
+  title: string;
+  description: string;
+  meta: string;
 };
 
 /* ---------- Ressources ---------- */
@@ -89,25 +81,25 @@ export type Resource = {
   type: ResourceType;
   access: ResourceAccess;
   image: string;
-  imageAlt: Bilingual;
-  title: Bilingual;
-  description: Bilingual;
-  longDescription: Bilingual;
-  level: Bilingual;
-  meta: Bilingual;
-  format: Bilingual;
+  imageAlt: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  level: string;
+  meta: string;
+  format: string;
   price?: string;
-  badge?: Bilingual;
-  outcomes: BilingualList;
-  audience: BilingualList;
+  badge?: string;
+  outcomes: string[];
+  audience: string[];
   chapters: {
-    title: Bilingual;
-    items: BilingualList;
+    title: string;
+    items: string[];
   }[];
 };
 
 /* ---------- Navigation ---------- */
-export type NavLink = { label: Bilingual; href: string };
+export type NavLink = { label: string; href: string };
 
 /* ---------- Simulation ---------- */
 export type ShippingMode = "air" | "sea";

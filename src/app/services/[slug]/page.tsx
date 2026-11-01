@@ -28,11 +28,11 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${service.title.fr} — TRACOLI BUSINESS`,
-    description: service.description.fr,
+    title: `${service.title} — TRACOLI BUSINESS`,
+    description: service.description,
     openGraph: {
-      title: service.title.fr,
-      description: service.description.fr,
+      title: service.title,
+      description: service.description,
       type: "website",
     },
   };

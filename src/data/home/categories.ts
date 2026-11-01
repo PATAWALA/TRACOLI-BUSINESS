@@ -1,32 +1,32 @@
 export const CATEGORIES = [
   {
     id: "mode",
-    label: { fr: "Mode", en: "Fashion" },
+    label: "Mode",
     image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=600&fit=crop&q=80",
-    examples: { fr: "Vêtements, chaussures, sacs, accessoires", en: "Clothing, shoes, bags, accessories" },
+    examples: "Vêtements, chaussures, sacs, accessoires",
   },
   {
     id: "electronics",
-    label: { fr: "Électronique", en: "Electronics" },
+    label: "Électronique",
     image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=600&fit=crop&q=80",
-    examples: { fr: "Téléphones, ordinateurs, écouteurs", en: "Phones, computers, earbuds" },
+    examples: "Téléphones, ordinateurs, écouteurs",
   },
   {
     id: "home",
-    label: { fr: "Maison", en: "Home" },
+    label: "Maison",
     image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=600&fit=crop&q=80",
-    examples: { fr: "Décoration, ustensiles, mobilier", en: "Decor, kitchenware, furniture" },
+    examples: "Décoration, ustensiles, mobilier",
   },
   {
     id: "cosmetics",
-    label: { fr: "Cosmétiques", en: "Cosmetics" },
+    label: "Cosmétiques",
     image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=600&fit=crop&q=80",
-    examples: { fr: "Soins, maquillage, parfums", en: "Skincare, makeup, perfumes" },
+    examples: "Soins, maquillage, parfums",
   },
   {
     id: "machinery",
-    label: { fr: "Machines", en: "Machinery" },
+    label: "Machines",
     image: "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=600&fit=crop&q=80",
-    examples: { fr: "Équipements, outils, industriel", en: "Equipment, tools, industrial" },
+    examples: "Équipements, outils, industriel",
   },
 ] as const;
