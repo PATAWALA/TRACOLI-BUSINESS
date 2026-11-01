@@ -28,9 +28,9 @@ export default function HomeAboutCTA() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-ink-500 lg:text-lg">
-            Depuis 2018, nous accompagnons les commerçants et entrepreneurs dans
+            Nous accompagnons les commerçants et entrepreneurs dans
             leurs opérations de sourcing, d&apos;expédition et de
-            dédouanement sur le corridor Chine–Afrique.
+            coordination douanière sur le corridor Chine–Afrique.
           </p>
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">

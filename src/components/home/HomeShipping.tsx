@@ -27,9 +27,9 @@ export default function HomeShipping() {
             </h2>
 
             <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-500 lg:text-lg">
-              Fret aérien ou maritime, groupage ou conteneur complet,
-              dédouanement inclus. Nous organisons votre expédition de bout en
-              bout.
+              Fret aérien ou maritime, groupage ou conteneur complet.
+              Coordination des formalités douanières incluse. Nous organisons
+              votre expédition de bout en bout.
             </p>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">

@@ -33,7 +33,7 @@ export default function ProofSection() {
 
         <div className="mt-4 flex flex-col items-center justify-between gap-3 rounded-2xl border border-ink-200 bg-white px-5 py-4 shadow-card sm:flex-row lg:mt-6 lg:px-6">
           <p className="text-center text-[13px] font-semibold text-ink-700 sm:text-left lg:text-[14px]">
-            Depuis 2018, nous connectons les entrepreneurs africains aux fournisseurs d&apos;Asie.
+            Nous connectons les entrepreneurs africains aux meilleurs fournisseurs d&apos;Asie.
           </p>
           <a
             href="/a-propos"

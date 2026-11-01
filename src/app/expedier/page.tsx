@@ -10,7 +10,7 @@ import LogisticsWizard from "@/components/LogisticsWizard";
 export const metadata: Metadata = {
   title: "Expédier une marchandise",
   description:
-    "Estimez votre fret aérien ou maritime de la Chine vers l'Afrique. Cotation immédiate, dédouanement inclus, livraison porte-à-porte.",
+    "Estimez votre fret aérien ou maritime de la Chine vers l'Afrique. Cotation immédiate, coordination douanière, livraison porte-à-porte.",
 };
 
 export default function ShippingPage() {

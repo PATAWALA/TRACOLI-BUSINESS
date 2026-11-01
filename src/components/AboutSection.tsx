@@ -21,7 +21,7 @@ export default function AboutSection() {
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/30 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-white/90 px-3.5 py-2 backdrop-blur-sm">
-                <p className="text-[10px] font-bold tracking-wide text-ink-500 uppercase">Depuis 2018</p>
+                <p className="text-[10px] font-bold tracking-wide text-ink-500 uppercase">TRACOLI Business</p>
                 <p className="text-[12.5px] font-extrabold text-ink-900">Corridor Asie ⇄ Afrique</p>
               </div>
             </div>

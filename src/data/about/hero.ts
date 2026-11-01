@@ -11,5 +11,5 @@ export const ABOUT_HERO = {
   eyebrow: "Qui sommes-nous ?",
   title: "Le connecteur logistique entre l'Asie et l'Afrique",
   subtitle:
-    "Depuis 2018, TRACOLI Business accompagne les entrepreneurs africains dans leurs importations depuis la Chine. Notre engagement : rendre le commerce international simple, sécurisé et rentable.",
+    "TRACOLI Business accompagne les entrepreneurs africains dans leurs importations depuis la Chine. Notre engagement : rendre le commerce international simple, sécurisé et rentable.",
 } as const;

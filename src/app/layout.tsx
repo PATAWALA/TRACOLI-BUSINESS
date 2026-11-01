@@ -101,6 +101,47 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "TRACOLI Business",
+  alternateName:
+    "TRACOLI Business - Trade Connectors Logistics International",
+  description:
+    "Sourcing, expédition et coordination douanière sur le corridor Chine–Afrique. Fret aérien et maritime vers le Burundi, la RDC, l'Ouganda et le Kenya.",
+  url: BASE_URL,
+  telephone: "+257 69 03 27 65",
+  email: "contact@tracoli-business.com",
+  address: [
+    {
+      "@type": "PostalAddress",
+      addressLocality: "Bujumbura",
+      addressCountry: "BI",
+    },
+    {
+      "@type": "PostalAddress",
+      addressLocality: "Guangzhou",
+      addressCountry: "CN",
+    },
+  ],
+  areaServed: [
+    { "@type": "Country", name: "Burundi" },
+    { "@type": "Country", name: "République Démocratique du Congo" },
+    { "@type": "Country", name: "Ouganda" },
+    { "@type": "Country", name: "Kenya" },
+    { "@type": "Country", name: "Chine" },
+  ],
+  serviceType: [
+    "Sourcing international",
+    "Fret aérien",
+    "Fret maritime",
+    "Groupage LCL",
+    "Coordination douanière",
+  ],
+  priceRange: "$$",
+  image: `${BASE_URL}/images/hero-delivery.jpeg`,
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -109,6 +150,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className={jakarta.variable}>
       <body className="bg-white text-ink-900 antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Header />
         {children}
         <Footer />
