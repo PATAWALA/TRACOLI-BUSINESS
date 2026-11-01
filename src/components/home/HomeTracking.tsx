@@ -7,7 +7,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 
 export default function HomeTracking() {
   return (
-    <section className="border-t border-tracoli-100/50 bg-gradient-to-b from-white to-tracoli-50/40 py-20 lg:py-32">
+    <section className="border-t border-tracoli-100/50 bg-gradient-to-b from-white via-tracoli-50/20 to-white py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
           <motion.div
@@ -15,14 +15,14 @@ export default function HomeTracking() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7 }}
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl"
+            className="relative aspect-[4/3] w-full overflow-hidden"
           >
             <Image
-              src="/images/scooter.jpeg"
+              src="/images/scooter.png"
               alt="Coursier moto TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-contain"
+              className="object-contain drop-shadow-xl"
             />
           </motion.div>
 
@@ -32,7 +32,7 @@ export default function HomeTracking() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm backdrop-blur-sm">
               <MapPin className="size-3.5" />
               Suivi
             </span>

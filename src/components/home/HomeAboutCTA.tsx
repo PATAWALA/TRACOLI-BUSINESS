@@ -9,7 +9,7 @@ export default function HomeAboutCTA() {
   const [email, setEmail] = useState("");
 
   return (
-    <section className="border-t border-tracoli-100/50 bg-tracoli-50 py-20 pb-28 lg:py-32 lg:pb-24">
+    <section className="border-t border-tracoli-100/50 bg-gradient-to-b from-tracoli-50 via-tracoli-100/30 to-tracoli-50 py-20 pb-28 lg:py-32 lg:pb-24">
       <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -17,7 +17,7 @@ export default function HomeAboutCTA() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7 }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm backdrop-blur-sm">
             <Users className="size-3.5" />
             Qui sommes-nous
           </span>
@@ -36,7 +36,7 @@ export default function HomeAboutCTA() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">
             <Link
               href="/a-propos"
-              className="group inline-flex items-center gap-2.5 rounded-2xl border-2 border-tracoli-200 bg-white px-7 py-4 text-sm font-bold text-tracoli-600 transition-all duration-300 hover:border-tracoli-400 hover:shadow-md"
+              className="group inline-flex items-center gap-2.5 rounded-2xl border-2 border-tracoli-200 bg-white/80 px-7 py-4 text-sm font-bold text-tracoli-600 backdrop-blur-sm transition-all duration-300 hover:border-tracoli-400 hover:shadow-md"
             >
               Découvrir notre histoire
               <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />

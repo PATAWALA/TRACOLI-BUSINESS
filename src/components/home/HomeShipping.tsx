@@ -7,7 +7,7 @@ import { ArrowRight, Plane } from "lucide-react";
 
 export default function HomeShipping() {
   return (
-    <section className="border-t border-tracoli-100/50 bg-white py-20 lg:py-32">
+    <section className="border-t border-tracoli-100/50 bg-gradient-to-b from-white via-tracoli-50/30 to-white py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
           <motion.div
@@ -17,7 +17,7 @@ export default function HomeShipping() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="order-2 lg:order-1"
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm backdrop-blur-sm">
               <Plane className="size-3.5" />
               Expédition
             </span>
@@ -48,14 +48,14 @@ export default function HomeShipping() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7 }}
-            className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-3xl lg:order-2"
+            className="relative order-1 aspect-[4/3] w-full overflow-hidden lg:order-2"
           >
             <Image
-              src="/images/box-handover.jpeg"
+              src="/images/box-handover.png"
               alt="Remise de colis TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-contain"
+              className="object-contain drop-shadow-xl"
             />
           </motion.div>
         </div>

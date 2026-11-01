@@ -8,7 +8,7 @@ import { IDENTITY } from "@/data/config/identity";
 
 export default function HomeHero() {
   return (
-    <section className="bg-white pt-24 pb-16 sm:pt-28 lg:pt-36 lg:pb-24">
+    <section className="bg-gradient-to-b from-white via-tracoli-50/30 to-white pt-24 pb-16 sm:pt-28 lg:pt-36 lg:pb-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
           <div className="text-center lg:text-left">
@@ -16,7 +16,7 @@ export default function HomeHero() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50/50 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm backdrop-blur-sm"
             >
               <span className="size-1.5 rounded-full bg-tracoli-500 animate-pulse" />
               {IDENTITY.positioning}
@@ -61,7 +61,7 @@ export default function HomeHero() {
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
                   href="/suivre"
-                  className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white px-8 py-4 text-sm font-bold text-ink-800 transition-all duration-300 hover:border-tracoli-300 hover:shadow-md"
+                  className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white/80 px-8 py-4 text-sm font-bold text-ink-800 backdrop-blur-sm transition-all duration-300 hover:border-tracoli-300 hover:shadow-md"
                 >
                   <MapPin className="size-4 text-tracoli-500" />
                   Suivre ma commande
@@ -78,12 +78,12 @@ export default function HomeHero() {
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-[4/5]">
               <Image
-                src="/images/hero-delivery.jpeg"
+                src="/images/hero-delivery.png"
                 alt="Livreur souriant TRACOLI avec des colis"
                 fill
                 priority
                 sizes="(max-width: 1024px) 90vw, 45vw"
-                className="object-contain"
+                className="object-contain drop-shadow-xl"
               />
             </div>
           </motion.div>

@@ -1,16 +1,16 @@
 # Guide des Assets Images
 
-Les images ont été téléchargées dans le dossier `public/images/`. 
-**ATTENTION : Toutes les images sont au format `.jpeg`.**
+Les images sont dans le dossier `public/images/`.
+**Les images détourées (.png transparentes) sont prioritaires. Le .jpeg reste en fallback pour `warehouse`.**
 
-Claude Code DOIT utiliser ces images exactes pour les sections suivantes, et respecter les règles de design associées.
+Claude Code DOIT utiliser ces images exactes pour les sections suivantes.
 
 | Nom du fichier | Description | Section d'utilisation | Règle de design (Fond) |
 |---|---|---|---|
-| `hero-delivery.jpeg` | Livreur souriant en rouge avec des colis | `HomeHero` | Fond de la section : Blanc pur (`bg-white`). L'image se fondra dedans. |
-| `warehouse.jpeg` | Grand entrepôt avec chaîne logistique | `HomeSourcing` | Fond de la section : Blanc pur (`bg-white`). |
-| `box-handover.jpeg` | Remise de colis par une fenêtre de voiture | `HomeShipping` | Fond de la section : Blanc pur (`bg-white`). |
-| `scooter.jpeg` | Coursier à moto avec sac rouge | `HomeTracking` | Fond de la section : Blanc pur (`bg-white`). |
+| `hero-delivery.png` | Livreur souriant en rouge avec des colis (fond transparent) | `HomeHero` | Dégradé rouge subtil (`bg-gradient-to-b from-white via-tracoli-50 to-white`). L'image flotte sur le dégradé. |
+| `warehouse.jpeg` | Grand entrepôt avec chaîne logistique | `HomeSourcing` | Dégradé rouge subtil. |
+| `box-handover.png` | Remise de colis (fond transparent) | `HomeShipping` | Dégradé rouge subtil. L'image flotte sur le dégradé. |
+| `scooter.png` | Coursier à moto avec sac rouge (fond transparent) | `HomeTracking` | Dégradé rouge subtil. L'image flotte sur le dégradé. |
 
-**Règle d'or visuelle (Image Graphique)** :
-Puisque ces images ont un fond blanc pur, les sections qui les contiennent DOIVENT avoir un fond blanc pur (`bg-white`). On ne met pas de gris autour. L'image doit sembler "flotter" naturellement dans la page. Utiliser `object-contain` plutôt que `object-cover` si nécessaire pour ne pas couper le sujet.
+**Règle d'or visuelle (Image Détourée)** :
+Les images .png ont un fond transparent. Les sections utilisent des dégradés rouges subtils (`from-white via-tracoli-50 to-white`). L'image "flotte" naturellement sur le dégradé. Utiliser `object-contain` et `drop-shadow-xl` pour un effet premium.
