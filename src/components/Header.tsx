@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/data/config/navigation";
 import { CONTACT } from "@/data/config/contact";
 
 export default function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -15,6 +17,8 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (pathname.startsWith("/demande")) return null;
 
   return (
     <header
@@ -59,10 +63,10 @@ export default function Header() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link
-            href="/sourcer"
+            href="/demande"
             className="rounded-xl bg-tracoli-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
           >
-            Demander une cotation
+            Passer commande
           </Link>
         </div>
       </div>

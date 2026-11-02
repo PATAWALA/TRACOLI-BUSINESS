@@ -11,11 +11,16 @@ import type { Lead, LeadStatus } from "@/types/database.types";
 
 const FILTERS: { value: LeadStatus | "all"; label: string }[] = [
   { value: "all", label: "Tous" },
-  { value: "nouveau", label: "Nouveau" },
-  { value: "contacte", label: "Contacté" },
-  { value: "en_cours", label: "En cours" },
-  { value: "gagne", label: "Gagné" },
-  { value: "perdu", label: "Perdu" },
+  { value: "received", label: "Reçu" },
+  { value: "researching", label: "Recherche" },
+  { value: "quoted", label: "Devis" },
+  { value: "validating", label: "Validation" },
+  { value: "payment_confirmed", label: "Payé" },
+  { value: "purchased", label: "Acheté" },
+  { value: "shipping", label: "Expédition" },
+  { value: "arrived", label: "Arrivé" },
+  { value: "delivered", label: "Livré" },
+  { value: "closed", label: "Clôturé" },
 ];
 
 export default function AdminLeadsPage() {
@@ -48,9 +53,9 @@ export default function AdminLeadsPage() {
   const filtered = search
     ? leads.filter(
         (l) =>
-          l.full_name.toLowerCase().includes(search.toLowerCase()) ||
+          l.name.toLowerCase().includes(search.toLowerCase()) ||
           l.reference.toLowerCase().includes(search.toLowerCase()) ||
-          l.phone.includes(search),
+          l.whatsapp.includes(search),
       )
     : leads;
 
@@ -65,29 +70,29 @@ export default function AdminLeadsPage() {
       ),
     },
     {
-      key: "full_name",
+      key: "name",
       label: "Client",
       render: (row) => (
         <span className="text-[13px] font-semibold text-ink-900">
-          {row.full_name}
+          {row.name}
         </span>
       ),
     },
     {
-      key: "phone",
-      label: "Téléphone",
+      key: "whatsapp",
+      label: "WhatsApp",
       hideOnMobile: true,
       render: (row) => (
-        <span className="text-[13px] text-ink-600">{row.phone}</span>
+        <span className="text-[13px] text-ink-600">{row.whatsapp}</span>
       ),
     },
     {
-      key: "product_type",
+      key: "product_name",
       label: "Produit",
       hideOnMobile: true,
       render: (row) => (
         <span className="text-[13px] text-ink-500">
-          {row.product_type ?? "—"}
+          {row.product_name ?? "—"}
         </span>
       ),
     },

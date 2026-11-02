@@ -15,20 +15,35 @@ function generateReference(): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { fullName, phone, email, message, productType, imageUrl, source } =
-      body as {
-        fullName: string;
-        phone: string;
-        email?: string;
-        message: string;
-        productType?: string;
-        imageUrl?: string;
-        source?: string;
-      };
+    const {
+      name,
+      whatsapp,
+      email,
+      productName,
+      productUrl,
+      imageUrls,
+      destinationCity,
+      destinationCountry,
+      message,
+      type,
+      source,
+    } = body as {
+      name: string;
+      whatsapp: string;
+      email?: string;
+      productName?: string;
+      productUrl?: string;
+      imageUrls?: string[];
+      destinationCity?: string;
+      destinationCountry?: string;
+      message?: string;
+      type?: string;
+      source?: string;
+    };
 
-    if (!fullName || !phone || !message) {
+    if (!name || !whatsapp) {
       return NextResponse.json(
-        { error: "Nom, téléphone et message sont requis." },
+        { error: "Nom et numéro WhatsApp sont requis." },
         { status: 400 },
       );
     }
@@ -36,18 +51,26 @@ export async function POST(request: Request) {
     const reference = generateReference();
     const supabase = createServerClient();
 
+    const mainImage = imageUrls?.[0] ?? null;
+    const extraImages = imageUrls && imageUrls.length > 1 ? imageUrls.slice(1) : null;
+
     const { data: lead, error: dbError } = await supabase
       .from("leads")
       .insert({
         reference,
-        full_name: fullName,
-        phone,
+        name,
+        whatsapp,
         email: email || null,
-        message,
-        product_type: productType || null,
-        image_url: imageUrl || null,
+        product_name: productName || null,
+        product_url: productUrl || null,
+        product_image_url: mainImage,
+        destination_city: destinationCity || null,
+        destination_country: destinationCountry || null,
+        type: type || "sourcing",
         source: source || "site",
-        status: "nouveau",
+        status: "received",
+        notes: message || null,
+        metadata: extraImages ? { images: extraImages } : null,
       })
       .select()
       .single();
@@ -62,11 +85,11 @@ export async function POST(request: Request) {
 
     const emailData = {
       reference,
-      fullName,
-      phone,
+      name,
+      whatsapp,
       email,
+      productName,
       message,
-      productType,
     };
 
     const emailPromises: Promise<unknown>[] = [];
@@ -88,7 +111,7 @@ export async function POST(request: Request) {
         resend.emails.send({
           from: "TRACOLI Business <noreply@tracoli-business.com>",
           to: adminEmail,
-          subject: `🚨 Nouveau lead — ${reference}`,
+          subject: `Nouveau lead — ${reference}`,
           html: adminAlertHtml(emailData),
         }),
       );

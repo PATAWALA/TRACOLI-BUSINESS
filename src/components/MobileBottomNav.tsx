@@ -8,7 +8,7 @@ import {
   Search,
   Plane,
   MapPin,
-  Info,
+  PlusCircle,
   type LucideIcon,
 } from "lucide-react";
 import { BOTTOM_NAV_ITEMS } from "@/data/config/navigation";
@@ -18,7 +18,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   search: Search,
   plane: Plane,
   pin: MapPin,
-  info: Info,
+  plus: PlusCircle,
 };
 
 function getActiveFromPath(pathname: string): string {
@@ -26,15 +26,16 @@ function getActiveFromPath(pathname: string): string {
   if (pathname.startsWith("/sourcer")) return "source";
   if (pathname.startsWith("/expedier")) return "ship";
   if (pathname.startsWith("/suivre")) return "track";
-  if (pathname.startsWith("/a-propos")) return "about";
+  if (pathname.startsWith("/demande")) return "demande";
   if (pathname.startsWith("/services/")) return "source";
-  if (pathname.startsWith("/ressources")) return "about";
   return "";
 }
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const activeId = getActiveFromPath(pathname);
+
+  if (pathname.startsWith("/admin") || pathname.startsWith("/demande")) return null;
 
   return (
     <nav
@@ -46,6 +47,25 @@ export default function MobileBottomNav() {
         {BOTTOM_NAV_ITEMS.map((item) => {
           const Icon = ICON_MAP[item.icon];
           const active = activeId === item.id;
+          const isCta = item.cta;
+
+          if (isCta) {
+            return (
+              <li key={item.id} className="relative flex-1">
+                <Link
+                  href={item.href}
+                  className="group relative z-10 flex min-h-[60px] flex-col items-center justify-center gap-0.5 px-1 py-2"
+                >
+                  <span className="grid size-11 place-items-center rounded-2xl bg-tracoli-500 shadow-[var(--shadow-red)] transition-transform active:scale-[0.92]">
+                    <Icon className="size-5 text-white" strokeWidth={2.5} />
+                  </span>
+                  <span className="text-[10px] font-bold text-tracoli-500">
+                    {item.label}
+                  </span>
+                </Link>
+              </li>
+            );
+          }
 
           return (
             <li key={item.id} className="relative flex-1">

@@ -12,16 +12,23 @@ import {
   Calendar,
   MessageSquare,
   Image as ImageIcon,
+  MapPin,
+  Link as LinkIcon,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
 const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
-  { value: "nouveau", label: "Nouveau", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  { value: "contacte", label: "Contacté", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  { value: "en_cours", label: "En cours", color: "bg-purple-100 text-purple-700 border-purple-200" },
-  { value: "gagne", label: "Gagné", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  { value: "perdu", label: "Perdu", color: "bg-ink-100 text-ink-500 border-ink-200" },
+  { value: "received", label: "Demande reçue", color: "bg-blue-100 text-blue-700 border-blue-200" },
+  { value: "researching", label: "Recherche fournisseur", color: "bg-amber-100 text-amber-700 border-amber-200" },
+  { value: "quoted", label: "Devis envoyé", color: "bg-purple-100 text-purple-700 border-purple-200" },
+  { value: "validating", label: "Validation client", color: "bg-cyan-100 text-cyan-700 border-cyan-200" },
+  { value: "payment_confirmed", label: "Paiement confirmé", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  { value: "purchased", label: "Achat effectué", color: "bg-teal-100 text-teal-700 border-teal-200" },
+  { value: "shipping", label: "Expédition en cours", color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
+  { value: "arrived", label: "Arrivée destination", color: "bg-orange-100 text-orange-700 border-orange-200" },
+  { value: "delivered", label: "Livré", color: "bg-green-100 text-green-700 border-green-200" },
+  { value: "closed", label: "Clôturé", color: "bg-ink-100 text-ink-500 border-ink-200" },
 ];
 
 export default function LeadDetailPage({
@@ -51,10 +58,11 @@ export default function LeadDetailPage({
 
   async function updateStatus(status: LeadStatus) {
     setSaving(true);
-    await supabase
-      .from("leads")
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq("id", id);
+    await fetch(`/api/leads/${id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
 
     setLead((prev) => (prev ? { ...prev, status } : null));
     setSaving(false);
@@ -78,6 +86,8 @@ export default function LeadDetailPage({
       </div>
     );
   }
+
+  const extraImages = (lead.metadata as { images?: string[] } | null)?.images;
 
   return (
     <div className="space-y-6">
@@ -116,14 +126,14 @@ export default function LeadDetailPage({
             <User className="mt-0.5 size-4 text-ink-400" />
             <div>
               <p className="text-xs font-bold text-ink-500">Nom</p>
-              <p className="text-sm font-semibold text-ink-900">{lead.full_name}</p>
+              <p className="text-sm font-semibold text-ink-900">{lead.name}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <Phone className="mt-0.5 size-4 text-ink-400" />
             <div>
-              <p className="text-xs font-bold text-ink-500">Téléphone</p>
-              <p className="text-sm font-semibold text-ink-900">{lead.phone}</p>
+              <p className="text-xs font-bold text-ink-500">WhatsApp</p>
+              <p className="text-sm font-semibold text-ink-900">{lead.whatsapp}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -136,33 +146,66 @@ export default function LeadDetailPage({
           <div className="flex items-start gap-3">
             <Package className="mt-0.5 size-4 text-ink-400" />
             <div>
-              <p className="text-xs font-bold text-ink-500">Type de produit</p>
-              <p className="text-sm text-ink-900">{lead.product_type ?? "—"}</p>
+              <p className="text-xs font-bold text-ink-500">Produit</p>
+              <p className="text-sm text-ink-900">{lead.product_name ?? "—"}</p>
             </div>
           </div>
+          {(lead.destination_city || lead.destination_country) && (
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-0.5 size-4 text-ink-400" />
+              <div>
+                <p className="text-xs font-bold text-ink-500">Destination</p>
+                <p className="text-sm text-ink-900">
+                  {[lead.destination_city, lead.destination_country].filter(Boolean).join(", ")}
+                </p>
+              </div>
+            </div>
+          )}
+          {lead.product_url && (
+            <div className="flex items-start gap-3">
+              <LinkIcon className="mt-0.5 size-4 text-ink-400" />
+              <div>
+                <p className="text-xs font-bold text-ink-500">Lien produit</p>
+                <a
+                  href={lead.product_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-tracoli-500 hover:underline"
+                >
+                  Voir le produit
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="mt-6 flex items-start gap-3">
-          <MessageSquare className="mt-0.5 size-4 text-ink-400" />
-          <div>
-            <p className="text-xs font-bold text-ink-500">Message</p>
-            <p className="mt-1 text-sm leading-relaxed text-ink-700">{lead.message}</p>
+        {lead.notes && (
+          <div className="mt-6 flex items-start gap-3">
+            <MessageSquare className="mt-0.5 size-4 text-ink-400" />
+            <div>
+              <p className="text-xs font-bold text-ink-500">Message</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-700">{lead.notes}</p>
+            </div>
           </div>
-        </div>
+        )}
 
-        {lead.image_url && (
+        {(lead.product_image_url || extraImages) && (
           <div className="mt-6 flex items-start gap-3">
             <ImageIcon className="mt-0.5 size-4 text-ink-400" />
             <div>
-              <p className="text-xs font-bold text-ink-500">Image</p>
-              <a
-                href={lead.image_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-1 text-sm font-semibold text-tracoli-500 hover:underline"
-              >
-                Voir l&apos;image
-              </a>
+              <p className="text-xs font-bold text-ink-500">Images</p>
+              <div className="mt-2 flex flex-wrap gap-3">
+                {lead.product_image_url && (
+                  <a href={lead.product_image_url} target="_blank" rel="noopener noreferrer">
+                    <img src={lead.product_image_url} alt="Produit" className="size-20 rounded-xl border border-ink-200 object-cover" />
+                  </a>
+                )}
+                {extraImages?.map((url, i) => (
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                    <img src={url} alt={`Image ${i + 2}`} className="size-20 rounded-xl border border-ink-200 object-cover" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         )}

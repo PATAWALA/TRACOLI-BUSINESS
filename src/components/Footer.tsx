@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
 import { CONTACT } from "@/data/config/contact";
@@ -26,6 +27,8 @@ const SLUG_MAP: Record<string, string> = {
 };
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/demande")) return null;
   const year = new Date().getFullYear();
 
   return (

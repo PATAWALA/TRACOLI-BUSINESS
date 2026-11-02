@@ -1,19 +1,29 @@
 import type { LeadStatus, OrderStatus } from "@/types/database.types";
 
 const LEAD_COLORS: Record<LeadStatus, string> = {
-  nouveau: "bg-blue-50 text-blue-700 ring-blue-600/20",
-  contacte: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  en_cours: "bg-purple-50 text-purple-700 ring-purple-600/20",
-  gagne: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  perdu: "bg-ink-50 text-ink-500 ring-ink-500/20",
+  received: "bg-blue-50 text-blue-700 ring-blue-600/20",
+  researching: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  quoted: "bg-purple-50 text-purple-700 ring-purple-600/20",
+  validating: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
+  payment_confirmed: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  purchased: "bg-teal-50 text-teal-700 ring-teal-600/20",
+  shipping: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
+  arrived: "bg-orange-50 text-orange-700 ring-orange-600/20",
+  delivered: "bg-green-50 text-green-700 ring-green-600/20",
+  closed: "bg-ink-50 text-ink-500 ring-ink-500/20",
 };
 
 const LEAD_LABELS: Record<LeadStatus, string> = {
-  nouveau: "Nouveau",
-  contacte: "Contacté",
-  en_cours: "En cours",
-  gagne: "Gagné",
-  perdu: "Perdu",
+  received: "Demande reçue",
+  researching: "Recherche fournisseur",
+  quoted: "Devis envoyé",
+  validating: "Validation client",
+  payment_confirmed: "Paiement confirmé",
+  purchased: "Achat effectué",
+  shipping: "Expédition en cours",
+  arrived: "Arrivée destination",
+  delivered: "Livré",
+  closed: "Clôturé",
 };
 
 const ORDER_COLORS: Record<OrderStatus, string> = {

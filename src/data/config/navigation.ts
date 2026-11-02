@@ -10,9 +10,9 @@ export const NAV_LINKS: NavLink[] = [
 ] as const;
 
 export const BOTTOM_NAV_ITEMS = [
-  { id: "home",   label: "Accueil",  href: "/",         icon: "home" },
-  { id: "source", label: "Sourcer",  href: "/sourcer",  icon: "search" },
-  { id: "ship",   label: "Expédier", href: "/expedier", icon: "plane" },
-  { id: "track",  label: "Suivre",   href: "/suivre",   icon: "pin" },
-  { id: "about",  label: "À propos", href: "/a-propos", icon: "info" },
+  { id: "home",    label: "Accueil",  href: "/",         icon: "home",    cta: false },
+  { id: "source",  label: "Sourcer",  href: "/sourcer",  icon: "search",  cta: false },
+  { id: "demande", label: "Commande", href: "/demande",  icon: "plus",    cta: true },
+  { id: "track",   label: "Suivre",   href: "/suivre",   icon: "pin",     cta: false },
+  { id: "ship",    label: "Expédier", href: "/expedier", icon: "plane",   cta: false },
 ] as const;

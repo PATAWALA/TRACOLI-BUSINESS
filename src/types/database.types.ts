@@ -1,4 +1,15 @@
-export type LeadStatus = "nouveau" | "contacte" | "en_cours" | "gagne" | "perdu";
+export type LeadStatus =
+  | "received"
+  | "researching"
+  | "quoted"
+  | "validating"
+  | "payment_confirmed"
+  | "purchased"
+  | "shipping"
+  | "arrived"
+  | "delivered"
+  | "closed";
+
 export type OrderStatus =
   | "en_attente"
   | "confirme"
@@ -8,27 +19,26 @@ export type OrderStatus =
   | "dedouanement"
   | "livre";
 
-export interface User {
-  id: string;
-  email: string;
-  full_name: string | null;
-  role: "admin" | "agent";
-  created_at: string;
-}
-
 export interface Lead {
   id: string;
   reference: string;
-  full_name: string;
-  phone: string;
-  email: string | null;
-  message: string;
-  product_type: string | null;
-  image_url: string | null;
-  source: string | null;
+  type: string | null;
   status: LeadStatus;
-  assigned_to: string | null;
+  name: string;
+  whatsapp: string;
+  email: string | null;
+  destination_city: string | null;
+  destination_country: string | null;
+  product_name: string | null;
+  product_url: string | null;
+  product_image_url: string | null;
+  freight_mode: string | null;
+  freight_quantity: number | null;
+  freight_unit: string | null;
+  customs_managed: boolean | null;
+  source: string | null;
   notes: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 }
@@ -53,6 +63,14 @@ export interface EmailCapture {
   id: string;
   email: string;
   source: string | null;
+  created_at: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: "admin" | "agent";
   created_at: string;
 }
 

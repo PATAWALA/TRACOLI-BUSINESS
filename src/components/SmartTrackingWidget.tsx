@@ -15,51 +15,54 @@ import {
 import { supabase } from "@/lib/supabase/client";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
-import type { Lead, Order } from "@/types/database.types";
+import type { LeadStatus } from "@/types/database.types";
 
 type StageStatus = "done" | "active" | "pending";
 
 interface Stage {
-  id: string;
+  id: LeadStatus;
   label: string;
   location: string;
   status: StageStatus;
   detail: string;
 }
 
-const ORDER_STAGES = [
-  { id: "nouveau", label: "Demande reçue", location: "TRACOLI", detail: "Votre demande a été enregistrée." },
-  { id: "contacte", label: "Prise de contact", location: "TRACOLI", detail: "Notre équipe vous a contacté." },
-  { id: "en_cours", label: "Recherche fournisseur", location: "Guangzhou, Chine", detail: "Identification et négociation en cours." },
-  { id: "confirme", label: "Commande confirmée", location: "Guangzhou, Chine", detail: "Le fournisseur a confirmé la commande." },
-  { id: "en_production", label: "En production", location: "Usine fournisseur", detail: "Votre produit est en cours de fabrication." },
-  { id: "expedie", label: "Expédié", location: "Port / Aéroport Chine", detail: "Votre marchandise a quitté l'entrepôt." },
-  { id: "en_transit", label: "En transit", location: "En route", detail: "Transport aérien ou maritime en cours." },
-  { id: "dedouanement", label: "Coordination douanière", location: "Pays de destination", detail: "Formalités douanières en cours." },
-  { id: "livre", label: "Livré", location: "Votre adresse", detail: "Votre marchandise est disponible." },
-] as const;
+interface PublicLead {
+  reference: string;
+  status: LeadStatus;
+  name: string;
+  product_name: string | null;
+  destination_city: string | null;
+  created_at: string;
+}
 
-function buildTimeline(lead: Lead, order: Order | null): Stage[] {
-  const leadStatuses = ["nouveau", "contacte", "en_cours"];
-  const orderStatuses = ["confirme", "en_production", "expedie", "en_transit", "dedouanement", "livre"];
+const STAGES: { id: LeadStatus; label: string; location: string; detail: string }[] = [
+  { id: "received", label: "Demande reçue", location: "TRACOLI", detail: "Votre demande a été enregistrée." },
+  { id: "researching", label: "Recherche fournisseur", location: "Guangzhou, Chine", detail: "Identification et négociation en cours." },
+  { id: "quoted", label: "Devis envoyé", location: "TRACOLI", detail: "Un devis vous a été transmis." },
+  { id: "validating", label: "Validation client", location: "TRACOLI", detail: "En attente de votre accord." },
+  { id: "payment_confirmed", label: "Paiement confirmé", location: "TRACOLI", detail: "Votre paiement a bien été reçu." },
+  { id: "purchased", label: "Achat effectué", location: "Guangzhou, Chine", detail: "La commande a été passée auprès du fournisseur." },
+  { id: "shipping", label: "Expédition en cours", location: "Port / Aéroport Chine", detail: "Votre marchandise est en route." },
+  { id: "arrived", label: "Arrivée destination", location: "Pays de destination", detail: "La marchandise est arrivée dans votre pays." },
+  { id: "delivered", label: "Livré", location: "Votre adresse", detail: "Votre marchandise est disponible." },
+];
 
-  const currentLeadIdx = leadStatuses.indexOf(lead.status);
-  const isLeadWon = lead.status === "gagne";
-  const currentOrderIdx = order ? orderStatuses.indexOf(order.status) : -1;
+const STATUS_ORDER: LeadStatus[] = STAGES.map((s) => s.id);
 
-  return ORDER_STAGES.map((stage) => {
-    const leadIdx = leadStatuses.indexOf(stage.id);
-    const orderIdx = orderStatuses.indexOf(stage.id);
+function buildTimeline(lead: PublicLead): Stage[] {
+  const currentIdx = STATUS_ORDER.indexOf(lead.status);
+  const isClosed = lead.status === "closed";
 
+  return STAGES.map((stage) => {
+    const idx = STATUS_ORDER.indexOf(stage.id);
     let status: StageStatus = "pending";
 
-    if (leadIdx >= 0) {
-      if (isLeadWon || leadIdx < currentLeadIdx) status = "done";
-      else if (leadIdx === currentLeadIdx) status = "active";
-    } else if (orderIdx >= 0 && order) {
-      if (orderIdx < currentOrderIdx) status = "done";
-      else if (orderIdx === currentOrderIdx) status = "active";
-    } else if (isLeadWon && !order && stage.id === "confirme") {
+    if (isClosed) {
+      status = "done";
+    } else if (idx < currentIdx) {
+      status = "done";
+    } else if (idx === currentIdx) {
       status = "active";
     }
 
@@ -70,8 +73,7 @@ function buildTimeline(lead: Lead, order: Order | null): Stage[] {
 export default function SmartTrackingWidget() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lead, setLead] = useState<Lead | null>(null);
-  const [order, setOrder] = useState<Order | null>(null);
+  const [lead, setLead] = useState<PublicLead | null>(null);
   const [notFound, setNotFound] = useState(false);
 
   const onSearch = async (e: FormEvent) => {
@@ -82,35 +84,24 @@ export default function SmartTrackingWidget() {
     setLoading(true);
     setNotFound(false);
     setLead(null);
-    setOrder(null);
 
-    const { data: leadData } = await supabase
+    const { data } = await supabase
       .from("leads")
-      .select("*")
+      .select("reference, status, name, product_name, destination_city, created_at")
       .eq("reference", ref)
       .single();
 
-    if (!leadData) {
+    if (!data) {
       setNotFound(true);
       setLoading(false);
       return;
     }
 
-    setLead(leadData as Lead);
-
-    const { data: orderData } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("lead_id", leadData.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    if (orderData) setOrder(orderData as Order);
+    setLead(data as PublicLead);
     setLoading(false);
   };
 
-  const stages = lead ? buildTimeline(lead, order) : [];
+  const stages = lead ? buildTimeline(lead) : [];
   const activeStage = stages.find((s) => s.status === "active");
 
   return (
@@ -126,7 +117,7 @@ export default function SmartTrackingWidget() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Votre référence (ex : TRC-2026-1234)"
+              placeholder="Votre référence (ex : TRC-2026-0001)"
               className="w-full min-h-[52px] rounded-xl border border-ink-200 bg-white py-3.5 pr-4 pl-11 text-sm text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
             />
           </div>
@@ -160,10 +151,10 @@ export default function SmartTrackingWidget() {
             >
               <AlertCircle className="mx-auto size-8 text-red-400" />
               <p className="mt-3 text-sm font-semibold text-red-800">
-                Aucune commande trouvée pour cette référence.
+                Référence introuvable.
               </p>
               <p className="mt-1 text-xs text-red-600">
-                Vérifiez le numéro ou contactez-nous sur WhatsApp.
+                Vérifiez votre code ou contactez-nous sur WhatsApp.
               </p>
             </motion.div>
           )}
@@ -185,7 +176,12 @@ export default function SmartTrackingWidget() {
                   <p className="mt-0.5 font-mono text-[15px] font-extrabold text-ink-900">
                     {lead.reference}
                   </p>
-                  <p className="mt-1 text-xs text-ink-500">{lead.full_name}</p>
+                  {lead.product_name && (
+                    <p className="mt-1 text-xs text-ink-500">{lead.product_name}</p>
+                  )}
+                  {lead.destination_city && (
+                    <p className="mt-0.5 text-xs text-ink-400">{lead.destination_city}</p>
+                  )}
                 </div>
                 {activeStage && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-tracoli-50 px-3 py-1.5 text-[11px] font-bold text-tracoli-700">
@@ -196,30 +192,13 @@ export default function SmartTrackingWidget() {
                     {activeStage.label}
                   </span>
                 )}
+                {lead.status === "closed" && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700">
+                    <Check className="size-3" strokeWidth={3} />
+                    Terminé
+                  </span>
+                )}
               </div>
-
-              {order && (
-                <div className="grid grid-cols-2 gap-3 border-b border-ink-100 px-6 py-4 sm:grid-cols-3">
-                  <div>
-                    <p className="text-[10px] font-bold tracking-wider text-ink-400 uppercase">Produit</p>
-                    <p className="mt-0.5 text-xs font-semibold text-ink-800">{order.description}</p>
-                  </div>
-                  {order.tracking_number && (
-                    <div>
-                      <p className="text-[10px] font-bold tracking-wider text-ink-400 uppercase">Tracking</p>
-                      <p className="mt-0.5 font-mono text-xs font-semibold text-ink-800">{order.tracking_number}</p>
-                    </div>
-                  )}
-                  {order.estimated_delivery && (
-                    <div>
-                      <p className="text-[10px] font-bold tracking-wider text-ink-400 uppercase">Livraison estimée</p>
-                      <p className="mt-0.5 text-xs font-semibold text-ink-800">
-                        {new Date(order.estimated_delivery).toLocaleDateString("fr-FR")}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
 
               <div className="p-6 sm:p-8">
                 <ol className="relative">
@@ -254,13 +233,11 @@ export default function SmartTrackingWidget() {
                           {stage.status === "pending" && <Clock className="size-3.5" />}
                         </span>
                         <div className="min-w-0 flex-1 pt-0.5">
-                          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                            <p className={`text-sm font-extrabold tracking-tight ${
-                              stage.status === "pending" ? "text-ink-400" : "text-ink-900"
-                            }`}>
-                              {stage.label}
-                            </p>
-                          </div>
+                          <p className={`text-sm font-extrabold tracking-tight ${
+                            stage.status === "pending" ? "text-ink-400" : "text-ink-900"
+                          }`}>
+                            {stage.label}
+                          </p>
                           <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-ink-500">
                             <MapPin className="size-3" />
                             {stage.location}
@@ -293,7 +270,6 @@ export default function SmartTrackingWidget() {
                     <button
                       onClick={() => {
                         setLead(null);
-                        setOrder(null);
                         setCode("");
                       }}
                       className="rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-[12.5px] font-semibold text-ink-700 hover:bg-ink-50"

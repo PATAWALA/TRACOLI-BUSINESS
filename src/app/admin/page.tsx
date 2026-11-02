@@ -46,7 +46,7 @@ export default function AdminDashboard() {
           supabase
             .from("leads")
             .select("id", { count: "exact", head: true })
-            .eq("status", "nouveau"),
+            .eq("status", "received"),
           supabase.from("orders").select("id", { count: "exact", head: true }),
           supabase
             .from("email_captures")
@@ -82,20 +82,20 @@ export default function AdminDashboard() {
       ),
     },
     {
-      key: "full_name",
+      key: "name",
       label: "Client",
       render: (row) => (
         <span className="text-[13px] font-semibold text-ink-900">
-          {row.full_name}
+          {row.name}
         </span>
       ),
     },
     {
-      key: "phone",
-      label: "Téléphone",
+      key: "whatsapp",
+      label: "WhatsApp",
       hideOnMobile: true,
       render: (row) => (
-        <span className="text-[13px] text-ink-600">{row.phone}</span>
+        <span className="text-[13px] text-ink-600">{row.whatsapp}</span>
       ),
     },
     {
