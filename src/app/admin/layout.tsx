@@ -36,7 +36,7 @@ export default function AdminLayout({
   if (pathname.startsWith("/admin/login")) {
     return (
       <div className="fixed inset-0 z-[100] bg-white">
-        <style>{`header, footer, nav.mobile-bottom-nav, .mobile-bottom-nav { display: none !important; }`}</style>
+        <style>{`body > header, body > footer, body > nav.mobile-bottom-nav, body > .mobile-bottom-nav { display: none !important; }`}</style>
         {children}
       </div>
     );
@@ -45,7 +45,7 @@ export default function AdminLayout({
   if (authenticated === null) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-        <style>{`header, footer, nav.mobile-bottom-nav, .mobile-bottom-nav { display: none !important; }`}</style>
+        <style>{`body > header, body > footer, body > nav.mobile-bottom-nav, body > .mobile-bottom-nav { display: none !important; }`}</style>
         <div className="size-8 animate-spin rounded-full border-[3px] border-ink-200 border-t-tracoli-500" />
       </div>
     );
@@ -53,7 +53,7 @@ export default function AdminLayout({
 
   return (
     <div className="fixed inset-0 z-[100] flex bg-ink-50">
-      <style>{`header, footer, nav.mobile-bottom-nav, .mobile-bottom-nav { display: none !important; }`}</style>
+      <style>{`body > header, body > footer, body > nav.mobile-bottom-nav, body > .mobile-bottom-nav { display: none !important; }`}</style>
 
       <AdminSidebar
         collapsed={collapsed}
