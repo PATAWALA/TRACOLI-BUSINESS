@@ -137,10 +137,16 @@ export default function DemandePage() {
   async function handleNewsletter(e: React.FormEvent) {
     e.preventDefault();
     setNlLoading(true);
-    await supabase
-      .from("email_captures")
-      .insert({ email: nlEmail, source: "demande_page" });
-    setNlDone(true);
+    const res = await fetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: nlEmail, source: "demande_page" }),
+    });
+    if (res.status === 409) {
+      setNlDone(true);
+    } else if (res.ok) {
+      setNlDone(true);
+    }
     setNlLoading(false);
   }
 

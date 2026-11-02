@@ -48,9 +48,7 @@ export default function AdminDashboard() {
             .select("id", { count: "exact", head: true })
             .eq("status", "received"),
           supabase.from("orders").select("id", { count: "exact", head: true }),
-          supabase
-            .from("email_captures")
-            .select("id", { count: "exact", head: true }),
+          fetch("/api/newsletter").then((r) => r.json()),
           supabase
             .from("leads")
             .select("*")
