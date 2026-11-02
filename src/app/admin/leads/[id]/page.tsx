@@ -14,6 +14,9 @@ import {
   Image as ImageIcon,
   MapPin,
   Link as LinkIcon,
+  Copy,
+  Check,
+  Plus,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
@@ -41,6 +44,9 @@ export default function LeadDetailPage({
   const [lead, setLead] = useState<Lead | null>(null);
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [copiedRef, setCopiedRef] = useState(false);
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [orderCreated, setOrderCreated] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
@@ -79,6 +85,31 @@ export default function LeadDetailPage({
     setSaving(false);
   }
 
+  async function copyRef() {
+    if (!lead) return;
+    await navigator.clipboard.writeText(lead.reference);
+    setCopiedRef(true);
+    setTimeout(() => setCopiedRef(false), 1500);
+  }
+
+  async function createOrderFromLead() {
+    if (!lead) return;
+    setCreatingOrder(true);
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lead_id: lead.id,
+        description: `${lead.product_name ?? "Commande"} — ${lead.name}`,
+      }),
+    });
+    if (res.ok) {
+      const order = await res.json();
+      setOrderCreated(order.reference);
+    }
+    setCreatingOrder(false);
+  }
+
   if (!lead) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -107,7 +138,20 @@ export default function LeadDetailPage({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">Référence</p>
-            <p className="mt-1 text-2xl font-extrabold tracking-tight text-tracoli-500">{lead.reference}</p>
+            <div className="mt-1 flex items-center gap-2">
+              <p className="font-mono text-2xl font-extrabold tracking-tight text-tracoli-500">{lead.reference}</p>
+              <button
+                onClick={copyRef}
+                className="grid size-8 place-items-center rounded-lg border border-ink-200 bg-white text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-600"
+                title="Copier la référence"
+              >
+                {copiedRef ? (
+                  <Check className="size-4 text-emerald-500" />
+                ) : (
+                  <Copy className="size-4" />
+                )}
+              </button>
+            </div>
           </div>
           <p className="text-sm text-ink-500">
             <Calendar className="mr-1 inline size-4" />
@@ -229,6 +273,43 @@ export default function LeadDetailPage({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Create order from lead */}
+      <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+        <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">
+          Commande associée
+        </p>
+        {orderCreated ? (
+          <div className="mt-3 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+            <Check className="size-5 text-emerald-600" />
+            <div>
+              <p className="text-sm font-bold text-emerald-800">
+                Commande créée : {orderCreated}
+              </p>
+              <a
+                href="/admin/orders"
+                className="text-xs font-semibold text-emerald-600 hover:underline"
+              >
+                Voir dans les commandes &rarr;
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-3">
+            <p className="text-sm text-ink-500">
+              Créer une commande liée à ce lead pour le suivi logistique.
+            </p>
+            <button
+              onClick={createOrderFromLead}
+              disabled={creatingOrder}
+              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-emerald-700 disabled:opacity-60"
+            >
+              <Plus className="size-4" />
+              {creatingOrder ? "Création…" : "Créer la commande"}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">

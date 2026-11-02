@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, Copy, Check } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import DataTable, { type Column } from "@/components/admin/ui/DataTable";
 import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
@@ -29,6 +29,7 @@ export default function AdminLeadsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const [copiedRef, setCopiedRef] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -64,8 +65,26 @@ export default function AdminLeadsPage() {
       key: "reference",
       label: "Référence",
       render: (row) => (
-        <span className="text-[13px] font-bold text-tracoli-600">
-          {row.reference}
+        <span className="inline-flex items-center gap-1.5">
+          <span className="font-mono text-[13px] font-bold text-tracoli-600">
+            {row.reference}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(row.reference);
+              setCopiedRef(row.reference);
+              setTimeout(() => setCopiedRef(null), 1500);
+            }}
+            className="grid size-6 shrink-0 place-items-center rounded-md text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
+            title="Copier la référence"
+          >
+            {copiedRef === row.reference ? (
+              <Check className="size-3 text-emerald-500" />
+            ) : (
+              <Copy className="size-3" />
+            )}
+          </button>
         </span>
       ),
     },
