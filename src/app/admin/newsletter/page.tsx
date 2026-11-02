@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Download, Trash2, RefreshCw } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
+import ConfirmModal from "@/components/admin/ui/ConfirmModal";
 import type { EmailCapture } from "@/types/database.types";
 
 export default function AdminNewsletterPage() {
   const [emails, setEmails] = useState<EmailCapture[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<EmailCapture | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadEmails();
@@ -24,9 +27,13 @@ export default function AdminNewsletterPage() {
     setLoading(false);
   }
 
-  async function deleteEmail(id: string) {
-    await fetch(`/api/newsletter?id=${id}`, { method: "DELETE" });
-    setEmails((prev) => prev.filter((e) => e.id !== id));
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    await fetch(`/api/newsletter?id=${deleteTarget.id}`, { method: "DELETE" });
+    setEmails((prev) => prev.filter((e) => e.id !== deleteTarget.id));
+    setDeleting(false);
+    setDeleteTarget(null);
   }
 
   function exportCSV() {
@@ -48,6 +55,21 @@ export default function AdminNewsletterPage() {
 
   return (
     <div className="space-y-6">
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Supprimer cet email ?"
+        message={
+          deleteTarget
+            ? `L'email « ${deleteTarget.email} » sera supprimé définitivement de la liste newsletter.`
+            : ""
+        }
+        confirmLabel="Supprimer"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Newsletter"
@@ -124,7 +146,7 @@ export default function AdminNewsletterPage() {
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <button
-                      onClick={() => deleteEmail(email.id)}
+                      onClick={() => setDeleteTarget(email)}
                       className="grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-red-50 hover:text-red-500"
                     >
                       <Trash2 className="size-4" />
