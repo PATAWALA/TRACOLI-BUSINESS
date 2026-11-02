@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
+import AdminBottomNav from "@/components/admin/AdminBottomNav";
 import { supabase } from "@/lib/supabase/client";
 
 export default function AdminLayout({
@@ -13,7 +14,8 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -54,18 +56,25 @@ export default function AdminLayout({
       <style>{`header, footer, nav.mobile-bottom-nav, .mobile-bottom-nav { display: none !important; }`}</style>
 
       <AdminSidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(!collapsed)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
         onLogout={handleLogout}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
+        <AdminHeader
+          onMenuClick={() => setMobileOpen(true)}
+          onLogout={handleLogout}
+        />
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 pb-20 lg:p-8 lg:pb-8">
           {children}
         </main>
       </div>
+
+      <AdminBottomNav />
     </div>
   );
 }

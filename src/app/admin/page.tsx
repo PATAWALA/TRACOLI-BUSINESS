@@ -3,7 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Users, TrendingUp, Package, Mail, ArrowRight } from "lucide-react";
+import {
+  Users,
+  TrendingUp,
+  Package,
+  Mail,
+  ArrowRight,
+  UserPlus,
+  FileText,
+  Handshake,
+  Download,
+} from "lucide-react";
 import StatCard from "@/components/admin/ui/StatCard";
 import DataTable, { type Column } from "@/components/admin/ui/DataTable";
 import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
@@ -137,6 +147,55 @@ export default function AdminDashboard() {
           color="bg-amber-50 text-amber-600"
           delay={0.15}
         />
+      </div>
+
+      {/* Quick actions */}
+      <div>
+        <h2 className="mb-4 text-sm font-bold text-ink-800">
+          Actions rapides
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              label: "Voir les leads",
+              icon: UserPlus,
+              href: "/admin/leads",
+              color: "bg-blue-50 text-blue-600 hover:bg-blue-100",
+            },
+            {
+              label: "Gérer les commandes",
+              icon: FileText,
+              href: "/admin/orders",
+              color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100",
+            },
+            {
+              label: "Partenaires",
+              icon: Handshake,
+              href: "/admin/partners",
+              color: "bg-purple-50 text-purple-600 hover:bg-purple-100",
+            },
+            {
+              label: "Exporter newsletter",
+              icon: Download,
+              href: "/admin/newsletter",
+              color: "bg-amber-50 text-amber-600 hover:bg-amber-100",
+            },
+          ].map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className={`flex items-center gap-3 rounded-2xl border border-ink-100 bg-white px-4 py-3.5 text-[13px] font-semibold shadow-sm transition-all hover:shadow-md ${action.color}`}
+            >
+              <div
+                className={`grid size-9 shrink-0 place-items-center rounded-xl ${action.color.split(" ").slice(0, 1).join("")}`}
+              >
+                <action.icon className="size-[18px]" />
+              </div>
+              <span className="text-ink-800">{action.label}</span>
+              <ArrowRight className="ml-auto size-4 text-ink-300" />
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Recent leads */}
