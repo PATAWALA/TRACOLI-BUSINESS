@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, Bell, User, Settings, LogOut } from "lucide-react";
+import {
+  Menu,
+  Search,
+  Bell,
+  User,
+  Settings,
+  LogOut,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import Avatar from "@/components/admin/ui/Avatar";
 import Dropdown from "@/components/admin/ui/Dropdown";
 
@@ -17,11 +26,15 @@ const PAGE_TITLES: Record<string, string> = {
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
+  onToggleSidebar: () => void;
+  sidebarCollapsed: boolean;
   onLogout: () => void;
 }
 
 export default function AdminHeader({
   onMenuClick,
+  onToggleSidebar,
+  sidebarCollapsed,
   onLogout,
 }: AdminHeaderProps) {
   const pathname = usePathname();
@@ -41,15 +54,32 @@ export default function AdminHeader({
   }
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-ink-200 bg-white px-4 lg:px-6">
-      {/* Left: burger + title */}
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-ink-200 bg-white px-4 lg:px-6">
+      {/* Mobile: burger */}
       <button
         onClick={onMenuClick}
         className="grid size-9 place-items-center rounded-lg text-ink-500 transition-colors hover:bg-ink-50 hover:text-ink-700 lg:hidden"
+        aria-label="Menu"
       >
         <Menu className="size-5" />
       </button>
-      <h1 className="hidden text-[15px] font-bold text-ink-800 sm:block">
+
+      {/* Desktop: sidebar toggle */}
+      <button
+        onClick={onToggleSidebar}
+        className="hidden size-9 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-700 lg:grid"
+        aria-label={sidebarCollapsed ? "Ouvrir la sidebar" : "Réduire la sidebar"}
+      >
+        {sidebarCollapsed ? (
+          <ChevronsRight className="size-[18px]" />
+        ) : (
+          <ChevronsLeft className="size-[18px]" />
+        )}
+      </button>
+
+      <div className="hidden h-6 w-px bg-ink-200 lg:block" />
+
+      <h1 className="text-[15px] font-bold text-ink-800 truncate">
         {title}
       </h1>
 
@@ -71,11 +101,13 @@ export default function AdminHeader({
       </form>
 
       {/* Right: notifications + profile */}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1.5">
         <button className="relative grid size-9 place-items-center rounded-xl text-ink-400 transition-colors hover:bg-ink-50 hover:text-ink-600">
           <Bell className="size-[18px]" />
           <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-tracoli-500 ring-2 ring-white" />
         </button>
+
+        <div className="mx-1 hidden h-6 w-px bg-ink-200 sm:block" />
 
         <Dropdown
           trigger={

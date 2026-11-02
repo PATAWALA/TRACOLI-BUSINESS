@@ -66,6 +66,8 @@ export default function AdminLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <AdminHeader
           onMenuClick={() => setMobileOpen(true)}
+          onToggleSidebar={() => setCollapsed(!collapsed)}
+          sidebarCollapsed={collapsed}
           onLogout={handleLogout}
         />
 
