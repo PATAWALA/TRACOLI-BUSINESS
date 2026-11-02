@@ -54,6 +54,8 @@ export async function POST(request: Request) {
     const mainImage = imageUrls?.[0] ?? null;
     const extraImages = imageUrls && imageUrls.length > 1 ? imageUrls.slice(1) : null;
 
+    const now = new Date().toISOString();
+
     const { data: lead, error: dbError } = await supabase
       .from("leads")
       .insert({
@@ -71,6 +73,8 @@ export async function POST(request: Request) {
         status: "received",
         notes: message || null,
         metadata: extraImages ? { images: extraImages } : null,
+        created_at: now,
+        updated_at: now,
       })
       .select()
       .single();
@@ -78,7 +82,7 @@ export async function POST(request: Request) {
     if (dbError) {
       console.error("Supabase insert error:", dbError);
       return NextResponse.json(
-        { error: "Erreur lors de l'enregistrement." },
+        { error: dbError.message || "Erreur lors de l'enregistrement." },
         { status: 500 },
       );
     }
