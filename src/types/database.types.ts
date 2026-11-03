@@ -1,14 +1,15 @@
 export type LeadStatus =
-  | "received"
-  | "researching"
-  | "quoted"
-  | "validating"
-  | "payment_confirmed"
-  | "purchased"
-  | "shipping"
-  | "arrived"
-  | "delivered"
-  | "closed";
+  | "en_attente_paiement"
+  | "paiement_soumis"
+  | "confirme"
+  | "recherche"
+  | "devis"
+  | "achat"
+  | "expedition"
+  | "en_transit"
+  | "douane"
+  | "livre"
+  | "cloture";
 
 export type OrderStatus =
   | "en_attente"
@@ -21,7 +22,7 @@ export type OrderStatus =
 
 export interface Lead {
   id: string;
-  reference: string;
+  reference: string | null;
   type: string | null;
   status: LeadStatus;
   name: string;
@@ -32,6 +33,7 @@ export interface Lead {
   product_name: string | null;
   product_url: string | null;
   product_image_url: string | null;
+  payment_proof_url: string | null;
   freight_mode: string | null;
   freight_quantity: number | null;
   freight_unit: string | null;
@@ -96,6 +98,42 @@ export interface Partner {
   created_at: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string;
+  price_min: number | null;
+  price_max: number | null;
+  currency: string;
+  moq: string | null;
+  origin: string | null;
+  image_url: string | null;
+  active: boolean;
+  created_at: string;
+}
+
+export interface ShippingRate {
+  id: string;
+  destination: string;
+  mode: "maritime" | "aerien";
+  price: number;
+  unit: string;
+  delivery_min_days: number;
+  delivery_max_days: number;
+  active: boolean;
+  updated_at: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  country: string;
+  provider: string;
+  phone_number: string;
+  active: boolean;
+  updated_at: string;
+}
+
 type TableDef<Row, Insert = Partial<Row>, Update = Partial<Row>> = {
   Row: Row;
   Insert: Insert;
@@ -111,6 +149,9 @@ export interface Database {
       email_captures: TableDef<EmailCapture>;
       files: TableDef<FileRecord>;
       partners: TableDef<Partner>;
+      products: TableDef<Product>;
+      shipping_rates: TableDef<ShippingRate>;
+      payment_methods: TableDef<PaymentMethod>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

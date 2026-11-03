@@ -24,16 +24,17 @@ import type { Lead, LeadStatus } from "@/types/database.types";
 
 const FILTERS: { value: LeadStatus | "all"; label: string }[] = [
   { value: "all", label: "Tous" },
-  { value: "received", label: "Reçu" },
-  { value: "researching", label: "Recherche" },
-  { value: "quoted", label: "Devis" },
-  { value: "validating", label: "Validation" },
-  { value: "payment_confirmed", label: "Payé" },
-  { value: "purchased", label: "Acheté" },
-  { value: "shipping", label: "Expédition" },
-  { value: "arrived", label: "Arrivé" },
-  { value: "delivered", label: "Livré" },
-  { value: "closed", label: "Clôturé" },
+  { value: "en_attente_paiement", label: "En attente" },
+  { value: "paiement_soumis", label: "Paiement soumis" },
+  { value: "confirme", label: "Confirmé" },
+  { value: "recherche", label: "Recherche" },
+  { value: "devis", label: "Devis" },
+  { value: "achat", label: "Acheté" },
+  { value: "expedition", label: "Expédition" },
+  { value: "en_transit", label: "Transit" },
+  { value: "douane", label: "Douane" },
+  { value: "livre", label: "Livré" },
+  { value: "cloture", label: "Clôturé" },
 ];
 
 interface NewLeadForm {
@@ -67,7 +68,7 @@ export default function AdminLeadsPage() {
   const [creating, setCreating] = useState(false);
   const [newForm, setNewForm] = useState<NewLeadForm>(EMPTY_FORM);
   const [createError, setCreateError] = useState("");
-  const [createdRef, setCreatedRef] = useState<string | null>(null);
+  const [created, setCreated] = useState(false);
 
   useEffect(() => {
     loadLeads();
@@ -116,14 +117,14 @@ export default function AdminLeadsPage() {
       return;
     }
 
-    setCreatedRef(data.reference);
+    setCreated(true);
     setCreating(false);
     loadLeads();
   }
 
   function closeModal() {
     setShowNew(false);
-    setCreatedRef(null);
+    setCreated(false);
     setNewForm(EMPTY_FORM);
     setCreateError("");
   }
@@ -139,7 +140,7 @@ export default function AdminLeadsPage() {
     ? leads.filter(
         (l) =>
           l.name.toLowerCase().includes(search.toLowerCase()) ||
-          l.reference.toLowerCase().includes(search.toLowerCase()) ||
+          (l.reference ?? "").toLowerCase().includes(search.toLowerCase()) ||
           l.whatsapp.includes(search),
       )
     : leads;
@@ -148,24 +149,27 @@ export default function AdminLeadsPage() {
     {
       key: "reference",
       label: "Référence",
-      render: (row) => (
-        <span className="inline-flex items-center gap-1.5">
-          <span className="font-mono text-[13px] font-bold text-tracoli-600">
-            {row.reference}
+      render: (row) =>
+        row.reference ? (
+          <span className="inline-flex items-center gap-1.5">
+            <span className="font-mono text-[13px] font-bold text-tracoli-600">
+              {row.reference}
+            </span>
+            <button
+              onClick={(e) => copyRef(row.reference!, e)}
+              className="grid size-6 shrink-0 place-items-center rounded-md text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
+              title="Copier la référence"
+            >
+              {copiedRef === row.reference ? (
+                <Check className="size-3 text-emerald-500" />
+              ) : (
+                <Copy className="size-3" />
+              )}
+            </button>
           </span>
-          <button
-            onClick={(e) => copyRef(row.reference, e)}
-            className="grid size-6 shrink-0 place-items-center rounded-md text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
-            title="Copier la référence"
-          >
-            {copiedRef === row.reference ? (
-              <Check className="size-3 text-emerald-500" />
-            ) : (
-              <Copy className="size-3" />
-            )}
-          </button>
-        </span>
-      ),
+        ) : (
+          <span className="text-[12px] font-semibold text-amber-600">En attente</span>
+        ),
     },
     {
       key: "name",
@@ -243,7 +247,7 @@ export default function AdminLeadsPage() {
                 <X className="size-4" />
               </button>
 
-              {createdRef ? (
+              {created ? (
                 /* Success screen */
                 <div className="text-center py-4">
                   <div className="mx-auto grid size-14 place-items-center rounded-full bg-emerald-100">
@@ -252,34 +256,13 @@ export default function AdminLeadsPage() {
                   <h3 className="mt-4 text-xl font-bold text-ink-900">
                     Demande créée !
                   </h3>
-                  <div className="mx-auto mt-4 max-w-xs rounded-xl border-2 border-tracoli-200 bg-tracoli-50 px-5 py-4">
-                    <p className="font-mono text-2xl font-extrabold tracking-wider text-tracoli-500">
-                      {createdRef}
-                    </p>
-                    <button
-                      onClick={() => copyRef(createdRef)}
-                      className="mt-2 inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-bold text-ink-700 shadow-sm ring-1 ring-ink-200 transition-all hover:bg-ink-50"
-                    >
-                      {copiedRef === createdRef ? (
-                        <>
-                          <Check className="size-3.5 text-emerald-500" />
-                          Copié !
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="size-3.5" />
-                          Copier le code
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <p className="mt-4 text-sm text-ink-500">
-                    Envoyez ce code au client sur WhatsApp pour qu&apos;il puisse suivre sa demande.
+                  <p className="mt-2 text-sm text-ink-500">
+                    Le code de suivi TRC-XXXX sera généré à la confirmation du paiement.
                   </p>
                   <div className="mt-6 flex gap-3 justify-center">
                     <button
                       onClick={() => {
-                        setCreatedRef(null);
+                        setCreated(false);
                         setNewForm(EMPTY_FORM);
                       }}
                       className="rounded-xl bg-tracoli-500 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-tracoli-600"

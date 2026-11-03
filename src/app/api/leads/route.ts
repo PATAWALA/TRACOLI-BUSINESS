@@ -1,16 +1,5 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { resend } from "@/lib/email/resend";
-import {
-  clientConfirmationHtml,
-  adminAlertHtml,
-} from "@/lib/email/templates";
-
-function generateReference(): string {
-  const year = new Date().getFullYear();
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `TRC-${year}-${rand}`;
-}
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +16,7 @@ export async function POST(request: Request) {
       message,
       type,
       source,
+      paymentProofUrl,
     } = body as {
       name: string;
       whatsapp: string;
@@ -39,6 +29,7 @@ export async function POST(request: Request) {
       message?: string;
       type?: string;
       source?: string;
+      paymentProofUrl?: string;
     };
 
     if (!name || !whatsapp) {
@@ -48,29 +39,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const reference = generateReference();
     const supabase = createServerClient();
 
     const mainImage = imageUrls?.[0] ?? null;
-    const extraImages = imageUrls && imageUrls.length > 1 ? imageUrls.slice(1) : null;
+    const extraImages =
+      imageUrls && imageUrls.length > 1 ? imageUrls.slice(1) : null;
 
     const now = new Date().toISOString();
+    const initialStatus = paymentProofUrl
+      ? "paiement_soumis"
+      : "en_attente_paiement";
 
     const { data: lead, error: dbError } = await supabase
       .from("leads")
       .insert({
-        reference,
+        reference: null,
         name,
         whatsapp,
         email: email || null,
         product_name: productName || null,
         product_url: productUrl || null,
         product_image_url: mainImage,
+        payment_proof_url: paymentProofUrl || null,
         destination_city: destinationCity || null,
         destination_country: destinationCountry || null,
         type: type || "sourcing",
         source: source || "site",
-        status: "received",
+        status: initialStatus,
         notes: message || null,
         metadata: extraImages ? { images: extraImages } : null,
         created_at: now,
@@ -87,43 +82,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const emailData = {
-      reference,
-      name,
-      whatsapp,
-      email,
-      productName,
-      message,
-    };
-
-    const emailPromises: Promise<unknown>[] = [];
-
-    if (email) {
-      emailPromises.push(
-        resend.emails.send({
-          from: "TRACOLI Business <noreply@tracoli-business.com>",
-          to: email,
-          subject: `Demande reçue — ${reference}`,
-          html: clientConfirmationHtml(emailData),
-        }),
-      );
-    }
-
-    const adminEmail = process.env.ADMIN_EMAIL;
-    if (adminEmail) {
-      emailPromises.push(
-        resend.emails.send({
-          from: "TRACOLI Business <noreply@tracoli-business.com>",
-          to: adminEmail,
-          subject: `Nouveau lead — ${reference}`,
-          html: adminAlertHtml(emailData),
-        }),
-      );
-    }
-
-    await Promise.allSettled(emailPromises);
-
-    return NextResponse.json({ reference, id: lead.id }, { status: 201 });
+    return NextResponse.json(
+      { id: lead.id, status: initialStatus },
+      { status: 201 },
+    );
   } catch {
     return NextResponse.json(
       { error: "Erreur serveur inattendue." },

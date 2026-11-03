@@ -45,57 +45,49 @@ const STAGES: {
   detail: string;
 }[] = [
   {
-    id: "received",
-    label: "Demande reçue",
+    id: "confirme",
+    label: "Demande confirmée",
     location: "TRACOLI",
-    detail: "Votre demande a été enregistrée dans notre système.",
+    detail: "Votre paiement a été confirmé et votre projet est activé.",
   },
   {
-    id: "researching",
+    id: "recherche",
     label: "Recherche fournisseur",
     location: "Guangzhou, Chine",
     detail: "Notre équipe identifie les meilleurs fournisseurs pour vous.",
   },
   {
-    id: "quoted",
+    id: "devis",
     label: "Devis envoyé",
     location: "TRACOLI",
     detail: "Un devis détaillé vous a été transmis par WhatsApp ou email.",
   },
   {
-    id: "validating",
-    label: "Validation en cours",
-    location: "TRACOLI",
-    detail: "Nous attendons votre accord pour lancer la commande.",
-  },
-  {
-    id: "payment_confirmed",
-    label: "Paiement confirmé",
-    location: "TRACOLI",
-    detail: "Votre paiement a bien été reçu. Merci !",
-  },
-  {
-    id: "purchased",
+    id: "achat",
     label: "Achat effectué",
     location: "Guangzhou, Chine",
-    detail:
-      "La commande a été passée auprès du fournisseur. Production en cours.",
+    detail: "La commande a été passée auprès du fournisseur. Production en cours.",
   },
   {
-    id: "shipping",
-    label: "Expédition en cours",
+    id: "expedition",
+    label: "Expédition",
     location: "Port / Aéroport, Chine",
+    detail: "Votre marchandise est en cours de chargement pour l'expédition.",
+  },
+  {
+    id: "en_transit",
+    label: "En transit",
+    location: "En mer / En vol",
     detail: "Votre marchandise a quitté la Chine et est en route.",
   },
   {
-    id: "arrived",
-    label: "Arrivée à destination",
+    id: "douane",
+    label: "Dédouanement",
     location: "Pays de destination",
-    detail:
-      "La marchandise est arrivée dans votre pays. Formalités en cours.",
+    detail: "La marchandise est arrivée. Formalités douanières en cours.",
   },
   {
-    id: "delivered",
+    id: "livre",
     label: "Livré",
     location: "Votre adresse",
     detail: "Votre marchandise est disponible. Bonne réception !",
@@ -106,7 +98,7 @@ const STATUS_ORDER: LeadStatus[] = STAGES.map((s) => s.id);
 
 function buildTimeline(lead: PublicLead): Stage[] {
   const currentIdx = STATUS_ORDER.indexOf(lead.status);
-  const isClosed = lead.status === "closed";
+  const isClosed = lead.status === "cloture";
 
   return STAGES.map((stage, i) => {
     const idx = STATUS_ORDER.indexOf(stage.id);
@@ -161,7 +153,7 @@ export default function SmartTrackingWidget() {
   const activeStage = stages.find((s) => s.status === "active");
   const doneCount = stages.filter((s) => s.status === "done").length;
   const progress = lead
-    ? lead.status === "closed"
+    ? lead.status === "cloture"
       ? 100
       : Math.round(
           ((doneCount + (activeStage ? 0.5 : 0)) / STAGES.length) * 100,
@@ -282,7 +274,7 @@ export default function SmartTrackingWidget() {
                         {activeStage.label}
                       </span>
                     )}
-                    {lead.status === "closed" && (
+                    {lead.status === "cloture" && (
                       <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">
                         <Check className="size-4" strokeWidth={3} />
                         Commande terminée

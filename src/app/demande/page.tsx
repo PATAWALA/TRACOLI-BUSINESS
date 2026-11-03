@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,11 +19,13 @@ import {
   ArrowRight,
   Sparkles,
   Users,
-  Copy,
-  Check,
   ShieldCheck,
   Zap,
   Globe,
+  CreditCard,
+  FileCheck,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { supabase } from "@/lib/supabase/client";
@@ -35,8 +37,16 @@ interface FilePreview {
   url: string;
 }
 
+interface PaymentMethod {
+  id: string;
+  country: string;
+  provider: string;
+  phone_number: string;
+}
+
 export default function DemandePage() {
   const fileRef = useRef<HTMLInputElement>(null);
+  const proofRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     whatsapp: "",
@@ -47,14 +57,24 @@ export default function DemandePage() {
     message: "",
   });
   const [files, setFiles] = useState<FilePreview[]>([]);
+  const [proofFile, setProofFile] = useState<FilePreview | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ reference: string } | null>(null);
+  const [result, setResult] = useState<{
+    hasPaid: boolean;
+  } | null>(null);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
 
   const [nlEmail, setNlEmail] = useState("");
   const [nlLoading, setNlLoading] = useState(false);
   const [nlDone, setNlDone] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/payment-methods")
+      .then((r) => r.json())
+      .then((data) => setPaymentMethods(data.methods ?? []))
+      .catch(() => {});
+  }, []);
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = e.target.files;
@@ -70,6 +90,19 @@ export default function DemandePage() {
     if (fileRef.current) fileRef.current.value = "";
   }
 
+  function handleProof(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    if (
+      !selected.type.startsWith("image/") &&
+      selected.type !== "application/pdf"
+    )
+      return;
+    if (proofFile) URL.revokeObjectURL(proofFile.url);
+    setProofFile({ file: selected, url: URL.createObjectURL(selected) });
+    if (proofRef.current) proofRef.current.value = "";
+  }
+
   function removeFile(idx: number) {
     setFiles((prev) => {
       URL.revokeObjectURL(prev[idx].url);
@@ -77,11 +110,11 @@ export default function DemandePage() {
     });
   }
 
-  async function copyRef() {
-    if (!result) return;
-    await navigator.clipboard.writeText(result.reference);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function removeProof() {
+    if (proofFile) {
+      URL.revokeObjectURL(proofFile.url);
+      setProofFile(null);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -106,6 +139,22 @@ export default function DemandePage() {
       }
     }
 
+    let paymentProofUrl: string | undefined;
+    if (proofFile) {
+      const ext = proofFile.file.name.split(".").pop();
+      const path = `proofs/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("files")
+        .upload(path, proofFile.file);
+
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage
+          .from("files")
+          .getPublicUrl(path);
+        paymentProofUrl = urlData.publicUrl;
+      }
+    }
+
     const res = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -118,6 +167,7 @@ export default function DemandePage() {
         destinationCity: form.destinationCity || undefined,
         message: form.message || undefined,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+        paymentProofUrl,
         source: "site",
       }),
     });
@@ -130,7 +180,7 @@ export default function DemandePage() {
       return;
     }
 
-    setResult({ reference: data.reference });
+    setResult({ hasPaid: !!paymentProofUrl });
     setLoading(false);
   }
 
@@ -142,9 +192,7 @@ export default function DemandePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: nlEmail, source: "demande_page" }),
     });
-    if (res.status === 409) {
-      setNlDone(true);
-    } else if (res.ok) {
+    if (res.status === 409 || res.ok) {
       setNlDone(true);
     }
     setNlLoading(false);
@@ -165,50 +213,83 @@ export default function DemandePage() {
           </div>
 
           <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
-            Commande envoyée !
+            Projet soumis !
           </h1>
 
-          <p className="mt-4 text-base leading-relaxed text-ink-600">
-            Votre demande a bien été enregistrée. Voici votre code de suivi :
-          </p>
+          {result.hasPaid ? (
+            <>
+              <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5 text-left">
+                <div className="flex items-start gap-3">
+                  <FileCheck className="mt-0.5 size-5 shrink-0 text-emerald-600" />
+                  <div>
+                    <p className="text-sm font-bold text-emerald-800">
+                      Preuve de paiement reçue
+                    </p>
+                    <p className="mt-1 text-sm leading-relaxed text-emerald-700">
+                      Votre demande est en cours de vérification. Vous recevrez
+                      votre <strong>code de suivi</strong> dès que votre
+                      paiement sera confirmé par notre équipe.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          {/* Reference copiable */}
-          <div className="mx-auto mt-5 max-w-xs rounded-2xl border-2 border-tracoli-200 bg-tracoli-50 px-6 py-5">
-            <p className="text-3xl font-extrabold tracking-[0.15em] text-tracoli-500">
-              {result.reference}
-            </p>
-            <button
-              onClick={copyRef}
-              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-ink-700 shadow-sm ring-1 ring-ink-200 transition-all hover:bg-ink-50 active:scale-[0.97]"
-            >
-              {copied ? (
-                <>
-                  <Check className="size-4 text-emerald-500" />
-                  Copié !
-                </>
-              ) : (
-                <>
-                  <Copy className="size-4" />
-                  Copier le code
-                </>
+              <div className="mx-auto mt-4 max-w-sm rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-left">
+                <div className="flex items-start gap-3">
+                  <Clock className="mt-0.5 size-5 shrink-0 text-blue-600" />
+                  <p className="text-sm leading-relaxed text-blue-700">
+                    Délai de confirmation :{" "}
+                    <strong>sous 24 heures</strong>. Vous serez notifié par
+                    email et WhatsApp.
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-amber-200 bg-amber-50 px-5 py-5 text-left">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-600" />
+                  <div>
+                    <p className="text-sm font-bold text-amber-800">
+                      En attente de paiement
+                    </p>
+                    <p className="mt-1 text-sm leading-relaxed text-amber-700">
+                      Votre demande est enregistrée. Envoyez votre preuve de
+                      paiement de <strong>10 $</strong> aux numéros ci-dessous
+                      pour activer votre projet.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {paymentMethods.length > 0 && (
+                <div className="mx-auto mt-4 max-w-sm space-y-2">
+                  {paymentMethods.map((pm) => (
+                    <div
+                      key={pm.id}
+                      className="flex items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-3 text-left"
+                    >
+                      <div>
+                        <p className="text-xs font-bold text-ink-500">
+                          {pm.country} — {pm.provider}
+                        </p>
+                        <p className="text-base font-extrabold text-ink-900">
+                          {pm.phone_number}
+                        </p>
+                      </div>
+                      <CreditCard className="size-5 text-ink-300" />
+                    </div>
+                  ))}
+                </div>
               )}
-            </button>
-          </div>
-
-          <div className="mx-auto mt-8 max-w-sm rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-left">
-            <p className="text-sm font-bold text-amber-800">
-              Conservez bien ce code !
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-amber-700">
-              Il vous permet de suivre votre commande en temps réel sur notre page de
-              suivi. Notre équipe vous contactera sous 24h via WhatsApp.
-            </p>
-          </div>
+            </>
+          )}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
               href={waLink(
-                `Bonjour, j'ai soumis une demande (${result.reference}). Je souhaite avoir plus d'informations.`,
+                `Bonjour, je viens de soumettre un projet d'import. Je souhaite avoir plus d'informations.`,
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -218,20 +299,11 @@ export default function DemandePage() {
               Contacter sur WhatsApp
             </a>
             <Link
-              href="/suivre"
+              href="/"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-ink-200 bg-white px-6 py-3.5 text-base font-bold text-ink-700 transition-all hover:bg-ink-50"
             >
-              Suivre ma commande
+              Visiter notre site
               <ArrowRight className="size-4" />
-            </Link>
-          </div>
-
-          <div className="mt-8">
-            <Link
-              href="/"
-              className="text-base font-semibold text-tracoli-500 hover:underline"
-            >
-              Visiter notre site &rarr;
             </Link>
           </div>
         </motion.div>
@@ -275,15 +347,16 @@ export default function DemandePage() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-sm font-bold tracking-wider text-tracoli-500 uppercase backdrop-blur-sm">
             <Send className="size-4" />
-            Commande
+            Projet d&apos;import
           </span>
           <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-            Passez votre commande
+            Déposez votre projet d&apos;import
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-ink-500">
-            Décrivez votre besoin, on s&apos;occupe du reste.
-            Seuls le <strong className="text-ink-700">nom</strong> et le{" "}
-            <strong className="text-ink-700">WhatsApp</strong> sont obligatoires.
+            Décrivez votre besoin, on s&apos;occupe du reste. Seuls le{" "}
+            <strong className="text-ink-700">nom</strong> et le{" "}
+            <strong className="text-ink-700">WhatsApp</strong> sont
+            obligatoires.
           </p>
         </motion.div>
 
@@ -370,7 +443,9 @@ export default function DemandePage() {
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
                   <Mail className="size-4 text-ink-400" /> Email
-                  <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                  <span className="text-xs font-normal text-ink-400">
+                    — optionnel
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -385,7 +460,9 @@ export default function DemandePage() {
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
                   <Package className="size-4 text-ink-400" /> Produit recherché
-                  <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                  <span className="text-xs font-normal text-ink-400">
+                    — optionnel
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -400,7 +477,9 @@ export default function DemandePage() {
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
                   <LinkIcon className="size-4 text-ink-400" /> Lien du produit
-                  <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                  <span className="text-xs font-normal text-ink-400">
+                    — optionnel
+                  </span>
                 </label>
                 <input
                   type="url"
@@ -414,8 +493,11 @@ export default function DemandePage() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                  <MapPin className="size-4 text-ink-400" /> Ville de destination
-                  <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                  <MapPin className="size-4 text-ink-400" /> Ville de
+                  destination
+                  <span className="text-xs font-normal text-ink-400">
+                    — optionnel
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -433,7 +515,9 @@ export default function DemandePage() {
             <div className="mt-5">
               <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
                 <Upload className="size-4 text-ink-400" /> Photos du produit
-                <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                <span className="text-xs font-normal text-ink-400">
+                  — optionnel
+                </span>
               </label>
               {files.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-3">
@@ -479,16 +563,117 @@ export default function DemandePage() {
             <div className="mt-5">
               <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
                 <MessageSquare className="size-4 text-ink-400" /> Message
-                <span className="text-xs font-normal text-ink-400">— optionnel</span>
+                <span className="text-xs font-normal text-ink-400">
+                  — optionnel
+                </span>
               </label>
               <textarea
                 rows={3}
                 value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, message: e.target.value })
+                }
                 className="mt-2 w-full rounded-xl border-2 border-ink-200 bg-white px-4 py-3.5 text-base text-ink-900 transition-all focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/20 focus:outline-none"
                 placeholder="Quantité souhaitée, précisions, questions…"
               />
             </div>
+          </div>
+
+          {/* ─── Section Frais de dossier ─── */}
+          <div className="rounded-2xl border-2 border-tracoli-200 bg-gradient-to-br from-tracoli-50/60 via-white to-white p-6 shadow-sm sm:p-8">
+            <div className="flex items-center gap-3">
+              <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-tracoli-500 text-white">
+                <CreditCard className="size-5" />
+              </div>
+              <div>
+                <p className="text-base font-extrabold text-ink-900">
+                  Frais de dossier : 10 $
+                </p>
+                <p className="text-sm text-ink-500">
+                  Obligatoire pour démarrer votre projet
+                </p>
+              </div>
+            </div>
+
+            {/* Numéros de paiement */}
+            {paymentMethods.length > 0 && (
+              <div className="mt-5 space-y-2">
+                <p className="text-xs font-bold tracking-widest text-ink-500 uppercase">
+                  Envoyez 10 $ à l&apos;un de ces numéros
+                </p>
+                {paymentMethods.map((pm) => (
+                  <div
+                    key={pm.id}
+                    className="flex items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-xs font-bold text-ink-500">
+                        {pm.country} — {pm.provider}
+                      </p>
+                      <p className="text-lg font-extrabold tracking-wide text-ink-900">
+                        {pm.phone_number}
+                      </p>
+                    </div>
+                    <Phone className="size-5 text-tracoli-400" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload preuve */}
+            <div className="mt-5">
+              <label className="flex items-center gap-2 text-sm font-bold text-ink-700">
+                <FileCheck className="size-4 text-tracoli-500" />
+                Preuve de paiement
+              </label>
+              <p className="mt-1 text-sm text-ink-500">
+                Capture d&apos;écran ou photo du reçu de transfert (image ou
+                PDF)
+              </p>
+
+              {proofFile ? (
+                <div className="mt-3 flex items-center gap-3 rounded-xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3">
+                  <FileCheck className="size-5 shrink-0 text-emerald-600" />
+                  <p className="flex-1 truncate text-sm font-semibold text-emerald-800">
+                    {proofFile.file.name}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={removeProof}
+                    className="grid size-7 shrink-0 place-items-center rounded-lg text-emerald-600 transition-colors hover:bg-emerald-100"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => proofRef.current?.click()}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-tracoli-300 bg-white px-4 py-5 text-base font-semibold text-tracoli-600 transition-all hover:border-tracoli-400 hover:bg-tracoli-50/30"
+                >
+                  <Upload className="size-5" />
+                  Joindre ma preuve de paiement
+                </button>
+              )}
+              <input
+                ref={proofRef}
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleProof}
+                className="hidden"
+              />
+            </div>
+
+            {!proofFile && (
+              <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-amber-50 px-4 py-3">
+                <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+                <p className="text-[13px] leading-relaxed text-amber-700">
+                  Sans preuve de paiement, votre demande sera mise{" "}
+                  <strong>en attente</strong>. Vous pourrez nous l&apos;envoyer
+                  ensuite sur WhatsApp.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Submit */}
@@ -499,7 +684,7 @@ export default function DemandePage() {
             disabled={loading}
             className="w-full rounded-2xl bg-tracoli-500 py-5 text-lg font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 hover:shadow-lg disabled:opacity-60"
           >
-            {loading ? "Envoi en cours…" : "Envoyer ma commande"}
+            {loading ? "Envoi en cours…" : "Soumettre mon projet"}
           </motion.button>
 
           <p className="text-center text-base text-ink-400">
@@ -532,8 +717,8 @@ export default function DemandePage() {
             Recevez les meilleures opportunités
           </h2>
           <p className="mt-3 text-base leading-relaxed text-ink-500">
-            Inscrivez-vous gratuitement pour recevoir les offres de groupage, les
-            bons plans fournisseurs et les conseils import/export.
+            Inscrivez-vous gratuitement pour recevoir les offres de groupage,
+            les bons plans fournisseurs et les conseils import/export.
           </p>
 
           {nlDone ? (

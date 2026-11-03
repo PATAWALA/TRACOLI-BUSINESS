@@ -46,11 +46,11 @@ export default function AdminDashboard() {
           supabase
             .from("leads")
             .select("id", { count: "exact", head: true })
-            .eq("status", "received"),
+            .eq("status", "en_attente_paiement"),
           supabase
             .from("leads")
             .select("id", { count: "exact", head: true })
-            .not("status", "in", '("received","delivered","closed")'),
+            .not("status", "in", '("en_attente_paiement","livre","cloture")'),
           fetch("/api/newsletter").then((r) => r.json()),
           supabase
             .from("leads")
@@ -76,11 +76,14 @@ export default function AdminDashboard() {
     {
       key: "reference",
       label: "Référence",
-      render: (row) => (
-        <span className="font-mono text-[13px] font-bold text-tracoli-600">
-          {row.reference}
-        </span>
-      ),
+      render: (row) =>
+        row.reference ? (
+          <span className="font-mono text-[13px] font-bold text-tracoli-600">
+            {row.reference}
+          </span>
+        ) : (
+          <span className="text-[12px] font-semibold text-amber-600">En attente</span>
+        ),
     },
     {
       key: "name",

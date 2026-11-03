@@ -13,11 +13,17 @@ import {
   ChevronsLeft,
   ChevronsRight,
   X,
+  ShoppingBag,
+  Ship,
+  CreditCard,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Demandes", icon: Users },
+  { href: "/admin/products", label: "Produits", icon: ShoppingBag },
+  { href: "/admin/shipping", label: "Tarifs", icon: Ship },
+  { href: "/admin/payments", label: "Paiements", icon: CreditCard },
   { href: "/admin/partners", label: "Partenaires", icon: Handshake },
   { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
