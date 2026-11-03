@@ -7,6 +7,7 @@ import {
   Plus,
   X,
   Trash2,
+  Pencil,
   Upload,
   RefreshCw,
   Search,
@@ -28,6 +29,7 @@ const CATEGORIES = [
 ];
 
 interface ProductForm {
+  id?: string;
   name: string;
   description: string;
   category: string;
@@ -87,6 +89,24 @@ export default function AdminProductsPage() {
     setCreateError("");
   }
 
+  function openEdit(product: Product) {
+    setForm({
+      id: product.id,
+      name: product.name,
+      description: product.description ?? "",
+      category: product.category,
+      price_min: product.price_min != null ? String(product.price_min) : "",
+      price_max: product.price_max != null ? String(product.price_max) : "",
+      currency: product.currency ?? "USD",
+      moq: product.moq != null ? String(product.moq) : "",
+      origin: product.origin ?? "Chine",
+    });
+    setImagePreview(product.image_url ?? null);
+    setImageFile(null);
+    setCreateError("");
+    setShowAdd(true);
+  }
+
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -100,7 +120,7 @@ export default function AdminProductsPage() {
     setCreateError("");
     setCreating(true);
 
-    let imageUrl: string | null = null;
+    let imageUrl: string | null = imagePreview;
 
     if (imageFile) {
       const ext = imageFile.name.split(".").pop();
@@ -121,6 +141,7 @@ export default function AdminProductsPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        id: form.id || undefined,
         name: form.name,
         description: form.description || null,
         category: form.category,
@@ -135,7 +156,7 @@ export default function AdminProductsPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setCreateError(data.error ?? "Erreur lors de la création.");
+      setCreateError(data.error ?? "Erreur lors de la sauvegarde.");
       setCreating(false);
       return;
     }
@@ -253,7 +274,7 @@ export default function AdminProductsPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-ink-900">
-                    Nouveau produit
+                    {form.id ? "Modifier le produit" : "Nouveau produit"}
                   </h3>
                   <p className="text-sm text-ink-500">
                     Visible dans le catalogue public
@@ -445,7 +466,11 @@ export default function AdminProductsPage() {
                   disabled={creating}
                   className="w-full rounded-xl bg-tracoli-500 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 disabled:opacity-60"
                 >
-                  {creating ? "Ajout en cours…" : "Ajouter au catalogue"}
+                  {creating
+                    ? "Enregistrement…"
+                    : form.id
+                      ? "Enregistrer"
+                      : "Ajouter au catalogue"}
                 </button>
               </form>
             </motion.div>
@@ -518,12 +543,20 @@ export default function AdminProductsPage() {
                   </p>
                 )}
               </div>
-              <button
-                onClick={() => setDeleteTarget(product)}
-                className="absolute top-2 right-2 grid size-7 place-items-center rounded-lg bg-white/90 text-ink-400 opacity-0 shadow-sm transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-all group-hover:opacity-100">
+                <button
+                  onClick={() => openEdit(product)}
+                  className="grid size-7 place-items-center rounded-lg bg-white/90 text-ink-400 shadow-sm transition-all hover:bg-ink-50 hover:text-ink-600"
+                >
+                  <Pencil className="size-3.5" />
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(product)}
+                  className="grid size-7 place-items-center rounded-lg bg-white/90 text-ink-400 shadow-sm transition-all hover:bg-red-50 hover:text-red-500"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>

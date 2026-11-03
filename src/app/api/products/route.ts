@@ -20,19 +20,36 @@ export async function POST(request: Request) {
     const body = await request.json();
     const supabase = createServerClient();
 
+    const payload = {
+      name: body.name,
+      description: body.description || null,
+      category: body.category,
+      price_min: body.price_min ?? null,
+      price_max: body.price_max ?? null,
+      currency: body.currency || "USD",
+      moq: body.moq || null,
+      origin: body.origin || "Chine",
+      image_url: body.image_url || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (body.id) {
+      const { data, error } = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", body.id)
+        .select()
+        .single();
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      return NextResponse.json(data);
+    }
+
     const { data, error } = await supabase
       .from("products")
-      .insert({
-        name: body.name,
-        description: body.description || null,
-        category: body.category,
-        price_min: body.price_min ?? null,
-        price_max: body.price_max ?? null,
-        currency: body.currency || "USD",
-        moq: body.moq || null,
-        origin: body.origin || "Chine",
-        image_url: body.image_url || null,
-      })
+      .insert(payload)
       .select()
       .single();
 
