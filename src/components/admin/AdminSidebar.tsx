@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
-  Package,
   Handshake,
   Mail,
   Settings,
@@ -18,8 +17,7 @@ import {
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/leads", label: "Leads", icon: Users },
-  { href: "/admin/orders", label: "Commandes", icon: Package },
+  { href: "/admin/leads", label: "Demandes", icon: Users },
   { href: "/admin/partners", label: "Partenaires", icon: Handshake },
   { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },

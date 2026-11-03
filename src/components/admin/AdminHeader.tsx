@@ -19,8 +19,7 @@ import ShareLinkModal from "@/components/admin/ShareLinkModal";
 
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Dashboard",
-  "/admin/leads": "Gestion des Leads",
-  "/admin/orders": "Commandes",
+  "/admin/leads": "Gestion des Demandes",
   "/admin/partners": "Partenaires",
   "/admin/newsletter": "Newsletter",
   "/admin/settings": "Paramètres",

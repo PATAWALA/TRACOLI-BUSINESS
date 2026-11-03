@@ -10,9 +10,9 @@ import {
   Mail,
   ArrowRight,
   UserPlus,
-  FileText,
   Handshake,
   Download,
+  Plus,
 } from "lucide-react";
 import StatCard from "@/components/admin/ui/StatCard";
 import DataTable, { type Column } from "@/components/admin/ui/DataTable";
@@ -23,7 +23,7 @@ import type { Lead, LeadStatus } from "@/types/database.types";
 interface Stats {
   totalLeads: number;
   newLeads: number;
-  orders: number;
+  inProgress: number;
   emails: number;
 }
 
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
     totalLeads: 0,
     newLeads: 0,
-    orders: 0,
+    inProgress: 0,
     emails: 0,
   });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
@@ -40,14 +40,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     async function load() {
-      const [leadsRes, newRes, ordersRes, emailsRes, recentRes] =
+      const [leadsRes, newRes, inProgressRes, emailsRes, recentRes] =
         await Promise.all([
           supabase.from("leads").select("id", { count: "exact", head: true }),
           supabase
             .from("leads")
             .select("id", { count: "exact", head: true })
             .eq("status", "received"),
-          supabase.from("orders").select("id", { count: "exact", head: true }),
+          supabase
+            .from("leads")
+            .select("id", { count: "exact", head: true })
+            .not("status", "in", '("received","delivered","closed")'),
           fetch("/api/newsletter").then((r) => r.json()),
           supabase
             .from("leads")
@@ -59,7 +62,7 @@ export default function AdminDashboard() {
       setStats({
         totalLeads: leadsRes.count ?? 0,
         newLeads: newRes.count ?? 0,
-        orders: ordersRes.count ?? 0,
+        inProgress: inProgressRes.count ?? 0,
         emails: emailsRes.count ?? 0,
       });
       setRecentLeads((recentRes.data as Lead[]) ?? []);
@@ -74,7 +77,7 @@ export default function AdminDashboard() {
       key: "reference",
       label: "Référence",
       render: (row) => (
-        <span className="text-[13px] font-bold text-tracoli-600">
+        <span className="font-mono text-[13px] font-bold text-tracoli-600">
           {row.reference}
         </span>
       ),
@@ -118,22 +121,22 @@ export default function AdminDashboard() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Total Leads"
+          label="Total Demandes"
           value={loading ? "—" : stats.totalLeads}
           icon={Users}
           color="bg-blue-50 text-blue-600"
           delay={0}
         />
         <StatCard
-          label="Nouveaux Leads"
+          label="Nouvelles"
           value={loading ? "—" : stats.newLeads}
           icon={TrendingUp}
           color="bg-tracoli-50 text-tracoli-600"
           delay={0.05}
         />
         <StatCard
-          label="Commandes"
-          value={loading ? "—" : stats.orders}
+          label="En cours"
+          value={loading ? "—" : stats.inProgress}
           icon={Package}
           color="bg-emerald-50 text-emerald-600"
           delay={0.1}
@@ -155,16 +158,16 @@ export default function AdminDashboard() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              label: "Voir les leads",
+              label: "Nouvelle demande",
+              icon: Plus,
+              href: "/admin/leads",
+              color: "bg-tracoli-50 text-tracoli-600 hover:bg-tracoli-100",
+            },
+            {
+              label: "Voir les demandes",
               icon: UserPlus,
               href: "/admin/leads",
               color: "bg-blue-50 text-blue-600 hover:bg-blue-100",
-            },
-            {
-              label: "Gérer les commandes",
-              icon: FileText,
-              href: "/admin/orders",
-              color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100",
             },
             {
               label: "Partenaires",
@@ -180,7 +183,7 @@ export default function AdminDashboard() {
             },
           ].map((action) => (
             <Link
-              key={action.href}
+              key={action.label}
               href={action.href}
               className={`flex items-center gap-3 rounded-2xl border border-ink-100 bg-white px-4 py-3.5 text-[13px] font-semibold shadow-sm transition-all hover:shadow-md ${action.color}`}
             >
@@ -199,12 +202,14 @@ export default function AdminDashboard() {
       {/* Recent leads */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-ink-800">Derniers leads</h2>
+          <h2 className="text-sm font-bold text-ink-800">
+            Dernières demandes
+          </h2>
           <Link
             href="/admin/leads"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-tracoli-500 transition-colors hover:text-tracoli-600"
           >
-            Voir tous
+            Voir toutes
             <ArrowRight className="size-3.5" />
           </Link>
         </div>
@@ -212,7 +217,7 @@ export default function AdminDashboard() {
           columns={columns}
           data={recentLeads}
           loading={loading}
-          emptyMessage="Aucun lead pour le moment."
+          emptyMessage="Aucune demande pour le moment."
           onRowClick={(row) => router.push(`/admin/leads/${row.id}`)}
         />
       </div>
