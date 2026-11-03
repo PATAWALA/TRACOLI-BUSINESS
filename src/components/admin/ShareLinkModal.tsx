@@ -68,7 +68,7 @@ export default function ShareLinkModal({ open, onClose }: ShareLinkModalProps) {
         className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="fixed inset-x-4 top-1/2 z-[201] mx-auto max-w-md -translate-y-1/2 rounded-2xl border border-ink-200 bg-white p-6 shadow-2xl sm:inset-x-auto sm:w-full">
+      <div className="fixed left-1/2 top-1/2 z-[201] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ink-200 bg-white p-6 shadow-2xl">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-base font-extrabold text-ink-900">
             Partager le lien
