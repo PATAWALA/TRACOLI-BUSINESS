@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Package, Settings } from "lucide-react";
+import { LayoutDashboard, Users, Handshake, Settings } from "lucide-react";
 
 const ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/leads", label: "Leads", icon: Users },
-  { href: "/admin/orders", label: "Commandes", icon: Package },
+  { href: "/admin", label: "Accueil", icon: LayoutDashboard },
+  { href: "/admin/leads", label: "Demandes", icon: Users },
+  { href: "/admin/partners", label: "Partenaires", icon: Handshake },
   { href: "/admin/settings", label: "Plus", icon: Settings },
 ] as const;
 

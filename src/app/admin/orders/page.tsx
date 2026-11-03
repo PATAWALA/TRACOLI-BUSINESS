@@ -410,7 +410,7 @@ export default function AdminOrdersPage() {
                         className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600 transition-colors hover:bg-blue-100"
                       >
                         <ExternalLink className="size-2.5" />
-                        Voir le lead
+                        Voir la demande
                       </Link>
                     )}
                   </div>

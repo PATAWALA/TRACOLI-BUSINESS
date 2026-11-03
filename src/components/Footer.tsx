@@ -205,19 +205,17 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col gap-4 border-t border-ink-200 pt-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[11.5px] text-ink-500">
-            © {year} {IDENTITY.legalName}. {FOOTER.legal}
-          </p>
-          <div className="flex items-center gap-4">
+            © {year} {IDENTITY.legalName}.{" "}
             <Link
               href="/admin/login"
-              className="text-[11px] text-ink-400 transition-colors hover:text-ink-600"
+              className="text-ink-500 transition-colors hover:text-ink-700"
             >
-              Admin
+              {FOOTER.legal}
             </Link>
-            <p className="text-[11.5px] text-ink-500">
-              {FOOTER.credit}
-            </p>
-          </div>
+          </p>
+          <p className="text-[11.5px] text-ink-500">
+            {FOOTER.credit}
+          </p>
         </div>
       </div>
     </footer>

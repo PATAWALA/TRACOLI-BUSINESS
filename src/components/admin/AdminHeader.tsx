@@ -18,8 +18,8 @@ import Dropdown from "@/components/admin/ui/Dropdown";
 import ShareLinkModal from "@/components/admin/ShareLinkModal";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/admin": "Dashboard",
-  "/admin/leads": "Gestion des Demandes",
+  "/admin": "Tableau de bord",
+  "/admin/leads": "Gestion des demandes",
   "/admin/partners": "Partenaires",
   "/admin/newsletter": "Newsletter",
   "/admin/settings": "Paramètres",
@@ -45,7 +45,7 @@ export default function AdminHeader({
 
   const title =
     PAGE_TITLES[pathname] ??
-    (pathname.startsWith("/admin/leads/") ? "Détail Lead" : "Admin");
+    (pathname.startsWith("/admin/leads/") ? "Détail demande" : "Gestion");
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -95,7 +95,7 @@ export default function AdminHeader({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un lead…"
+                placeholder="Rechercher une demande…"
                 className="w-full rounded-xl border border-ink-200 bg-ink-50/60 py-2 pr-4 pl-10 text-[13px] text-ink-900 transition-all placeholder:text-ink-400 focus:border-tracoli-500 focus:bg-white focus:ring-1 focus:ring-tracoli-500 focus:outline-none"
               />
             </div>

@@ -106,7 +106,7 @@ export default function LeadDetailPage({
         className="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 transition-colors hover:text-ink-900"
       >
         <ArrowLeft className="size-4" />
-        Retour aux leads
+        Retour aux demandes
       </button>
 
       <motion.div
@@ -261,7 +261,7 @@ export default function LeadDetailPage({
           onChange={(e) => setNotes(e.target.value)}
           rows={4}
           className="mt-3 w-full rounded-xl border border-ink-200 bg-ink-50/50 p-3 text-sm text-ink-900 focus:border-tracoli-500 focus:ring-1 focus:ring-tracoli-500 focus:outline-none"
-          placeholder="Ajouter des notes sur ce lead…"
+          placeholder="Ajouter des notes sur cette demande…"
         />
         <button
           onClick={saveNotes}

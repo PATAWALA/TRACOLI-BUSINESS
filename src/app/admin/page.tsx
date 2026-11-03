@@ -21,19 +21,19 @@ import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
 interface Stats {
-  totalLeads: number;
-  newLeads: number;
-  inProgress: number;
-  emails: number;
+  totalDemandes: number;
+  nouvelles: number;
+  enCours: number;
+  abonnes: number;
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
-    totalLeads: 0,
-    newLeads: 0,
-    inProgress: 0,
-    emails: 0,
+    totalDemandes: 0,
+    nouvelles: 0,
+    enCours: 0,
+    abonnes: 0,
   });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,10 +60,10 @@ export default function AdminDashboard() {
         ]);
 
       setStats({
-        totalLeads: leadsRes.count ?? 0,
-        newLeads: newRes.count ?? 0,
-        inProgress: inProgressRes.count ?? 0,
-        emails: emailsRes.count ?? 0,
+        totalDemandes: leadsRes.count ?? 0,
+        nouvelles: newRes.count ?? 0,
+        enCours: inProgressRes.count ?? 0,
+        abonnes: emailsRes.count ?? 0,
       });
       setRecentLeads((recentRes.data as Lead[]) ?? []);
       setLoading(false);
@@ -121,29 +121,29 @@ export default function AdminDashboard() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Total Demandes"
-          value={loading ? "—" : stats.totalLeads}
+          label="Total demandes"
+          value={loading ? "—" : stats.totalDemandes}
           icon={Users}
           color="bg-blue-50 text-blue-600"
           delay={0}
         />
         <StatCard
-          label="Nouvelles"
-          value={loading ? "—" : stats.newLeads}
+          label="Nouvelles demandes"
+          value={loading ? "—" : stats.nouvelles}
           icon={TrendingUp}
           color="bg-tracoli-50 text-tracoli-600"
           delay={0.05}
         />
         <StatCard
-          label="En cours"
-          value={loading ? "—" : stats.inProgress}
+          label="En cours de traitement"
+          value={loading ? "—" : stats.enCours}
           icon={Package}
           color="bg-emerald-50 text-emerald-600"
           delay={0.1}
         />
         <StatCard
-          label="Emails captés"
-          value={loading ? "—" : stats.emails}
+          label="Abonnés newsletter"
+          value={loading ? "—" : stats.abonnes}
           icon={Mail}
           color="bg-amber-50 text-amber-600"
           delay={0.15}
