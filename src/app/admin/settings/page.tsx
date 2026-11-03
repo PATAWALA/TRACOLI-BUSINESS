@@ -67,7 +67,7 @@ export default function AdminSettingsPage() {
           .select("role")
           .eq("id", session.user.id)
           .single();
-        setCurrentRole(userData?.role ?? "agent");
+        setCurrentRole(userData?.role ?? "admin");
       }
       loadMembers();
     }
