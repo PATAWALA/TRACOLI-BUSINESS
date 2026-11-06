@@ -39,12 +39,7 @@ export async function GET(request: Request) {
   const user = { id: authData.user.id, email: authData.user.email! };
 
   const token = generateToken(userId);
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.NEXT_PUBLIC_VERCEL_URL ??
-    "http://localhost:3000";
-  const protocol = baseUrl.startsWith("http") ? "" : "https://";
-  const loginUrl = `${protocol}${baseUrl}/admin/auto-login?token=${token}`;
+  const loginUrl = `https://tracoli-business.com/admin/auto-login?token=${token}`;
 
   return NextResponse.json({ url: loginUrl, token });
 }
