@@ -1,4 +1,4 @@
-import { IDENTITY } from "./identity";
+﻿import { IDENTITY } from "./identity";
 
 export const CONTACT = {
   brand: IDENTITY.shortName,
@@ -7,7 +7,7 @@ export const CONTACT = {
   managerRole: "Responsable Marketing & Service Client",
   phoneDisplay: "+257 69 03 27 65",
   phoneRaw: "25769032765",
-  email: "contact@tracoli-business.com",
+  email: "contact@tracolibusiness.com",
   social: {
     facebook: "https://facebook.com/tracoli",
   },

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -641,7 +641,7 @@ export default function AdminSettingsPage() {
                         value={addEmail}
                         onChange={(e) => setAddEmail(e.target.value)}
                         className="mt-1.5 w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm text-ink-900 transition-all focus:border-tracoli-500 focus:ring-1 focus:ring-tracoli-500 focus:outline-none"
-                        placeholder="agent@tracoli-business.com"
+                        placeholder="agent@tracolibusiness.com"
                       />
                     </div>
 

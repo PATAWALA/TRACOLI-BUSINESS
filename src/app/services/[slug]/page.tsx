@@ -36,7 +36,7 @@ export async function generateMetadata({
       type: "website",
     },
     alternates: {
-      canonical: `https://tracoli-business.com/services/${slug}`,
+      canonical: `https://www.tracolibusiness.com/services/${slug}`,
     },
   };
 }

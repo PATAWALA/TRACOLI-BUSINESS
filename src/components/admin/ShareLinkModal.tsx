@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { X, Copy, Check, ExternalLink } from "lucide-react";
 import { FaWhatsapp, FaTiktok, FaInstagram, FaFacebook } from "react-icons/fa";
 
-const PUBLIC_URL = "https://tracolibusiness.com/demande";
+const PUBLIC_URL = "https://www.tracolibusiness.com/demande";
 
 const SHARE_CHANNELS = [
   {

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Faire une demande — TRACOLI BUSINESS",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://tracoli-business.com/demande",
+    canonical: "https://www.tracolibusiness.com/demande",
   },
 };
 

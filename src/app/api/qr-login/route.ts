@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const user = { id: authData.user.id, email: authData.user.email! };
 
   const token = generateToken(userId);
-  const loginUrl = `https://tracoli-business.com/admin/auto-login?token=${token}`;
+  const loginUrl = `https://www.tracolibusiness.com/admin/auto-login?token=${token}`;
 
   return NextResponse.json({ url: loginUrl, token });
 }

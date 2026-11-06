@@ -71,12 +71,12 @@ export async function PATCH(
     }
 
     if (lead.email && lead.reference) {
-      const trackingUrl = `https://tracolibusiness.com/suivre?ref=${lead.reference}`;
+      const trackingUrl = `https://www.tracolibusiness.com/suivre?ref=${lead.reference}`;
 
       if (status === "confirme") {
         await resend.emails
           .send({
-            from: "TRACOLI Business <noreply@tracoli-business.com>",
+            from: "TRACOLI Business <noreply@tracolibusiness.com>",
             to: lead.email,
             subject: `Paiement confirmé — ${lead.reference}`,
             html: paymentConfirmedHtml(
@@ -89,7 +89,7 @@ export async function PATCH(
       } else {
         await resend.emails
           .send({
-            from: "TRACOLI Business <noreply@tracoli-business.com>",
+            from: "TRACOLI Business <noreply@tracolibusiness.com>",
             to: lead.email,
             subject: `Mise à jour — ${lead.reference}`,
             html: statusChangeHtml(lead.name, lead.reference, status),

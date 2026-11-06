@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -11,7 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const BASE_URL = "https://tracoli-business.com";
+const BASE_URL = "https://www.tracolibusiness.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -124,7 +124,7 @@ const jsonLd = {
     "Sourcing, expédition et coordination douanière sur le corridor Chine–Afrique. Fret aérien et maritime vers le Burundi, la RDC, l'Ouganda et le Kenya.",
   url: BASE_URL,
   telephone: "+257 69 03 27 65",
-  email: "contact@tracoli-business.com",
+  email: "contact@tracolibusiness.com",
   address: [
     {
       "@type": "PostalAddress",

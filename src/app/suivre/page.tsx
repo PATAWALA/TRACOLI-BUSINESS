@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import TrackingHero from "@/components/tracking/TrackingHero";
 import SmartTrackingWidget from "@/components/SmartTrackingWidget";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://tracoli-business.com/suivre",
+    canonical: "https://www.tracolibusiness.com/suivre",
   },
 };
 

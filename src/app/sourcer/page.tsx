@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Search } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://tracoli-business.com/sourcer",
+    canonical: "https://www.tracolibusiness.com/sourcer",
   },
 };
 

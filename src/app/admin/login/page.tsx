@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-xl border-2 border-ink-200 bg-white py-3 pr-4 pl-11 text-sm text-ink-900 transition-all focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/20 focus:outline-none"
-                placeholder="admin@tracoli-business.com"
+                placeholder="admin@tracolibusiness.com"
               />
             </div>
           </div>

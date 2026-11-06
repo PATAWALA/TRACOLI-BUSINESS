@@ -1,8 +1,8 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 import { RESOURCES } from "@/data/resources/items";
 import { SERVICE_DETAILS } from "@/data/services/details";
 
-const BASE_URL = "https://tracoli-business.com";
+const BASE_URL = "https://www.tracolibusiness.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

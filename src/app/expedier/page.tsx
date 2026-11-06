@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Plane } from "lucide-react";
 import PageHero from "@/components/layout/PageHero";
 import PageSection from "@/components/layout/PageSection";
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://tracoli-business.com/expedier",
+    canonical: "https://www.tracolibusiness.com/expedier",
   },
 };
 

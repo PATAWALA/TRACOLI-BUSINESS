@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Ressources — Guides & formations import Chine–Afrique",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://tracoli-business.com/ressources",
+    canonical: "https://www.tracolibusiness.com/ressources",
   },
 };
 
