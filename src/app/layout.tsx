@@ -65,6 +65,10 @@ export const metadata: Metadata = {
     telephone: false,
   },
 
+  alternates: {
+    canonical: BASE_URL,
+  },
+
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -73,12 +77,21 @@ export const metadata: Metadata = {
     title: "TRACOLI BUSINESS — Sourcing & Logistique Chine–Afrique",
     description:
       "Nous trouvons vos fournisseurs en Chine, sécurisons vos achats et organisons votre livraison jusqu'à destination.",
+    images: [
+      {
+        url: `${BASE_URL}/images/hero-delivery.jpeg`,
+        width: 1200,
+        height: 630,
+        alt: "TRACOLI BUSINESS — Sourcing & Logistique Chine–Afrique",
+      },
+    ],
   },
 
   twitter: {
     card: "summary_large_image",
     title: "TRACOLI BUSINESS — Sourcing & Logistique Chine–Afrique",
     description: "Votre sourcing Chine → Afrique, simplement.",
+    images: [`${BASE_URL}/images/hero-delivery.jpeg`],
   },
 
   robots: {

@@ -36,6 +36,9 @@ export async function generateMetadata({
       images: [{ url: resource.image }],
       type: "article",
     },
+    alternates: {
+      canonical: `https://tracoli-business.com/ressources/${slug}`,
+    },
   };
 }
 

@@ -13,6 +13,15 @@ export const metadata: Metadata = {
   title: "Sourcer un produit en Chine",
   description:
     "Trouvez le fournisseur idéal en Chine. Envoyez-nous une photo ou un lien et recevez une cotation sous 24h.",
+  openGraph: {
+    title: "Sourcer un produit en Chine — TRACOLI BUSINESS",
+    description:
+      "Trouvez le fournisseur idéal en Chine. Cotation sous 24h.",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://tracoli-business.com/sourcer",
+  },
 };
 
 export default function SourcingPage() {

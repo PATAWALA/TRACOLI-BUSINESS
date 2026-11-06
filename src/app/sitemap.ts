@@ -10,8 +10,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   /* Pages statiques */
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL,                          lastModified: now, changeFrequency: "weekly",  priority: 1.0 },
+    { url: `${BASE_URL}/sourcer`,             lastModified: now, changeFrequency: "weekly",  priority: 0.95 },
+    { url: `${BASE_URL}/expedier`,            lastModified: now, changeFrequency: "weekly",  priority: 0.95 },
+    { url: `${BASE_URL}/suivre`,              lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${BASE_URL}/demande`,             lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/a-propos`,            lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/ressources`,          lastModified: now, changeFrequency: "weekly",  priority: 0.9 },
+    { url: `${BASE_URL}/newsletter`,          lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   /* Pages services */

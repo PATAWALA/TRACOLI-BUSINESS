@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   title: "Expédier une marchandise",
   description:
     "Estimez votre fret aérien ou maritime de la Chine vers l'Afrique. Cotation immédiate, coordination douanière, livraison porte-à-porte.",
+  openGraph: {
+    title: "Expédier une marchandise — TRACOLI BUSINESS",
+    description:
+      "Fret aérien et maritime Chine–Afrique. Cotation immédiate, dédouanement inclus.",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://tracoli-business.com/expedier",
+  },
 };
 
 export default function ShippingPage() {
