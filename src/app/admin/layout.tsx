@@ -20,7 +20,11 @@ export default function AdminLayout({
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session && !pathname.startsWith("/admin/login")) {
+      if (
+        !session &&
+        !pathname.startsWith("/admin/login") &&
+        !pathname.startsWith("/admin/auto-login")
+      ) {
         router.replace("/admin/login");
       } else {
         setAuthenticated(!!session);
@@ -33,7 +37,10 @@ export default function AdminLayout({
     router.replace("/admin/login");
   }
 
-  if (pathname.startsWith("/admin/login")) {
+  if (
+    pathname.startsWith("/admin/login") ||
+    pathname.startsWith("/admin/auto-login")
+  ) {
     return (
       <div className="fixed inset-0 z-[100] bg-white">
         <style>{`body > header, body > footer, body > nav.mobile-bottom-nav, body > .mobile-bottom-nav { display: none !important; }`}</style>

@@ -12,7 +12,12 @@ import {
   Check,
   Lock,
   Mail,
+  QrCode,
+  Download,
+  RefreshCw,
+  Printer,
 } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import ConfirmModal from "@/components/admin/ui/ConfirmModal";
 import { supabase } from "@/lib/supabase/client";
@@ -46,6 +51,11 @@ export default function AdminSettingsPage() {
   // Delete confirm
   const [deleteTarget, setDeleteTarget] = useState<TeamMember | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // QR Code
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState("");
 
   // Password change
   const [showPasswordChange, setShowPasswordChange] = useState(false);
@@ -189,6 +199,85 @@ export default function AdminSettingsPage() {
     setChangingPassword(false);
   }
 
+  async function generateQrCode() {
+    if (!currentUserId) return;
+    setQrLoading(true);
+    setQrError("");
+
+    try {
+      const res = await fetch(`/api/qr-login?userId=${currentUserId}`);
+      if (!res.ok) {
+        const data = await res.json();
+        setQrError(data.error ?? "Erreur lors de la génération.");
+        setQrLoading(false);
+        return;
+      }
+      const { url } = await res.json();
+      setQrUrl(url);
+    } catch {
+      setQrError("Erreur réseau.");
+    }
+    setQrLoading(false);
+  }
+
+  function downloadQrCode() {
+    const canvas = document.querySelector<HTMLCanvasElement>("#qr-canvas canvas");
+    if (!canvas) return;
+
+    const padding = 32;
+    const titleHeight = 60;
+    const subtitleHeight = 24;
+    const totalWidth = canvas.width + padding * 2;
+    const totalHeight = canvas.height + padding * 2 + titleHeight + subtitleHeight + 16;
+
+    const offscreen = document.createElement("canvas");
+    offscreen.width = totalWidth;
+    offscreen.height = totalHeight;
+    const ctx = offscreen.getContext("2d")!;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+    ctx.fillStyle = "#1a1a2e";
+    ctx.font = "bold 22px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("TRACOLI Business", totalWidth / 2, padding + 26);
+
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "14px sans-serif";
+    ctx.fillText("Scannez pour vous connecter", totalWidth / 2, padding + 50);
+
+    ctx.drawImage(canvas, padding, padding + titleHeight + subtitleHeight);
+
+    const link = document.createElement("a");
+    link.download = "tracoli-qr-connexion.png";
+    link.href = offscreen.toDataURL("image/png");
+    link.click();
+  }
+
+  function printQrCode() {
+    const canvas = document.querySelector<HTMLCanvasElement>("#qr-canvas canvas");
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL("image/png");
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`
+      <html>
+        <head><title>QR Code — TRACOLI Business</title></head>
+        <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;font-family:sans-serif;">
+          <h1 style="font-size:24px;margin-bottom:4px;">TRACOLI Business</h1>
+          <p style="color:#6b7280;margin-bottom:24px;">Scannez pour vous connecter</p>
+          <img src="${dataUrl}" style="width:256px;height:256px;" />
+          <p style="color:#9ca3af;margin-top:24px;font-size:12px;">Imprimez et affichez ce QR code pour un accès rapide.</p>
+        </body>
+      </html>
+    `);
+    win.document.close();
+    win.onload = () => {
+      win.print();
+    };
+  }
+
   const isAdmin = currentRole === "admin";
 
   return (
@@ -300,6 +389,128 @@ export default function AdminSettingsPage() {
               </button>
             </div>
           </form>
+        )}
+      </motion.div>
+
+      {/* QR Code section */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.03 }}
+        className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-ink-800">
+            <QrCode className="size-4 text-tracoli-500" />
+            QR Code de connexion rapide
+          </h2>
+          {!qrUrl && (
+            <button
+              onClick={generateQrCode}
+              disabled={qrLoading}
+              className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-tracoli-600 disabled:opacity-60"
+            >
+              {qrLoading ? (
+                <RefreshCw className="size-3.5 animate-spin" />
+              ) : (
+                <QrCode className="size-3.5" />
+              )}
+              {qrLoading ? "Génération…" : "Générer mon QR Code"}
+            </button>
+          )}
+        </div>
+        <p className="mt-2 text-[13px] text-ink-500">
+          Générez un QR Code unique pour vous connecter instantanément.
+          Imprimez-le et scannez-le depuis n&apos;importe quel appareil.
+        </p>
+
+        {qrError && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {qrError}
+          </div>
+        )}
+
+        {qrUrl && (
+          <div className="mt-6">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+              <div
+                id="qr-canvas"
+                className="rounded-2xl border-2 border-ink-100 bg-white p-4"
+              >
+                <QRCodeCanvas
+                  value={qrUrl}
+                  size={200}
+                  level="H"
+                  includeMargin={false}
+                  bgColor="#ffffff"
+                  fgColor="#1a1a2e"
+                />
+              </div>
+
+              <div className="flex flex-1 flex-col gap-3">
+                <div className="rounded-xl border border-ink-100 bg-ink-50 p-4">
+                  <p className="text-xs font-bold text-ink-600">
+                    Comment ça marche ?
+                  </p>
+                  <ul className="mt-2 space-y-1.5 text-[12px] text-ink-500">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-tracoli-100 text-[10px] font-bold text-tracoli-600">
+                        1
+                      </span>
+                      Scannez le QR code avec votre téléphone
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-tracoli-100 text-[10px] font-bold text-tracoli-600">
+                        2
+                      </span>
+                      La connexion se fait automatiquement
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-tracoli-100 text-[10px] font-bold text-tracoli-600">
+                        3
+                      </span>
+                      Accédez directement à votre espace admin
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={downloadQrCode}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-ink-800 px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-ink-900"
+                  >
+                    <Download className="size-3.5" />
+                    Télécharger
+                  </button>
+                  <button
+                    onClick={printQrCode}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-xs font-bold text-ink-700 transition-all hover:bg-ink-50"
+                  >
+                    <Printer className="size-3.5" />
+                    Imprimer
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setQrUrl(null);
+                    generateQrCode();
+                  }}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-xs font-bold text-ink-700 transition-all hover:bg-ink-50"
+                >
+                  <RefreshCw className="size-3.5" />
+                  Regénérer
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+              <p className="text-[12px] font-medium text-amber-700">
+                ⚠ Ce QR code donne un accès direct à votre compte. Ne le
+                partagez qu&apos;avec des personnes de confiance.
+              </p>
+            </div>
+          </div>
         )}
       </motion.div>
 
