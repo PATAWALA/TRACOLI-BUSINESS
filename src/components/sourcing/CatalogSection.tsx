@@ -1,36 +1,107 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Filter, Package, X, ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Filter, Package, X } from "lucide-react";
 import { PRODUCT_CATEGORIES } from "@/data/products/categories";
-import { PRODUCTS } from "@/data/products/items";
+import { PRODUCTS as STATIC_PRODUCTS } from "@/data/products/items";
+import type { Product as StaticProduct } from "@/data/products/items";
 import ProductCard from "./ProductCard";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "moq-asc";
 
-export default function CatalogSection() {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
-  const [activeSubCategory, setActiveSubCategory] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortOption>("default");
-  const [showSubFilters, setShowSubFilters] = useState(false);
+interface DBProduct {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string;
+  price_min: number | null;
+  price_max: number | null;
+  currency: string;
+  moq: number | null;
+  origin: string;
+  image_url: string | null;
+}
 
-  const currentCategory = PRODUCT_CATEGORIES.find(
-    (c) => c.slug === activeCategory
-  );
+function mapDBProduct(p: DBProduct): StaticProduct {
+  const catMap: Record<string, string> = {
+    "Mode & Habillement": "mode",
+    "Électronique & Tech": "electronics",
+    "Maison & Cuisine": "maison",
+    "Beauté & Cosmétiques": "cosmetics",
+    "Machines & Industriel": "machinery",
+    "Auto & Moto": "auto",
+  };
+
+  const priceMin = p.price_min ?? 0;
+  const priceMax = p.price_max ?? 0;
+  const priceRange =
+    priceMin > 0 || priceMax > 0
+      ? `${priceMin} $ – ${priceMax} $ / pièce`
+      : "Sur devis";
+
+  return {
+    id: p.id,
+    slug: p.id,
+    name: p.name,
+    categorySlug: catMap[p.category] ?? "autre",
+    image: p.image_url ?? "",
+    imageAlt: p.name,
+    moq: p.moq ? `${p.moq} pcs` : "—",
+    priceRange,
+    priceMin,
+    priceMax,
+    currency: p.currency ?? "USD",
+    origin: p.origin ?? "Chine",
+    featured: false,
+    tags: p.description ? [p.description] : [],
+  };
+}
+
+export default function CatalogSection() {
+  const [dbProducts, setDbProducts] = useState<StaticProduct[] | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("default");
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => {
+        const items: DBProduct[] = data.products ?? [];
+        if (items.length > 0) {
+          setDbProducts(items.map(mapDBProduct));
+        } else {
+          setDbProducts(null);
+        }
+      })
+      .catch(() => setDbProducts(null));
+  }, []);
+
+  const allProducts = dbProducts ?? STATIC_PRODUCTS;
+  const fromDB = dbProducts !== null;
+
+  const categories = useMemo(() => {
+    if (!fromDB) return PRODUCT_CATEGORIES;
+    const cats = [...new Set(allProducts.map((p) => p.categorySlug))];
+    return cats.map((slug) => {
+      const found = PRODUCT_CATEGORIES.find((c) => c.slug === slug);
+      return {
+        id: slug,
+        slug,
+        label: found?.label ?? slug,
+        tagline: "",
+        image: "",
+        icon: "",
+        subCategories: [] as string[],
+        accent: "primary" as const,
+      };
+    });
+  }, [allProducts, fromDB]);
 
   const products = useMemo(() => {
     let list =
       activeCategory === "all"
-        ? PRODUCTS
-        : PRODUCTS.filter((p) => p.categorySlug === activeCategory);
-
-    if (activeSubCategory) {
-      list = list.filter((p) =>
-        p.tags.some((t) =>
-          t.toLowerCase().includes(activeSubCategory.toLowerCase())
-        )
-      );
-    }
+        ? allProducts
+        : allProducts.filter((p) => p.categorySlug === activeCategory);
 
     switch (sortBy) {
       case "price-asc":
@@ -40,26 +111,22 @@ export default function CatalogSection() {
         list = [...list].sort((a, b) => b.priceMax - a.priceMax);
         break;
       case "moq-asc":
-        list = [...list].sort((a, b) => parseInt(a.moq) - parseInt(b.moq));
+        list = [...list].sort(
+          (a, b) => parseInt(a.moq) - parseInt(b.moq),
+        );
         break;
       default:
         break;
     }
 
     return list;
-  }, [activeCategory, activeSubCategory, sortBy]);
+  }, [allProducts, activeCategory, sortBy]);
 
   const resetFilters = () => {
     setActiveCategory("all");
-    setActiveSubCategory(null);
-    setShowSubFilters(false);
   };
 
-  const handleCategoryChange = (slug: string) => {
-    setActiveCategory(slug);
-    setActiveSubCategory(null);
-    setShowSubFilters(slug !== "all");
-  };
+  const currentCategory = categories.find((c) => c.slug === activeCategory);
 
   return (
     <div>
@@ -72,7 +139,8 @@ export default function CatalogSection() {
           Produits souvent commandés par nos clients
         </h2>
         <p className="mt-2 max-w-2xl text-[14px] text-ink-500">
-          Ces exemples vous donnent une idée des prix et des quantités minimums. Vous cherchez autre chose ? Envoyez-nous votre besoin.
+          Ces exemples vous donnent une idée des prix et des quantités
+          minimums. Vous cherchez autre chose ? Envoyez-nous votre besoin.
         </p>
       </div>
 
@@ -80,7 +148,7 @@ export default function CatalogSection() {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => handleCategoryChange("all")}
+            onClick={() => setActiveCategory("all")}
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-bold transition-all active:scale-[0.98] ${
               activeCategory === "all"
                 ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)]"
@@ -96,20 +164,20 @@ export default function CatalogSection() {
                   : "bg-ink-100 text-ink-600"
               }`}
             >
-              {PRODUCTS.length}
+              {allProducts.length}
             </span>
           </button>
 
-          {PRODUCT_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const active = activeCategory === cat.slug;
-            const count = PRODUCTS.filter(
-              (p) => p.categorySlug === cat.slug
+            const count = allProducts.filter(
+              (p) => p.categorySlug === cat.slug,
             ).length;
             return (
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => handleCategoryChange(cat.slug)}
+                onClick={() => setActiveCategory(cat.slug)}
                 className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-bold transition-all active:scale-[0.98] ${
                   active
                     ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)]"
@@ -131,54 +199,6 @@ export default function CatalogSection() {
           })}
         </div>
       </div>
-
-      {currentCategory && showSubFilters && (
-        <div className="mb-4 rounded-2xl border border-ink-200 bg-white p-4">
-          <button
-            type="button"
-            onClick={() => setShowSubFilters((v) => !v)}
-            className="flex w-full items-center justify-between gap-3 text-left"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold tracking-wide text-ink-500 uppercase">
-                Sous-catégories
-              </span>
-              <span className="rounded-md bg-ink-100 px-1.5 py-0.5 text-[10px] font-bold text-ink-600">
-                {currentCategory.subCategories.length}
-              </span>
-            </div>
-            {showSubFilters ? (
-              <ChevronUp className="size-4 text-ink-400" />
-            ) : (
-              <ChevronDown className="size-4 text-ink-400" />
-            )}
-          </button>
-
-          {showSubFilters && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {currentCategory.subCategories.map((sub) => {
-                const active = activeSubCategory === sub;
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() =>
-                      setActiveSubCategory(active ? null : sub)
-                    }
-                    className={`rounded-full border px-3 py-1.5 text-[11.5px] font-semibold transition-all active:scale-[0.98] ${
-                      active
-                        ? "border-tracoli-500 bg-tracoli-50 text-tracoli-600"
-                        : "border-ink-200 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900"
-                    }`}
-                  >
-                    {sub}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-200 bg-white px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">
