@@ -26,18 +26,17 @@ export async function GET(request: Request) {
   }
 
   const supabase = createServerClient();
-  const { data: user } = await supabase
-    .from("users")
-    .select("id, email")
-    .eq("id", userId)
-    .single();
+  const { data: authData, error: authError } =
+    await supabase.auth.admin.getUserById(userId);
 
-  if (!user) {
+  if (authError || !authData?.user) {
     return NextResponse.json(
       { error: "Utilisateur introuvable." },
       { status: 404 },
     );
   }
+
+  const user = { id: authData.user.id, email: authData.user.email! };
 
   const token = generateToken(userId);
   const baseUrl =
@@ -67,18 +66,17 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServerClient();
-    const { data: user } = await supabase
-      .from("users")
-      .select("id, email")
-      .eq("id", userId)
-      .single();
+    const { data: authData, error: authError } =
+      await supabase.auth.admin.getUserById(userId);
 
-    if (!user) {
+    if (authError || !authData?.user) {
       return NextResponse.json(
         { error: "Utilisateur introuvable." },
         { status: 404 },
       );
     }
+
+    const user = { id: authData.user.id, email: authData.user.email! };
 
     const { data: linkData, error: linkError } =
       await supabase.auth.admin.generateLink({
