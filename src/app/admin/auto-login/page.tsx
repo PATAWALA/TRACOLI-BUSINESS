@@ -55,8 +55,8 @@ function AutoLoginContent() {
 
         const { error } = await supabase.auth.verifyOtp({
           email,
-          token_hash: otp,
-          type: "magiclink",
+          token: otp,
+          type: "email",
         });
 
         if (error) {

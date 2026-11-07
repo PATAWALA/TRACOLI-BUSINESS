@@ -86,10 +86,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const actionUrl = new URL(linkData.properties.action_link);
-    const otpToken = actionUrl.searchParams.get("token");
-
-    return NextResponse.json({ email: user.email, otp: otpToken });
+    return NextResponse.json({
+      email: user.email,
+      otp: linkData.properties.email_otp,
+    });
   } catch {
     return NextResponse.json(
       { error: "Erreur serveur inattendue." },
