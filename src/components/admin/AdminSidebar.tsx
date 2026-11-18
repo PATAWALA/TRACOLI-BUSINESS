@@ -16,10 +16,12 @@ import {
   ShoppingBag,
   Ship,
   CreditCard,
+  Package,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/admin/clients", label: "Clients & colis", icon: Package },
   { href: "/admin/leads", label: "Demandes", icon: Users },
   { href: "/admin/products", label: "Produits", icon: ShoppingBag },
   { href: "/admin/shipping", label: "Tarifs", icon: Ship },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -13,7 +13,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { supabase } from "@/lib/supabase/client";
+import ClientTrackingResult, {
+  type PublicClient,
+} from "@/components/tracking/ClientTrackingResult";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
 import type { LeadStatus } from "@/types/database.types";
@@ -120,33 +122,48 @@ export default function SmartTrackingWidget() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [lead, setLead] = useState<PublicLead | null>(null);
+  const [clientData, setClientData] = useState<PublicClient | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [ambiguous, setAmbiguous] = useState(false);
 
-  const onSearch = async (e: FormEvent) => {
-    e.preventDefault();
-    const ref = code.trim().toUpperCase();
+  const search = useCallback(async (raw: string) => {
+    const ref = raw.trim().toUpperCase();
     if (!ref) return;
 
     setLoading(true);
     setNotFound(false);
+    setAmbiguous(false);
     setLead(null);
+    setClientData(null);
 
-    const { data } = await supabase
-      .from("leads")
-      .select(
-        "reference, status, name, product_name, destination_city, created_at",
-      )
-      .eq("reference", ref)
-      .single();
+    try {
+      const res = await fetch(`/api/track?code=${encodeURIComponent(ref)}`);
+      const data = await res.json();
 
-    if (!data) {
+      if (data.type === "client") setClientData(data as PublicClient);
+      else if (data.type === "lead") setLead(data.lead as PublicLead);
+      else if (data.type === "ambiguous") setAmbiguous(true);
+      else setNotFound(true);
+    } catch {
       setNotFound(true);
-      setLoading(false);
-      return;
     }
-
-    setLead(data as PublicLead);
     setLoading(false);
+  }, []);
+
+  // Lien reçu par email/WhatsApp : /suivre?ref=TRC-2026-0001
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (!ref) return;
+    const t = setTimeout(() => {
+      setCode(ref);
+      search(ref);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const onSearch = (e: FormEvent) => {
+    e.preventDefault();
+    search(code);
   };
 
   const stages = lead ? buildTimeline(lead) : [];
@@ -174,7 +191,7 @@ export default function SmartTrackingWidget() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Entrez votre code (ex : TRC-2026-0001)"
+              placeholder="Code TRACOLI ou code Alibaba (ex : TRC-2026-0001)"
               className="w-full min-h-[56px] rounded-xl border-2 border-ink-200 bg-white py-4 pr-4 pl-12 text-base text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
             />
           </div>
@@ -229,7 +246,31 @@ export default function SmartTrackingWidget() {
             </motion.div>
           )}
 
-          {/* Result */}
+          {/* Plusieurs clients pour un même code externe */}
+          {ambiguous && (
+            <motion.div
+              key="ambiguous"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mx-auto mt-10 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center"
+            >
+              <AlertCircle className="mx-auto size-10 text-amber-500" />
+              <p className="mt-4 text-lg font-bold text-amber-800">
+                Ce code correspond à plusieurs colis
+              </p>
+              <p className="mt-2 text-base text-amber-700">
+                Entrez plutôt votre code TRACOLI (format TRC-2026-XXXX) ou
+                contactez-nous sur WhatsApp.
+              </p>
+            </motion.div>
+          )}
+
+          {/* Result : client avec ses colis */}
+          {clientData && (
+            <ClientTrackingResult key="client-result" data={clientData} />
+          )}
+
+          {/* Result : demande de sourcing */}
           {lead && (
             <motion.div
               key="result"
@@ -421,7 +462,7 @@ export default function SmartTrackingWidget() {
         </AnimatePresence>
 
         {/* Empty state */}
-        {!lead && !notFound && (
+        {!lead && !clientData && !notFound && !ambiguous && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

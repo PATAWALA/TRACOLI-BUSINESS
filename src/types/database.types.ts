@@ -134,6 +134,53 @@ export interface PaymentMethod {
   updated_at: string;
 }
 
+export type ParcelStatus =
+  | "en_agence"
+  | "expedie"
+  | "en_transit"
+  | "douane"
+  | "livre";
+
+export type ParcelMode = "maritime" | "aerien" | "a_preciser";
+
+export interface Client {
+  id: string;
+  code: string;
+  name: string;
+  city: string | null;
+  country: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  notes: string | null;
+  source: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Parcel {
+  id: string;
+  client_id: string;
+  matricule: string;
+  mode: ParcelMode;
+  status: ParcelStatus;
+  description: string | null;
+  external_code: string | null;
+  external_platform: string | null;
+  expected_ship_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ParcelEvent {
+  id: string;
+  parcel_id: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+}
+
+export type ClientWithParcels = Client & { parcels: Parcel[] };
+
 type TableDef<Row, Insert = Partial<Row>, Update = Partial<Row>> = {
   Row: Row;
   Insert: Insert;
@@ -152,6 +199,9 @@ export interface Database {
       products: TableDef<Product>;
       shipping_rates: TableDef<ShippingRate>;
       payment_methods: TableDef<PaymentMethod>;
+      clients: TableDef<Client>;
+      parcels: TableDef<Parcel>;
+      parcel_events: TableDef<ParcelEvent>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
