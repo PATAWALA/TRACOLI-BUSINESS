@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Package,
   Plus,
@@ -203,28 +202,11 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* New order modal */}
-      <AnimatePresence>
+      <>
         {showNew && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={() => setShowNew(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm anim-in" onClick={() => setShowNew(false)} />
+            <div className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
               <button
                 onClick={() => setShowNew(false)}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -346,10 +328,10 @@ export default function AdminOrdersPage() {
                   {creating ? "Création…" : "Créer la commande"}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Orders list */}
       {loading ? (
@@ -380,13 +362,7 @@ export default function AdminOrdersPage() {
       ) : (
         <div className="space-y-4">
           {filtered.map((order, i) => (
-            <motion.div
-              key={order.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-            >
+            <div key={order.id} className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm anim-in">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -460,7 +436,7 @@ export default function AdminOrdersPage() {
                   </button>
                 ))}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

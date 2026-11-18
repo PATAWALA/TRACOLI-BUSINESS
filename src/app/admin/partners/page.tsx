@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Handshake, Plus, MapPin, Mail, Phone, X } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import { supabase } from "@/lib/supabase/client";
@@ -70,12 +69,7 @@ export default function AdminPartnersPage() {
       </div>
 
       {showForm && (
-        <motion.form
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleAdd}
-          className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
-        >
+        <form onSubmit={handleAdd} className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm anim-in">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="text-[11px] font-bold tracking-wider text-ink-400 uppercase">Nom *</label>
@@ -136,7 +130,7 @@ export default function AdminPartnersPage() {
           >
             {saving ? "Enregistrement…" : "Ajouter le partenaire"}
           </button>
-        </motion.form>
+        </form>
       )}
 
       {loading ? (
@@ -152,13 +146,7 @@ export default function AdminPartnersPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {partners.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
-            >
+            <div key={p.id} className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md anim-in">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-bold text-ink-900">{p.name}</p>
@@ -195,7 +183,7 @@ export default function AdminPartnersPage() {
                   {p.notes}
                 </p>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

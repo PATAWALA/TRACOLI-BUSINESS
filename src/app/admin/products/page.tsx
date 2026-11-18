@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Package,
   Plus,
@@ -239,28 +238,11 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Add modal */}
-      <AnimatePresence>
+      <>
         {showAdd && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={closeModal}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm anim-in" onClick={closeModal} />
+            <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -473,10 +455,10 @@ export default function AdminProductsPage() {
                       : "Ajouter au catalogue"}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Products grid */}
       {loading ? (
@@ -504,13 +486,7 @@ export default function AdminProductsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.map((product, i) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="group relative overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-sm transition-all hover:shadow-md"
-            >
+            <div key={product.id} className="group relative overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-sm transition-all hover:shadow-md anim-in">
               <div className="aspect-square bg-ink-100">
                 {product.image_url ? (
                   <img
@@ -557,7 +533,7 @@ export default function AdminProductsPage() {
                   <Trash2 className="size-3.5" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
@@ -79,12 +78,7 @@ function AutoLoginContent() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-tracoli-50/30 to-white px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-sm text-center"
-      >
+      <div className="w-full max-w-sm text-center anim-in">
         <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-white shadow-lg border border-ink-100">
           {status === "loading" && (
             <Loader2 className="size-7 text-tracoli-500 animate-spin" />
@@ -113,7 +107,7 @@ function AutoLoginContent() {
             Connexion manuelle
           </button>
         )}
-      </motion.div>
+      </div>
     </main>
   );
 }

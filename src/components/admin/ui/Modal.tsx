@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 interface ModalProps {
@@ -32,28 +31,13 @@ export default function Modal({
   }, [open, onClose]);
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
         <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center sm:p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-ink-900/50 backdrop-blur-sm"
-          />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label={title}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.2 }}
-            className={`relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl ${
+          <div onClick={onClose} className="absolute inset-0 bg-ink-900/50 backdrop-blur-sm anim-in" />
+          <div role="dialog" aria-modal="true" aria-label={title} className={`${`relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl ${
               wide ? "sm:max-w-2xl" : "sm:max-w-lg"
-            }`}
-          >
+            }`} anim-in`}>
             <div className="flex items-start justify-between gap-4 border-b border-ink-100 px-5 py-4 sm:px-6">
               <div className="min-w-0">
                 <h2 className="text-base font-extrabold text-ink-900 sm:text-lg">{title}</h2>
@@ -75,9 +59,9 @@ export default function Modal({
                 {footer}
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

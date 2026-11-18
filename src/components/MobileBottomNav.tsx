@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   Home,
   Search,
@@ -75,12 +74,7 @@ export default function MobileBottomNav() {
                 className="group relative z-10 flex min-h-[60px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 transition-transform active:scale-[0.94]"
               >
                 {active && (
-                  <motion.span
-                    layoutId="bottomNavActive"
-                    className="absolute inset-x-1 inset-y-1 -z-10 rounded-xl bg-tracoli-50"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    aria-hidden
-                  />
+                  <span className="absolute inset-x-1 inset-y-1 -z-10 rounded-xl bg-tracoli-50" aria-hidden />
                 )}
 
                 <span

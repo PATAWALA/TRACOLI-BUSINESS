@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Package,
@@ -214,16 +213,10 @@ export default function SmartTrackingWidget() {
           </button>
         </form>
 
-        <AnimatePresence mode="wait">
+        <>
           {/* Not found */}
           {notFound && (
-            <motion.div
-              key="not-found"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mx-auto mt-10 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center"
-            >
+            <div key="not-found" className="mx-auto mt-10 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center anim-in">
               <AlertCircle className="mx-auto size-10 text-red-400" />
               <p className="mt-4 text-lg font-bold text-red-800">
                 Référence introuvable
@@ -243,17 +236,12 @@ export default function SmartTrackingWidget() {
                 <FaWhatsapp className="size-5" />
                 Contacter le support
               </a>
-            </motion.div>
+            </div>
           )}
 
           {/* Plusieurs clients pour un même code externe */}
           {ambiguous && (
-            <motion.div
-              key="ambiguous"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-auto mt-10 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center"
-            >
+            <div key="ambiguous" className="mx-auto mt-10 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center anim-in">
               <AlertCircle className="mx-auto size-10 text-amber-500" />
               <p className="mt-4 text-lg font-bold text-amber-800">
                 Ce code correspond à plusieurs colis
@@ -262,7 +250,7 @@ export default function SmartTrackingWidget() {
                 Entrez plutôt votre code TRACOLI (format TRC-2026-XXXX) ou
                 contactez-nous sur WhatsApp.
               </p>
-            </motion.div>
+            </div>
           )}
 
           {/* Result : client avec ses colis */}
@@ -272,14 +260,7 @@ export default function SmartTrackingWidget() {
 
           {/* Result : demande de sourcing */}
           {lead && (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-10 overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-card-lg"
-            >
+            <div key="result" className="mt-10 overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-card-lg anim-in">
               {/* Header */}
               <div className="border-b border-ink-200 bg-gradient-to-r from-white to-ink-50 px-6 py-6 sm:px-8">
                 <div className="flex flex-wrap items-start justify-between gap-4">
@@ -335,12 +316,7 @@ export default function SmartTrackingWidget() {
                     </span>
                   </div>
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-100">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="h-full rounded-full bg-gradient-to-r from-tracoli-500 to-emerald-500"
-                    />
+                    <div className="h-full rounded-full bg-gradient-to-r from-tracoli-500 to-emerald-500 anim-in" />
                   </div>
                   <p className="mt-1.5 text-sm text-ink-400">
                     Étape {doneCount + (activeStage ? 1 : 0)} sur{" "}
@@ -457,18 +433,13 @@ export default function SmartTrackingWidget() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
 
         {/* Empty state */}
         {!lead && !clientData && !notFound && !ambiguous && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mx-auto mt-12 max-w-xl"
-          >
+          <div className="mx-auto mt-12 max-w-xl anim-in">
             <div className="rounded-2xl border border-dashed border-ink-300 bg-ink-50/60 p-8 text-center">
               <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-white text-ink-500 shadow-sm">
                 <Package className="size-6" />
@@ -533,7 +504,7 @@ export default function SmartTrackingWidget() {
                 <ArrowRight className="size-4" />
               </a>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
     </section>

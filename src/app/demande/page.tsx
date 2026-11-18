@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -202,12 +201,7 @@ export default function DemandePage() {
   if (result) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-tracoli-50/30 to-white px-5 py-16">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-lg text-center"
-        >
+        <div className="w-full max-w-lg text-center anim-in">
           <div className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-100">
             <CheckCircle className="size-10 text-emerald-600" />
           </div>
@@ -306,7 +300,7 @@ export default function DemandePage() {
               <ArrowRight className="size-4" />
             </Link>
           </div>
-        </motion.div>
+        </div>
       </main>
     );
   }
@@ -340,11 +334,7 @@ export default function DemandePage() {
 
       {/* Hero */}
       <div className="mx-auto max-w-3xl px-5 pt-6 pb-2 text-center sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="anim-in">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-sm font-bold tracking-wider text-tracoli-500 uppercase backdrop-blur-sm">
             <Send className="size-4" />
             Projet d&apos;import
@@ -358,7 +348,7 @@ export default function DemandePage() {
             <strong className="text-ink-700">WhatsApp</strong> sont
             obligatoires.
           </p>
-        </motion.div>
+        </div>
 
         {/* Trust badges */}
         <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
@@ -380,13 +370,7 @@ export default function DemandePage() {
 
       {/* Form */}
       <div className="mx-auto max-w-3xl px-5 pb-10 pt-8 sm:px-8">
-        <motion.form
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          onSubmit={handleSubmit}
-          className="space-y-8"
-        >
+        <form onSubmit={handleSubmit} className="space-y-8 anim-in">
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-base text-red-700">
               {error}
@@ -677,15 +661,9 @@ export default function DemandePage() {
           </div>
 
           {/* Submit */}
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-2xl bg-tracoli-500 py-5 text-lg font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 hover:shadow-lg disabled:opacity-60"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded-2xl bg-tracoli-500 py-5 text-lg font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 hover:shadow-lg disabled:opacity-60 transition-transform hover:scale-[1.02] active:scale-[0.97]">
             {loading ? "Envoi en cours…" : "Soumettre mon projet"}
-          </motion.button>
+          </button>
 
           <p className="text-center text-base text-ink-400">
             Ou contactez-nous directement sur{" "}
@@ -700,7 +678,7 @@ export default function DemandePage() {
               WhatsApp
             </a>
           </p>
-        </motion.form>
+        </form>
       </div>
 
       {/* ─── Newsletter section ─── */}
@@ -722,14 +700,10 @@ export default function DemandePage() {
           </p>
 
           {nlDone ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-emerald-50 px-6 py-4 text-base font-semibold text-emerald-700"
-            >
+            <div className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-emerald-50 px-6 py-4 text-base font-semibold text-emerald-700 anim-in">
               <CheckCircle className="size-5" />
               Inscription confirmée !
-            </motion.div>
+            </div>
           ) : (
             <form
               onSubmit={handleNewsletter}

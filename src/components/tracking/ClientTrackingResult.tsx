@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Check, MapPin, Package, Plane, Ship } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { CONTACT } from "@/data/config/contact";
@@ -51,7 +50,7 @@ function ParcelCard({ p, open }: { p: PublicParcel; open: boolean }) {
 
       <div className="border-t border-ink-100 p-4 sm:p-5">
         <div className="h-2 overflow-hidden rounded-full bg-ink-100">
-          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} className="h-full rounded-full bg-gradient-to-r from-tracoli-500 to-emerald-500" />
+          <div style={{ width: `${pct}%` }} className="h-full rounded-full bg-gradient-to-r from-tracoli-500 to-emerald-500 transition-[width] duration-700" />
         </div>
         <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-600">
           <MapPin className="size-4 text-tracoli-500" />
@@ -97,11 +96,7 @@ export default function ClientTrackingResult({ data }: { data: PublicClient }) {
   const inAgency = parcels.filter((p) => p.status === "en_agence").length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-10 space-y-5"
-    >
+    <div className="mt-10 space-y-5 anim-in">
       <div className="rounded-3xl border border-ink-200 bg-gradient-to-r from-white to-ink-50 p-6 shadow-card-lg sm:p-8">
         <p className="text-xs font-bold tracking-widest text-ink-400 uppercase">Code de suivi</p>
         <p className="mt-1 font-mono text-2xl font-extrabold text-ink-900">{client.code}</p>
@@ -141,6 +136,6 @@ export default function ClientTrackingResult({ data }: { data: PublicClient }) {
       >
         <FaWhatsapp className="size-5" /> Une question ? Écrire sur WhatsApp
       </a>
-    </motion.div>
+    </div>
   );
 }

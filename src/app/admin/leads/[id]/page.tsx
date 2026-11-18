@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   User,
@@ -133,14 +132,9 @@ export default function LeadDetailPage({
       </button>
 
       {/* Confirmation banner */}
-      <AnimatePresence>
+      <>
         {confirmBanner && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5"
-          >
+          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 anim-in">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-100">
               <ShieldCheck className="size-5 text-emerald-600" />
             </div>
@@ -165,16 +159,12 @@ export default function LeadDetailPage({
             >
               {copiedRef ? "Copié !" : "Copier le code"}
             </button>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Lead info card */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
-      >
+      <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm anim-in">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">Référence</p>
@@ -304,7 +294,7 @@ export default function LeadDetailPage({
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Payment proof */}
       <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">

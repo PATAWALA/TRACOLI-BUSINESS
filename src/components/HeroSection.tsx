@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ArrowRight, Search, Plane, MapPin } from "lucide-react";
 import { HERO, IDENTITY, STATS, CONTACT } from "@/data/content";
 
@@ -34,19 +33,19 @@ export default function HeroSection() {
       <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.35]" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <motion.span initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-[11px] font-semibold text-ink-700 shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-[11px] font-semibold text-ink-700 shadow-sm anim-in">
             <span className="size-1.5 rounded-full bg-tracoli-500" />
             {HERO.eyebrow}
-          </motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.08 }} className="mt-6 text-[2rem] leading-[1.1] font-extrabold tracking-tight text-ink-900 text-balance sm:text-5xl lg:text-[3.25rem]">
+          </span>
+          <h1 className="mt-6 text-[2rem] leading-[1.1] font-extrabold tracking-tight text-ink-900 text-balance sm:text-5xl lg:text-[3.25rem] anim-in">
             {HERO.title}
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.16 }} className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-ink-500 sm:text-base">
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-ink-500 sm:text-base anim-in">
             {HERO.subtitle}
-          </motion.p>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.24 }} className="mx-auto mt-6 max-w-xl text-[13px] font-semibold tracking-wide text-tracoli-500">
+          </p>
+          <p className="mx-auto mt-6 max-w-xl text-[13px] font-semibold tracking-wide text-tracoli-500 anim-in">
             {IDENTITY.motto}
-          </motion.p>
+          </p>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
@@ -55,7 +54,7 @@ export default function HeroSection() {
             const isPrimary = i === 0;
             const isDark = i === 1;
             return (
-              <motion.a key={action.title} href={QUICK_ACTION_ANCHORS[i]} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.3 + i * 0.08 }} className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-300 active:scale-[0.985] ${isPrimary ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600" : isDark ? "border-ink-900 bg-ink-900 text-white shadow-card-lg hover:bg-ink-800" : "border-ink-200 bg-white text-ink-900 shadow-card hover:border-ink-300 hover:shadow-card-lg"}`}>
+              <a key={action.title} href={QUICK_ACTION_ANCHORS[i]} className={`${`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-300 active:scale-[0.985] ${isPrimary ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)] hover:bg-tracoli-600" : isDark ? "border-ink-900 bg-ink-900 text-white shadow-card-lg hover:bg-ink-800" : "border-ink-200 bg-white text-ink-900 shadow-card hover:border-ink-300 hover:shadow-card-lg"}`} anim-in`}>
                 <div className="flex items-start justify-between">
                   <span className={`grid size-12 place-items-center rounded-xl ${isPrimary ? "bg-white/15 text-white" : isDark ? "bg-white/10 text-white" : "bg-tracoli-50 text-tracoli-500"}`}>
                     <Icon className="size-5" />
@@ -70,12 +69,12 @@ export default function HeroSection() {
                   {action.cta}
                   <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
                 </span>
-              </motion.a>
+              </a>
             );
           })}
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.65 }} className="mt-14 grid grid-cols-1 overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-card sm:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-card sm:grid-cols-3 anim-in">
           {STATS.map((s, i) => (
             <div key={s.label} className={`border-ink-200 px-6 py-6 text-center sm:text-left ${i < STATS.length - 1 ? "border-b sm:border-b-0 sm:border-r" : ""}`}>
               <p className="text-2xl font-extrabold tracking-tight text-tracoli-500">{s.value}</p>
@@ -83,7 +82,7 @@ export default function HeroSection() {
               <p className="mt-0.5 text-[11.5px] text-ink-500">{s.sublabel}</p>
             </div>
           ))}
-        </motion.div>
+        </div>
 
         <p className="mt-6 text-center text-[12px] text-ink-400">
           Contact direct · {CONTACT.manager} · {CONTACT.phoneDisplay}

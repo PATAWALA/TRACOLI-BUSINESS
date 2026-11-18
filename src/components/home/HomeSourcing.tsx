@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { ArrowRight, Package } from "lucide-react";
 
 export default function HomeSourcing() {
@@ -10,28 +7,17 @@ export default function HomeSourcing() {
     <section className="border-t border-tracoli-100/50 bg-gradient-to-b from-white via-tracoli-50/20 to-white py-20 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7 }}
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl"
-          >
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl reveal-l">
             <Image
-              src="/images/warehouse.jpeg"
+              src="/images/warehouse.webp"
               alt="Entrepôt logistique TRACOLI"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
               className="object-contain mix-blend-multiply"
             />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-          >
+          <div className="reveal-r">
             <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-xs font-bold tracking-wider text-tracoli-500 uppercase shadow-sm backdrop-blur-sm">
               <Package className="size-3.5" />
               Sourcing
@@ -47,7 +33,7 @@ export default function HomeSourcing() {
               pour vous.
             </p>
 
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">
+            <div className="mt-8 inline-block transition-transform hover:scale-[1.02] active:scale-[0.98]">
               <Link
                 href="/sourcer"
                 className="group inline-flex items-center gap-2.5 rounded-2xl bg-tracoli-500 px-7 py-4 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all duration-300 hover:bg-tracoli-600 hover:shadow-lg"
@@ -55,8 +41,8 @@ export default function HomeSourcing() {
                 Sourcer un produit
                 <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

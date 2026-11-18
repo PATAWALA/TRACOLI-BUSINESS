@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Mail, Download, Trash2, RefreshCw } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import ConfirmModal from "@/components/admin/ui/ConfirmModal";
@@ -128,13 +127,7 @@ export default function AdminNewsletterPage() {
             </thead>
             <tbody>
               {emails.map((email, i) => (
-                <motion.tr
-                  key={email.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.02 }}
-                  className="border-b border-ink-100 last:border-0 hover:bg-ink-50/50"
-                >
+                <tr key={email.id} className="border-b border-ink-100 last:border-0 hover:bg-ink-50/50 anim-in">
                   <td className="px-5 py-3.5 text-[13px] font-semibold text-ink-900">
                     {email.email}
                   </td>
@@ -152,7 +145,7 @@ export default function AdminNewsletterPage() {
                       <Trash2 className="size-4" />
                     </button>
                   </td>
-                </motion.tr>
+                </tr>
               ))}
             </tbody>
           </table>

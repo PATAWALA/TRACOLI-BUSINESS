@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   CreditCard,
   Plus,
@@ -153,24 +152,11 @@ export default function AdminPaymentsPage() {
       </div>
 
       {/* Form modal */}
-      <AnimatePresence>
+      <>
         {showForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={() => setShowForm(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm" onClick={() => setShowForm(false)} />
+            <div className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
               <button
                 onClick={() => setShowForm(false)}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -250,10 +236,10 @@ export default function AdminPaymentsPage() {
                   {saving ? "Enregistrement…" : "Enregistrer"}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Methods list */}
       {loading ? (
@@ -277,13 +263,7 @@ export default function AdminPaymentsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {methods.map((m, i) => (
-            <motion.div
-              key={m.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="relative rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-            >
+            <div key={m.id} className="relative rounded-2xl border border-ink-200 bg-white p-5 shadow-sm anim-in">
               <div className="flex items-start gap-3">
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
                   <Phone className="size-5" />
@@ -314,7 +294,7 @@ export default function AdminPaymentsPage() {
                   <Trash2 className="size-3.5" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

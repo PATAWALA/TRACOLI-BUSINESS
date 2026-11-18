@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
@@ -35,12 +34,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-tracoli-50/30 to-white px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-sm"
-      >
+      <div className="w-full max-w-sm anim-in">
         <div className="text-center">
           <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-tracoli-500 shadow-lg">
             <Lock className="size-6 text-white" />
@@ -101,17 +95,11 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-tracoli-500 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 disabled:opacity-60"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded-xl bg-tracoli-500 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 disabled:opacity-60 transition-transform hover:scale-[1.02] active:scale-[0.97]">
             {loading ? "Connexion…" : "Se connecter"}
-          </motion.button>
+          </button>
         </form>
-      </motion.div>
+      </div>
     </main>
   );
 }

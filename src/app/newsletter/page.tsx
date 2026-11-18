@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -76,11 +75,7 @@ export default function NewsletterPage() {
 
       {/* Hero */}
       <div className="mx-auto max-w-2xl px-5 pt-12 pb-6 text-center sm:px-8 lg:pt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="anim-in">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-sm font-bold tracking-wider text-tracoli-500 uppercase backdrop-blur-sm">
             <Mail className="size-4" />
             Newsletter gratuite
@@ -97,17 +92,12 @@ export default function NewsletterPage() {
             nos offres de groupage, nos trouvailles fournisseurs et nos conseils
             pour importer malin depuis la Chine.
           </p>
-        </motion.div>
+        </div>
       </div>
 
       {/* Form card */}
       <div className="mx-auto max-w-lg px-5 sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="rounded-3xl border border-ink-200 bg-white p-8 shadow-card-lg sm:p-10"
-        >
+        <div className="rounded-3xl border border-ink-200 bg-white p-8 shadow-card-lg sm:p-10 anim-in">
           {success ? (
             <div className="text-center">
               <div className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-100">
@@ -169,15 +159,9 @@ export default function NewsletterPage() {
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={loading}
-                  className="w-full min-h-[56px] rounded-xl bg-tracoli-500 py-4 text-base font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 hover:shadow-lg disabled:opacity-60"
-                >
+                <button type="submit" disabled={loading} className="w-full min-h-[56px] rounded-xl bg-tracoli-500 py-4 text-base font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 hover:shadow-lg disabled:opacity-60 transition-transform hover:scale-[1.02] active:scale-[0.97]">
                   {loading ? "Inscription en cours…" : "S'inscrire gratuitement"}
-                </motion.button>
+                </button>
 
                 <p className="text-center text-sm text-ink-400">
                   Gratuit &middot; Pas de spam &middot; Désinscription en un clic
@@ -185,16 +169,12 @@ export default function NewsletterPage() {
               </form>
             </>
           )}
-        </motion.div>
+        </div>
       </div>
 
       {/* Benefits */}
       <div className="mx-auto max-w-3xl px-5 pt-16 pb-10 sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
+        <div className="anim-in">
           <h3 className="text-center text-xs font-bold tracking-widest text-ink-400 uppercase">
             Ce que vous recevrez
           </h3>
@@ -243,7 +223,7 @@ export default function NewsletterPage() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Footer */}

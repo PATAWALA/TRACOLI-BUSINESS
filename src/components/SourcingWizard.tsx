@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -166,14 +165,8 @@ export default function SourcingWizard() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
+        <>
+          <div key={step} className="anim-in">
             {step === 1 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
@@ -346,8 +339,8 @@ export default function SourcingWizard() {
                 </div>
               </div>
             )}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </>
 
         <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink-200 pt-6">
           <button

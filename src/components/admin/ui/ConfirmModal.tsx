@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
 
 interface ConfirmModalProps {
@@ -52,31 +51,14 @@ export default function ConfirmModal({
         };
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-            onClick={onCancel}
-          />
+          <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm anim-in" onClick={onCancel} />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-sm rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-          >
+          <div className="relative w-full max-w-sm rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
             <button
               onClick={onCancel}
               className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -114,9 +96,9 @@ export default function ConfirmModal({
                 {loading ? "..." : confirmLabel}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

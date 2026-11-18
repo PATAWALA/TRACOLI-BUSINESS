@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -145,14 +144,8 @@ export default function LogisticsWizard() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
+        <>
+          <div key={step} className="anim-in">
             {step === 1 && (
               <div>
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
@@ -375,11 +368,7 @@ export default function LogisticsWizard() {
                   </div>
 
                   {qty >= rate.minQty && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="rounded-2xl border border-tracoli-200 bg-tracoli-50 p-5"
-                    >
+                    <div className="rounded-2xl border border-tracoli-200 bg-tracoli-50 p-5 anim-in">
                       <p className="text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
                         Estimation instantanée
                       </p>
@@ -391,13 +380,13 @@ export default function LogisticsWizard() {
                       <p className="mt-1 text-[12px] text-ink-500">
                         {qty} {rate.unit} · {destination.city}
                       </p>
-                    </motion.div>
+                    </div>
                   )}
                 </div>
               </div>
             )}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </>
 
         <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink-200 pt-6">
           <button

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
   Copy,
@@ -218,28 +217,11 @@ export default function AdminLeadsPage() {
   return (
     <div className="space-y-6">
       {/* New lead modal */}
-      <AnimatePresence>
+      <>
         {showNew && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={closeModal}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm anim-in" onClick={closeModal} />
+            <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8 anim-in">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -439,10 +421,10 @@ export default function AdminLeadsPage() {
                   </form>
                 </>
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader

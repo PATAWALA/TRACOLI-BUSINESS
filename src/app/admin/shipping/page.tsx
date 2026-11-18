@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Ship,
   Plane,
@@ -168,24 +167,11 @@ export default function AdminShippingPage() {
       </div>
 
       {/* Form modal */}
-      <AnimatePresence>
+      <>
         {showForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={() => setShowForm(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm" onClick={() => setShowForm(false)} />
+            <div className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
               <button
                 onClick={() => setShowForm(false)}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -310,10 +296,10 @@ export default function AdminShippingPage() {
                       : "Ajouter le tarif"}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {loading ? (
         <div className="flex items-center justify-center rounded-2xl border border-ink-200 bg-white py-16">

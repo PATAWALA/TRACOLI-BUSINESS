@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 
 export interface Column<T> {
   key: string;
@@ -61,24 +60,17 @@ export default function DataTable<T>({
               </tr>
             ) : (
               data.map((row, i) => (
-                <motion.tr
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.02 }}
-                  onClick={() => onRowClick?.(row)}
-                  className={`border-b border-ink-100 transition-colors last:border-0 ${
+                <tr key={i} onClick={() => onRowClick?.(row)} className={`${`border-b border-ink-100 transition-colors last:border-0 ${
                     onRowClick
                       ? "cursor-pointer hover:bg-tracoli-50/40"
                       : "hover:bg-ink-50/50"
-                  }`}
-                >
+                  }`} anim-in`}>
                   {columns.map((col) => (
                     <td key={col.key} className="px-5 py-3.5">
                       {col.render(row)}
                     </td>
                   ))}
-                </motion.tr>
+                </tr>
               ))
             )}
           </tbody>
@@ -93,16 +85,9 @@ export default function DataTable<T>({
           </div>
         ) : (
           data.map((row, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              onClick={() => onRowClick?.(row)}
-              className={`rounded-2xl border border-ink-200 bg-white p-4 shadow-sm ${
+            <div key={i} onClick={() => onRowClick?.(row)} className={`${`rounded-2xl border border-ink-200 bg-white p-4 shadow-sm ${
                 onRowClick ? "cursor-pointer active:bg-ink-50" : ""
-              }`}
-            >
+              }`} anim-in`}>
               <div className="space-y-2">
                 {columns
                   .filter((col) => !col.hideOnMobile)
@@ -118,7 +103,7 @@ export default function DataTable<T>({
                     </div>
                   ))}
               </div>
-            </motion.div>
+            </div>
           ))
         )}
       </div>

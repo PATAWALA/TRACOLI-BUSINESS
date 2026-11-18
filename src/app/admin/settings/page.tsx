@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus,
   Shield,
@@ -304,11 +303,7 @@ export default function AdminSettingsPage() {
       />
 
       {/* Password change section */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
-      >
+      <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm anim-in">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-bold text-ink-800">
             <Lock className="size-4 text-tracoli-500" />
@@ -390,15 +385,10 @@ export default function AdminSettingsPage() {
             </div>
           </form>
         )}
-      </motion.div>
+      </div>
 
       {/* QR Code section */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.03 }}
-        className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
-      >
+      <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm anim-in">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-bold text-ink-800">
             <QrCode className="size-4 text-tracoli-500" />
@@ -512,16 +502,11 @@ export default function AdminSettingsPage() {
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Add account - admin only */}
       {isAdmin && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm"
-        >
+        <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm anim-in">
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-bold text-ink-800">
               <UserPlus className="size-4 text-tracoli-500" />
@@ -543,32 +528,15 @@ export default function AdminSettingsPage() {
             gérer les demandes mais ne peuvent pas ajouter d&apos;autres
             comptes.
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Add modal */}
-      <AnimatePresence>
+      <>
         {showAdd && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm"
-              onClick={closeAddModal}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg"
-            >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 anim-in">
+            <div className="absolute inset-0 bg-ink-900/40 backdrop-blur-sm anim-in" onClick={closeAddModal} />
+            <div className="relative w-full max-w-md rounded-2xl border border-ink-200 bg-white p-6 shadow-card-lg anim-in">
               <button
                 onClick={closeAddModal}
                 className="absolute top-4 right-4 grid size-8 place-items-center rounded-lg text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-600"
@@ -729,18 +697,13 @@ export default function AdminSettingsPage() {
                   </form>
                 </>
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Team list */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-ink-200 bg-white shadow-sm"
-      >
+      <div className="rounded-2xl border border-ink-200 bg-white shadow-sm anim-in">
         <div className="border-b border-ink-100 px-6 py-4">
           <h2 className="text-sm font-bold text-ink-800">Équipe actuelle</h2>
         </div>
@@ -795,7 +758,7 @@ export default function AdminSettingsPage() {
             ))}
           </ul>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
