@@ -7,7 +7,7 @@ import { waLink } from "@/data/shared/helpers";
 import { PARCEL_STATUSES, modeLabel, statusInfo } from "@/lib/parcels";
 
 export interface PublicParcel {
-  matricule: string;
+  matricule: string | null;
   mode: string;
   status: string;
   description: string | null;
@@ -18,7 +18,7 @@ export interface PublicParcel {
 }
 
 export interface PublicClient {
-  client: { code: string; name: string; city: string | null; country: string | null };
+  client: { name: string; city: string | null; country: string | null };
   parcels: PublicParcel[];
   highlight: string | null;
 }
@@ -39,7 +39,7 @@ function ParcelCard({ p, open }: { p: PublicParcel; open: boolean }) {
           {p.status === "livre" ? <Check className="size-5" strokeWidth={3} /> : <Package className="size-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-mono text-[15px] font-extrabold text-ink-900">{p.matricule}</p>
+          <p className="truncate font-mono text-[15px] font-extrabold text-ink-900">{p.matricule ?? "Code à venir"}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-ink-500">
             <span className="inline-flex items-center gap-1"><ModeIcon className="size-3.5" />{modeLabel(p.mode) === "À préciser" ? "Mode à confirmer" : modeLabel(p.mode)}</span>
             {p.description && <span className="truncate">{p.description}</span>}
@@ -98,12 +98,13 @@ export default function ClientTrackingResult({ data }: { data: PublicClient }) {
   return (
     <div className="mt-10 space-y-5 anim-in">
       <div className="rounded-3xl border border-ink-200 bg-gradient-to-r from-white to-ink-50 p-6 shadow-card-lg sm:p-8">
-        <p className="text-xs font-bold tracking-widest text-ink-400 uppercase">Code de suivi</p>
-        <p className="mt-1 font-mono text-2xl font-extrabold text-ink-900">{client.code}</p>
-        <p className="mt-2 text-base text-ink-600">
+        <p className="text-xs font-bold tracking-widest text-ink-400 uppercase">Suivi de vos colis</p>
+        <p className="mt-1 text-2xl font-extrabold text-ink-900">
           {client.name}
-          {(client.city || client.country) && <> · {[client.city, client.country].filter(Boolean).join(", ")}</>}
         </p>
+        {(client.city || client.country) && (
+          <p className="mt-1 text-base text-ink-600">{[client.city, client.country].filter(Boolean).join(", ")}</p>
+        )}
 
         <div className="mt-5 grid grid-cols-3 gap-3 text-center">
           {[
@@ -123,13 +124,13 @@ export default function ClientTrackingResult({ data }: { data: PublicClient }) {
       </div>
 
       <div className="space-y-3">
-        {parcels.map((p) => (
-          <ParcelCard key={p.matricule} p={p} open={highlight ? p.matricule === highlight : parcels.length === 1} />
+        {parcels.map((p, i) => (
+          <ParcelCard key={p.matricule ?? `sans-code-${i}`} p={p} open={highlight ? p.matricule === highlight : parcels.length === 1} />
         ))}
       </div>
 
       <a
-        href={waLink(`Bonjour ${CONTACT.manager}, je souhaite des informations sur mon code ${client.code}.`)}
+        href={waLink(`Bonjour ${CONTACT.manager}, je souhaite des informations sur mon colis ${highlight ?? parcels.find((p) => p.matricule)?.matricule ?? ""}.`)}
         target="_blank"
         rel="noopener noreferrer"
         className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-base font-bold text-white hover:bg-emerald-700"

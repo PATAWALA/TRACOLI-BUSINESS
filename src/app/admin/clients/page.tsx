@@ -7,8 +7,6 @@ import {
   Plus,
   Upload,
   Download,
-  Copy,
-  Check,
   Users,
   Package,
   Warehouse,
@@ -45,7 +43,7 @@ export default function AdminClientsPage() {
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [created, setCreated] = useState<{ code: string; name: string } | null>(null);
+  const [created, setCreated] = useState<{ name: string; parcels: number } | null>(null);
 
   const load = useCallback(async () => {
     const res = await adminFetch("/api/clients");
@@ -75,10 +73,9 @@ export default function AdminClientsPage() {
       if (!q) return true;
       return (
         c.name.toLowerCase().includes(q) ||
-        c.code.toLowerCase().includes(q) ||
         (c.city ?? "").toLowerCase().includes(q) ||
         (c.whatsapp ?? "").includes(q) ||
-        c.parcels.some((p) => (p.external_code ?? "").toLowerCase().includes(q))
+        c.parcels.some((p) => (p.matricule ?? "").toLowerCase().includes(q) || (p.external_code ?? "").toLowerCase().includes(q))
       );
     });
   }, [clients, search, filter]);
@@ -95,11 +92,22 @@ export default function AdminClientsPage() {
   }
 
   function exportCsv() {
-    const head = ["Code client", "Client", "Ville", "Pays", "WhatsApp", "Nombre de colis", "Mode", "Lien de suivi"];
-    const lines = filtered.map((c) =>
-      [c.code, c.name, c.city, c.country, c.whatsapp, c.parcels.length, summarize(c).modes, trackingUrl(c.code)]
-        .map(csvCell)
-        .join(";"),
+    const head = ["Client", "Ville", "Pays", "WhatsApp", "Code du colis", "Statut", "Mode", "Lien de suivi"];
+    const lines = filtered.flatMap((c) =>
+      (c.parcels.length ? c.parcels : [null]).map((p) =>
+        [
+          c.name,
+          c.city,
+          c.country,
+          c.whatsapp,
+          p?.matricule ?? "",
+          p ? statusInfo(p.status).label : "",
+          p ? modeLabel(p.mode) : "",
+          p?.matricule ? trackingUrl(p.matricule) : "",
+        ]
+          .map(csvCell)
+          .join(";"),
+      ),
     );
     const blob = new Blob(["﻿" + [head.map(csvCell).join(";"), ...lines].join("\n")], {
       type: "text/csv;charset=utf-8",
@@ -124,7 +132,7 @@ export default function AdminClientsPage() {
             Clients &amp; colis
           </h1>
           <p className="mt-1 text-sm text-ink-500">
-            Les clients dont la marchandise est en agence ou en route, avec leur code de suivi.
+            Les clients dont la marchandise est en agence ou en route. Chaque colis a son propre code de suivi.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
@@ -145,32 +153,28 @@ export default function AdminClientsPage() {
             disabled={filtered.length === 0}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-4 text-sm font-semibold text-ink-700 hover:bg-ink-50 disabled:opacity-50"
           >
-            <Download className="size-4" /> Exporter les codes
+            <Download className="size-4" /> Exporter la liste
           </button>
         </div>
       </div>
 
       <HelpBanner title="Comment ça marche ?">
         <ol className="list-decimal space-y-0.5 pl-4">
-          <li>Ajoutez un client (ou importez une liste) : un <b>code de suivi</b> est créé.</li>
-          <li>Envoyez-lui son code (bouton <b>Copier le message</b>, ou <b>Exporter les codes</b>).</li>
-          <li>Le client le saisit sur <b>tracolibusiness.com/suivre</b> et voit où sont ses colis.</li>
+          <li>Ajoutez un client (ou importez une liste), puis ouvrez-le pour saisir le <b>code de chaque colis</b>.</li>
+          <li>Envoyez-lui les codes de ses colis (bouton <b>Copier le message</b> dans sa fiche).</li>
+          <li>Le client saisit le code d&apos;un colis sur <b>tracolibusiness.com/suivre</b> et voit où il est.</li>
           <li>Ouvrez un client pour changer le statut de ses colis au fil de l&apos;expédition.</li>
         </ol>
       </HelpBanner>
 
       {created && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-emerald-800">Client {created.name} créé</p>
-            <p className="font-mono text-xl font-extrabold text-emerald-700">{created.code}</p>
-          </div>
-          <button
-            onClick={() => copy(clientMessage(created.name, created.code, 0), "new")}
-            className="min-h-11 rounded-xl bg-emerald-600 px-4 text-sm font-bold text-white hover:bg-emerald-700"
-          >
-            {copied === "new" ? "Copié !" : "Copier le message pour le client"}
-          </button>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+          <p className="text-sm font-bold text-emerald-800">
+            Client {created.name} créé avec {created.parcels} colis.
+          </p>
+          <p className="mt-1 text-[13px] text-emerald-700">
+            Ouvrez sa fiche pour saisir ou modifier le code de chaque colis.
+          </p>
         </div>
       )}
 
@@ -250,18 +254,15 @@ export default function AdminClientsPage() {
                       )}
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <button
-                        onClick={(e) => copy(c.code, c.id, e)}
-                        title="Copier le code"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-tracoli-50 px-2.5 py-1 font-mono text-[13px] font-bold text-tracoli-600 hover:bg-tracoli-100"
-                      >
-                        {c.code}
-                        {copied === c.id ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-                      </button>
                       <span className="rounded-lg bg-ink-100 px-2.5 py-1 text-[12px] font-bold text-ink-700">
                         {c.parcels.length} colis
                       </span>
                       {modes && <span className="text-[12px] text-ink-500">{modes}</span>}
+                      {c.parcels.some((p) => !p.matricule) && (
+                        <span className="rounded-lg bg-amber-50 px-2.5 py-1 text-[12px] font-bold text-amber-700">
+                          {c.parcels.filter((p) => !p.matricule).length} sans code
+                        </span>
+                      )}
                     </div>
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {[...counts.entries()].map(([s, n]) => (
@@ -274,7 +275,7 @@ export default function AdminClientsPage() {
                   <div className="flex shrink-0 flex-col items-end gap-2">
                     <ChevronRight className="size-5 text-ink-300" />
                     <button
-                      onClick={(e) => copy(clientMessage(c.name, c.code, c.parcels.length), `m-${c.id}`, e)}
+                      onClick={(e) => copy(clientMessage(c.name, c.parcels.map((p) => p.matricule).filter((x): x is string => !!x)), `m-${c.id}`, e)}
                       className="hidden rounded-lg border border-ink-200 px-3 py-1.5 text-[12px] font-semibold text-ink-600 hover:bg-ink-50 sm:block"
                     >
                       {copied === `m-${c.id}` ? "Copié !" : "Copier le message"}
@@ -282,7 +283,7 @@ export default function AdminClientsPage() {
                   </div>
                 </div>
                 <button
-                  onClick={(e) => copy(clientMessage(c.name, c.code, c.parcels.length), `m-${c.id}`, e)}
+                  onClick={(e) => copy(clientMessage(c.name, c.parcels.map((p) => p.matricule).filter((x): x is string => !!x)), `m-${c.id}`, e)}
                   className="mt-3 min-h-10 w-full rounded-xl border border-ink-200 text-[13px] font-semibold text-ink-600 hover:bg-ink-50 sm:hidden"
                 >
                   {copied === `m-${c.id}` ? "Message copié !" : "Copier le message pour le client"}
@@ -296,9 +297,9 @@ export default function AdminClientsPage() {
       <ClientFormModal
         open={showForm}
         onClose={() => setShowForm(false)}
-        onCreated={(code, name) => {
+        onCreated={(name, parcels) => {
           setShowForm(false);
-          setCreated({ code, name });
+          setCreated({ name, parcels });
           load();
         }}
       />

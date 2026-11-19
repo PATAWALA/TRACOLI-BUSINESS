@@ -145,7 +145,8 @@ export type ParcelMode = "maritime" | "aerien" | "a_preciser";
 
 export interface Client {
   id: string;
-  code: string;
+  /** Obsolète : les codes sont portés par les colis. */
+  code: string | null;
   name: string;
   city: string | null;
   country: string | null;
@@ -160,7 +161,8 @@ export interface Client {
 export interface Parcel {
   id: string;
   client_id: string;
-  matricule: string;
+  /** Code du colis, saisi par l'équipe (unique, modifiable). */
+  matricule: string | null;
   mode: ParcelMode;
   status: ParcelStatus;
   description: string | null;

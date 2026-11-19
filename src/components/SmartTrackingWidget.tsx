@@ -190,7 +190,7 @@ export default function SmartTrackingWidget() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Code TRACOLI ou code Alibaba (ex : TRC-2026-0001)"
+              placeholder="Code de votre colis"
               className="w-full min-h-[56px] rounded-xl border-2 border-ink-200 bg-white py-4 pr-4 pl-12 text-base text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10"
             />
           </div>
@@ -247,7 +247,7 @@ export default function SmartTrackingWidget() {
                 Ce code correspond à plusieurs colis
               </p>
               <p className="mt-2 text-base text-amber-700">
-                Entrez plutôt votre code TRACOLI (format TRC-2026-XXXX) ou
+                Entrez plutôt le code de votre colis ou
                 contactez-nous sur WhatsApp.
               </p>
             </div>

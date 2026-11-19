@@ -69,22 +69,28 @@ export function normalizeCode(code: string): string {
   return code.trim().toUpperCase().replace(/\s+/g, "");
 }
 
-export function matriculeFor(clientCode: string, n: number): string {
-  return `${clientCode}-${String(n).padStart(2, "0")}`;
-}
-
 export function trackingUrl(code: string): string {
   return `https://www.tracolibusiness.com/suivre?ref=${encodeURIComponent(code)}`;
 }
 
-/** Message WhatsApp prêt à envoyer au client. */
-export function clientMessage(name: string, code: string, parcels: number): string {
+
+/** Message WhatsApp prêt à envoyer au client : un lien de suivi par colis codé. */
+export function clientMessage(name: string, codes: string[]): string {
+  const list = codes.length
+    ? codes.map((c) => `• ${c} → ${trackingUrl(c)}`).join("\n")
+    : "Les codes de vos colis vous seront communiqués très prochainement.";
   return (
     `Bonjour ${name},\n\n` +
-    `Votre code de suivi TRACOLI est : ${code}\n` +
-    (parcels > 0 ? `Il concerne ${parcels} colis. ` : "") +
-    `Suivez la position de vos colis à tout moment ici :\n` +
-    `${trackingUrl(code)}\n\n` +
+    `Suivez vos colis TRACOLI à tout moment avec le code de chaque colis :\n\n` +
+    `${list}\n\n` +
     `TRACOLI Supply Chain`
   );
+}
+
+/** Transforme un texte collé (une ligne par code, ou séparés par virgule/point-virgule) en liste de codes. */
+export function parseCodes(text: string): string[] {
+  return text
+    .split(/[\r\n,;]+/)
+    .map((c) => normalizeCode(c))
+    .filter(Boolean);
 }

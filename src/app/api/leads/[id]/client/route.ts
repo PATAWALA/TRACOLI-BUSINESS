@@ -5,7 +5,7 @@ import { createClientWithParcels } from "@/lib/clients-service";
 import type { ParcelMode } from "@/types/database.types";
 
 /**
- * Transforme une demande en client + colis (suivi par code TRC-…).
+ * Transforme une demande en client + colis (les codes de colis sont saisis ensuite dans fiche client).
  * Idempotent : si la demande a déjà un client, on le renvoie.
  */
 export async function POST(
@@ -24,8 +24,8 @@ export async function POST(
   if (!lead) return NextResponse.json({ error: "Demande introuvable." }, { status: 404 });
 
   const meta = (lead.metadata ?? {}) as Record<string, unknown>;
-  if (typeof meta.client_code === "string") {
-    return NextResponse.json({ code: meta.client_code, existing: true });
+  if (typeof meta.client_id === "string") {
+    return NextResponse.json({ clientId: meta.client_id, existing: true });
   }
 
   const count = Math.min(Math.max(Number(body.parcels) || 1, 1), 100);
@@ -46,11 +46,11 @@ export async function POST(
     await sb
       .from("leads")
       .update({
-        metadata: { ...meta, client_id: created.id, client_code: created.code },
+        metadata: { ...meta, client_id: created.id },
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);
-    return NextResponse.json({ code: created.code, parcels: created.parcels });
+    return NextResponse.json({ clientId: created.id, parcels: created.parcels });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Erreur lors de la création." },

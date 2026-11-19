@@ -114,7 +114,7 @@ export default function LeadDetailPage({
     setSaving(false);
     if (!res.ok) return setClientMsg(data.error ?? "Erreur.");
     setLead((prev) =>
-      prev ? { ...prev, metadata: { ...(prev.metadata ?? {}), client_code: data.code } } : prev,
+      prev ? { ...prev, metadata: { ...(prev.metadata ?? {}), client_id: data.clientId } } : prev,
     );
     setClientMsg(data.existing ? "Ce client existe déjà." : "Client et colis créés.");
   }
@@ -373,16 +373,16 @@ export default function LeadDetailPage({
       {/* Client & colis (suivi) */}
       <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
         <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">Client &amp; colis</p>
-        {(lead.metadata as { client_code?: string } | null)?.client_code ? (
+        {(lead.metadata as { client_id?: string } | null)?.client_id ? (
           <p className="mt-3 text-sm text-ink-700">
-            Code de suivi client :{" "}
+            Client créé.{" "}
             <a
-              href={`/admin/clients`}
-              className="font-mono font-bold text-tracoli-600 underline"
+              href={`/admin/clients/${(lead.metadata as { client_id?: string }).client_id}`}
+              className="font-bold text-tracoli-600 underline"
             >
-              {(lead.metadata as { client_code?: string }).client_code}
+              Ouvrir la fiche pour saisir les codes de ses colis
             </a>
-            . Le client peut suivre ses colis sur /suivre.
+            .
           </p>
         ) : (
           <div className="mt-3 flex flex-wrap items-end gap-3">
@@ -402,7 +402,7 @@ export default function LeadDetailPage({
               disabled={saving}
               className="rounded-xl bg-ink-900 px-5 py-2.5 text-xs font-bold text-white hover:bg-ink-800 disabled:opacity-60"
             >
-              Créer le client et ses colis
+              Créer le client et ses colis (sans code)
             </button>
           </div>
         )}

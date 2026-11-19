@@ -1,12 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { matriculeFor, isParcelMode } from "@/lib/parcels";
+import { isParcelMode, normalizeCode } from "@/lib/parcels";
 import type { ParcelMode } from "@/types/database.types";
 
 export interface NewParcelInput {
+  /** Code du colis, saisi par l'équipe (facultatif : peut être ajouté plus tard). */
+  code?: string | null;
   mode?: ParcelMode;
   description?: string | null;
-  external_code?: string | null;
-  external_platform?: string | null;
 }
 
 export interface NewClientInput {
@@ -22,28 +22,41 @@ export interface NewClientInput {
 
 const clean = (v?: string | null) => (v && v.trim() ? v.trim() : null);
 
-function randomCode(): string {
-  return `TRC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+/** Code de colis normalisé (majuscules, sans espaces) ou null. */
+export const cleanCode = (v?: string | null) => {
+  const c = v ? normalizeCode(v) : "";
+  return c || null;
+};
+
+export class DuplicateCodeError extends Error {
+  constructor(public code?: string) {
+    super(code ? `Le code « ${code} » est déjà utilisé par un autre colis.` : "Code déjà utilisé.");
+  }
 }
 
-export function buildParcelRows(
-  clientId: string,
-  clientCode: string,
-  parcels: NewParcelInput[],
-  startAt = 1,
-) {
+export function buildParcelRows(clientId: string, parcels: NewParcelInput[]) {
   const now = new Date().toISOString();
-  return parcels.map((p, i) => ({
+  return parcels.map((p) => ({
     client_id: clientId,
-    matricule: matriculeFor(clientCode, startAt + i),
+    matricule: cleanCode(p.code),
     mode: isParcelMode(p.mode) ? p.mode : "a_preciser",
     status: "en_agence",
     description: clean(p.description),
-    external_code: clean(p.external_code)?.toUpperCase().replace(/\s+/g, "") ?? null,
-    external_platform: clean(p.external_platform),
     created_at: now,
     updated_at: now,
   }));
+}
+
+/** Détecte les codes en double dans la saisie (avant même d'interroger la base). */
+export function findDuplicateCode(parcels: NewParcelInput[]): string | null {
+  const seen = new Set<string>();
+  for (const p of parcels) {
+    const c = cleanCode(p.code);
+    if (!c) continue;
+    if (seen.has(c)) return c;
+    seen.add(c);
+  }
+  return null;
 }
 
 export async function insertParcels(
@@ -52,7 +65,13 @@ export async function insertParcels(
 ) {
   if (!rows.length) return;
   const { data, error } = await sb.from("parcels").insert(rows).select("id");
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.code === "23505") {
+      const m = error.message.match(/\(matricule\)=\(([^)]*)\)/);
+      throw new DuplicateCodeError(m?.[1]);
+    }
+    throw new Error(error.message);
+  }
   await sb.from("parcel_events").insert(
     (data ?? []).map((p) => ({
       parcel_id: p.id,
@@ -62,38 +81,39 @@ export async function insertParcels(
   );
 }
 
-/** Crée un client (code unique garanti) + ses colis (matricules -01, -02…). */
+/** Crée un client + ses colis (codes saisis par l'équipe, ou vides pour plus tard). */
 export async function createClientWithParcels(
   sb: SupabaseClient,
   input: NewClientInput,
 ) {
+  const dup = findDuplicateCode(input.parcels ?? []);
+  if (dup) throw new DuplicateCodeError(dup);
+
   const now = new Date().toISOString();
-  let client: { id: string; code: string } | null = null;
+  const { data: client, error } = await sb
+    .from("clients")
+    .insert({
+      name: input.name.trim(),
+      city: clean(input.city),
+      country: clean(input.country),
+      whatsapp: clean(input.whatsapp),
+      email: clean(input.email)?.toLowerCase() ?? null,
+      notes: clean(input.notes),
+      source: input.source ?? "manual",
+      created_at: now,
+      updated_at: now,
+    })
+    .select("id")
+    .single();
+  if (error || !client) throw new Error(error?.message ?? "Erreur");
 
-  for (let attempt = 0; attempt < 8 && !client; attempt++) {
-    const { data, error } = await sb
-      .from("clients")
-      .insert({
-        code: randomCode(),
-        name: input.name.trim(),
-        city: clean(input.city),
-        country: clean(input.country),
-        whatsapp: clean(input.whatsapp),
-        email: clean(input.email)?.toLowerCase() ?? null,
-        notes: clean(input.notes),
-        source: input.source ?? "manual",
-        created_at: now,
-        updated_at: now,
-      })
-      .select("id, code")
-      .single();
-    if (data) client = data;
-    else if (error?.code !== "23505") throw new Error(error?.message ?? "Erreur");
+  try {
+    await insertParcels(sb, buildParcelRows(client.id, input.parcels ?? []));
+  } catch (e) {
+    // Pas de client orphelin si un code est refusé.
+    await sb.from("clients").delete().eq("id", client.id);
+    throw e;
   }
-  if (!client) throw new Error("Impossible de générer un code unique.");
 
-  const rows = buildParcelRows(client.id, client.code, input.parcels ?? []);
-  await insertParcels(sb, rows);
-
-  return { id: client.id, code: client.code, parcels: rows.map((p) => p.matricule) };
+  return { id: client.id, parcels: input.parcels?.length ?? 0 };
 }

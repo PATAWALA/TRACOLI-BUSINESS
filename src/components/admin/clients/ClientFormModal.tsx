@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/admin/ui/Modal";
 import { adminFetch } from "@/lib/admin-fetch";
-import { PARCEL_MODES } from "@/lib/parcels";
+import { PARCEL_MODES, parseCodes } from "@/lib/parcels";
 import type { ParcelMode } from "@/types/database.types";
 
 const input =
@@ -34,7 +34,7 @@ export default function ClientFormModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onCreated: (code: string, name: string) => void;
+  onCreated: (name: string, parcels: number) => void;
 }) {
   const [f, setF] = useState({
     name: "",
@@ -45,8 +45,7 @@ export default function ClientFormModal({
     count: "1",
     mode: "a_preciser" as ParcelMode,
     description: "",
-    external_code: "",
-    external_platform: "",
+    codes: "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -55,7 +54,8 @@ export default function ClientFormModal({
   async function submit() {
     setError("");
     if (!f.name.trim()) return setError("Indiquez le nom du client.");
-    const count = Math.max(0, Math.min(300, parseInt(f.count, 10) || 0));
+    const codes = parseCodes(f.codes);
+    const count = Math.max(0, Math.min(300, Math.max(codes.length, parseInt(f.count, 10) || 0)));
 
     setSaving(true);
     const res = await adminFetch("/api/clients", {
@@ -66,11 +66,10 @@ export default function ClientFormModal({
         country: f.country,
         whatsapp: f.whatsapp,
         email: f.email,
-        parcels: Array.from({ length: count }, () => ({
+        parcels: Array.from({ length: count }, (_, i) => ({
+          code: codes[i] ?? "",
           mode: f.mode,
           description: f.description,
-          external_code: count === 1 ? f.external_code : "",
-          external_platform: f.external_platform,
         })),
       }),
     });
@@ -82,8 +81,8 @@ export default function ClientFormModal({
       return setError("Ce client existe déjà (même nom et même ville).");
     }
     if (data.failed?.length) return setError(data.failed[0].error);
-    onCreated(data.created[0].code, f.name.trim());
-    setF((p) => ({ ...p, name: "", city: "", whatsapp: "", email: "", description: "", external_code: "" }));
+    onCreated(f.name.trim(), count);
+    setF((p) => ({ ...p, name: "", city: "", whatsapp: "", email: "", description: "", codes: "", count: "1" }));
   }
 
   return (
@@ -91,7 +90,7 @@ export default function ClientFormModal({
       open={open}
       onClose={onClose}
       title="Ajouter un client"
-      description="Un code de suivi est créé automatiquement. Il suffit de le donner au client."
+      description="Ajoutez le client et ses colis. Chaque colis a son propre code, que vous saisissez (ou ajoutez plus tard)."
       footer={
         <>
           <button
@@ -105,7 +104,7 @@ export default function ClientFormModal({
             disabled={saving}
             className="min-h-11 rounded-xl bg-tracoli-500 px-6 text-sm font-bold text-white hover:bg-tracoli-600 disabled:opacity-60"
           >
-            {saving ? "Enregistrement…" : "Créer le client et son code"}
+            {saving ? "Enregistrement…" : "Créer le client"}
           </button>
         </>
       }
@@ -121,7 +120,7 @@ export default function ClientFormModal({
           <Field label="Pays">
             <input className={input} value={f.country} onChange={(e) => set("country", e.target.value)} placeholder="Ex : RDC" />
           </Field>
-          <Field label="WhatsApp" hint="Facultatif — utile pour envoyer le code.">
+          <Field label="WhatsApp" hint="Facultatif — utile pour envoyer les codes.">
             <input className={input} inputMode="tel" value={f.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="+243…" />
           </Field>
           <Field label="Email" hint="Facultatif.">
@@ -148,12 +147,9 @@ export default function ClientFormModal({
               <textarea className={`${input} min-h-20 py-2.5`} value={f.description} onChange={(e) => set("description", e.target.value)} />
             </Field>
           </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Field label="Code Alibaba / autre plateforme" hint="Si 1 seul colis. Pour plusieurs, ajoutez-les dans la fiche client.">
-              <input className={`${input} uppercase`} value={f.external_code} onChange={(e) => set("external_code", e.target.value)} />
-            </Field>
-            <Field label="Plateforme">
-              <input className={input} value={f.external_platform} onChange={(e) => set("external_platform", e.target.value)} placeholder="Alibaba, 1688, Taobao…" />
+          <div className="mt-4">
+            <Field label="Codes des colis (un par ligne)" hint="Facultatif : le nombre de colis s'ajuste au nombre de codes. Vous pourrez les saisir ou les modifier plus tard dans la fiche client.">
+              <textarea className={`${input} min-h-24 py-2.5 font-mono uppercase`} value={f.codes} onChange={(e) => set("codes", e.target.value)} placeholder={"COLIS-001\nCOLIS-002"} />
             </Field>
           </div>
         </div>

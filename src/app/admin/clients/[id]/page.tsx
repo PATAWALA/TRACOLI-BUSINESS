@@ -20,7 +20,7 @@ import ConfirmModal from "@/components/admin/ui/ConfirmModal";
 import Modal from "@/components/admin/ui/Modal";
 import ParcelStatusBadge from "@/components/admin/clients/ParcelStatusBadge";
 import { adminFetch } from "@/lib/admin-fetch";
-import { PARCEL_MODES, PARCEL_STATUSES, clientMessage, trackingUrl } from "@/lib/parcels";
+import { PARCEL_MODES, PARCEL_STATUSES, clientMessage, parseCodes, trackingUrl } from "@/lib/parcels";
 import type { ClientWithParcels, Parcel, ParcelMode } from "@/types/database.types";
 
 const field =
@@ -37,7 +37,9 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   const [editing, setEditing] = useState(false);
   const [info, setInfo] = useState({ name: "", city: "", country: "", whatsapp: "", email: "" });
   const [showAdd, setShowAdd] = useState(false);
-  const [add, setAdd] = useState({ count: "1", mode: "a_preciser" as ParcelMode, description: "", external_code: "", external_platform: "" });
+  const [add, setAdd] = useState({ count: "1", mode: "a_preciser" as ParcelMode, description: "", codes: "" });
+  const [showCodes, setShowCodes] = useState(false);
+  const [codesText, setCodesText] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const load = useCallback(async () => {
@@ -79,6 +81,34 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
     await load();
   }
 
+  /** Attribue ou modifie le code d'un ou plusieurs colis (un code par colis). */
+  async function assignCodes(assign: { id: string; code: string | null }[]) {
+    const res = await adminFetch("/api/parcels", { method: "PATCH", body: JSON.stringify({ assign }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      flash(data.error ?? "Erreur : code non enregistré.");
+      await load();
+      return false;
+    }
+    flash(assign.length > 1 ? `${assign.length} codes enregistrés ✓` : "Code enregistré ✓");
+    await load();
+    return true;
+  }
+
+  async function saveBulkCodes() {
+    const codes = parseCodes(codesText);
+    const free = (client?.parcels ?? []).filter((p) => !p.matricule);
+    if (codes.length === 0) return;
+    if (codes.length > free.length) {
+      return flash(`Vous avez collé ${codes.length} codes mais il y a seulement ${free.length} colis sans code.`);
+    }
+    const ok = await assignCodes(codes.map((code, i) => ({ id: free[i].id, code })));
+    if (ok) {
+      setShowCodes(false);
+      setCodesText("");
+    }
+  }
+
   async function saveInfo() {
     const res = await adminFetch(`/api/clients/${id}`, { method: "PATCH", body: JSON.stringify(info) });
     const data = await res.json();
@@ -89,21 +119,23 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   }
 
   async function addParcels() {
-    const count = Math.max(1, Math.min(100, parseInt(add.count, 10) || 1));
+    const codes = parseCodes(add.codes);
+    const count = Math.max(1, Math.min(300, Math.max(codes.length, parseInt(add.count, 10) || 1)));
     const res = await adminFetch("/api/parcels", {
       method: "POST",
       body: JSON.stringify({
         client_id: id,
-        parcels: Array.from({ length: count }, () => ({
+        parcels: Array.from({ length: count }, (_, i) => ({
+          code: codes[i] ?? "",
           mode: add.mode,
           description: add.description,
-          external_code: count === 1 ? add.external_code : "",
-          external_platform: add.external_platform,
         })),
       }),
     });
-    if (!res.ok) return flash("Erreur : colis non ajoutés.");
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return flash(data.error ?? "Erreur : colis non ajoutés.");
     setShowAdd(false);
+    setAdd({ count: "1", mode: "a_preciser", description: "", codes: "" });
     flash(`${count} colis ajouté(s) ✓`);
     load();
   }
@@ -131,7 +163,9 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
 
   const parcels = client.parcels;
   const allSelected = parcels.length > 0 && selected.size === parcels.length;
-  const message = clientMessage(client.name, client.code, parcels.length);
+  const codedCodes = parcels.map((p) => p.matricule).filter((c): c is string => !!c);
+  const uncoded = parcels.length - codedCodes.length;
+  const message = clientMessage(client.name, codedCodes);
   const wa = client.whatsapp
     ? `https://wa.me/${client.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`
     : null;
@@ -160,25 +194,32 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
           </div>
 
           <div className="rounded-2xl bg-tracoli-50 p-4 lg:min-w-72">
-            <p className="text-[11px] font-bold tracking-wider text-tracoli-600 uppercase">Code de suivi à donner au client</p>
-            <div className="mt-1 flex items-center gap-2">
-              <p className="font-mono text-2xl font-extrabold text-tracoli-600">{client.code}</p>
-              <button onClick={() => copy(client.code, "code")} aria-label="Copier le code" className="grid size-9 place-items-center rounded-lg bg-white text-ink-500 hover:text-ink-800">
-                {copied === "code" ? <Check className="size-4 text-emerald-500" /> : <Copy className="size-4" />}
-              </button>
-            </div>
+            <p className="text-[11px] font-bold tracking-wider text-tracoli-600 uppercase">Suivi par code de colis</p>
+            <p className="mt-1 text-[13px] text-ink-700">
+              <strong>{codedCodes.length}</strong> colis avec code
+              {uncoded > 0 && <> · <strong className="text-amber-700">{uncoded} sans code</strong></>}
+            </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-              <button onClick={() => copy(message, "msg")} className="min-h-10 rounded-xl bg-white px-3 text-[13px] font-bold text-ink-700 hover:bg-ink-50">
-                {copied === "msg" ? "Message copié !" : "Copier le message"}
-              </button>
-              {wa && (
+              {uncoded > 0 && (
+                <button onClick={() => setShowCodes(true)} className="min-h-10 rounded-xl bg-tracoli-500 px-3 text-[13px] font-bold text-white hover:bg-tracoli-600">
+                  Saisir les codes en lot
+                </button>
+              )}
+              {codedCodes.length > 0 && (
+                <button onClick={() => copy(message, "msg")} className="min-h-10 rounded-xl bg-white px-3 text-[13px] font-bold text-ink-700 hover:bg-ink-50">
+                  {copied === "msg" ? "Message copié !" : "Copier le message avec les codes"}
+                </button>
+              )}
+              {wa && codedCodes.length > 0 && (
                 <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 text-[13px] font-bold text-white hover:bg-emerald-700">
                   <FaWhatsapp className="size-4" /> Envoyer sur WhatsApp
                 </a>
               )}
-              <a href={trackingUrl(client.code)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-tracoli-200 px-3 text-[13px] font-semibold text-tracoli-600 hover:bg-white">
-                <ExternalLink className="size-4" /> Voir ce que voit le client
-              </a>
+              {codedCodes.length > 0 && (
+                <a href={trackingUrl(codedCodes[0])} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-tracoli-200 px-3 text-[13px] font-semibold text-tracoli-600 hover:bg-white">
+                  <ExternalLink className="size-4" /> Voir ce que voit le client
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -217,7 +258,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                 <div className="flex flex-wrap items-center gap-3">
                   <input
                     type="checkbox"
-                    aria-label={`Sélectionner ${p.matricule}`}
+                    aria-label={`Sélectionner ${p.matricule ?? "ce colis"}`}
                     checked={selected.has(p.id)}
                     onChange={() => {
                       const n = new Set(selected);
@@ -226,7 +267,18 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                     }}
                     className="size-4 accent-[#e60000]"
                   />
-                  <p className="font-mono text-[13px] font-bold text-ink-900">{p.matricule}</p>
+                  <input
+                    key={`${p.id}-${p.matricule ?? ""}`}
+                    aria-label="Code du colis"
+                    defaultValue={p.matricule ?? ""}
+                    placeholder="Code du colis…"
+                    className="min-h-10 w-52 rounded-lg border border-ink-200 bg-white px-3 font-mono text-[13px] font-bold text-ink-900 uppercase outline-none placeholder:font-sans placeholder:font-medium placeholder:normal-case placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/15"
+                    onBlur={(e) => {
+                      const v = e.target.value.trim().toUpperCase().replace(/\s+/g, "");
+                      if (v !== (p.matricule ?? "")) assignCodes([{ id: p.id, code: v || null }]);
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                  />
                   <ParcelStatusBadge status={p.status} />
                   <button onClick={() => removeParcel(p)} aria-label="Supprimer ce colis" className="ml-auto grid size-9 place-items-center rounded-lg text-ink-300 hover:bg-red-50 hover:text-red-500">
                     <Trash2 className="size-4" />
@@ -248,14 +300,6 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                   <label className="block sm:col-span-2 xl:col-span-2">
                     <span className="text-[11px] font-bold text-ink-500">Contenu</span>
                     <input className={field} defaultValue={p.description ?? ""} placeholder="Ex : 2 cartons de vêtements" onBlur={(e) => e.target.value !== (p.description ?? "") && patchParcels([p.id], { description: e.target.value })} />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-bold text-ink-500">Code Alibaba / autre</span>
-                    <input className={`${field} uppercase`} defaultValue={p.external_code ?? ""} placeholder="Facultatif" onBlur={(e) => e.target.value.toUpperCase() !== (p.external_code ?? "") && patchParcels([p.id], { external_code: e.target.value })} />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-bold text-ink-500">Plateforme</span>
-                    <input className={field} defaultValue={p.external_platform ?? ""} placeholder="Alibaba, 1688…" onBlur={(e) => e.target.value !== (p.external_platform ?? "") && patchParcels([p.id], { external_platform: e.target.value })} />
                   </label>
                   <label className="block">
                     <span className="text-[11px] font-bold text-ink-500">Date d&apos;expédition prévue</span>
@@ -324,7 +368,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
         open={showAdd}
         onClose={() => setShowAdd(false)}
         title="Ajouter des colis"
-        description="Les nouveaux matricules continuent la numérotation existante."
+        description="Collez le code de chaque colis (un par ligne). Vous pouvez aussi les ajouter plus tard."
         footer={
           <>
             <button onClick={() => setShowAdd(false)} className="min-h-11 rounded-xl border border-ink-200 bg-white px-5 text-sm font-semibold text-ink-700">Annuler</button>
@@ -347,21 +391,34 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
             <span className="text-[12px] font-bold text-ink-700">Contenu</span>
             <input className={`${field} min-h-11`} value={add.description} onChange={(e) => setAdd({ ...add, description: e.target.value })} />
           </label>
-          <label className="block">
-            <span className="text-[12px] font-bold text-ink-700">Code Alibaba / autre (1 colis)</span>
-            <input className={`${field} min-h-11 uppercase`} value={add.external_code} onChange={(e) => setAdd({ ...add, external_code: e.target.value })} />
-          </label>
-          <label className="block">
-            <span className="text-[12px] font-bold text-ink-700">Plateforme</span>
-            <input className={`${field} min-h-11`} value={add.external_platform} onChange={(e) => setAdd({ ...add, external_platform: e.target.value })} />
+          <label className="block sm:col-span-2">
+            <span className="text-[12px] font-bold text-ink-700">Codes des colis (un par ligne)</span>
+            <textarea className={`${field} min-h-24 py-2 font-mono uppercase`} value={add.codes} onChange={(e) => setAdd({ ...add, codes: e.target.value })} placeholder={"COLIS-001\nCOLIS-002"} />
+            <span className="mt-1 block text-[12px] text-ink-400">Facultatif. Le nombre de colis s&apos;ajuste au nombre de codes.</span>
           </label>
         </div>
+      </Modal>
+
+      <Modal
+        open={showCodes}
+        onClose={() => setShowCodes(false)}
+        title="Saisir les codes en lot"
+        description={`${uncoded} colis n'ont pas encore de code. Collez les codes, un par ligne : ils sont attribués dans l'ordre.`}
+        footer={
+          <>
+            <button onClick={() => setShowCodes(false)} className="min-h-11 rounded-xl border border-ink-200 bg-white px-5 text-sm font-semibold text-ink-700">Annuler</button>
+            <button onClick={saveBulkCodes} className="min-h-11 rounded-xl bg-tracoli-500 px-6 text-sm font-bold text-white hover:bg-tracoli-600">Enregistrer les codes</button>
+          </>
+        }
+      >
+        <textarea className={`${field} min-h-40 py-2 font-mono uppercase`} value={codesText} onChange={(e) => setCodesText(e.target.value)} placeholder={"CODE-1\nCODE-2\nCODE-3"} />
+        <p className="mt-2 text-[12px] text-ink-500">{parseCodes(codesText).length} code(s) collé(s) pour {uncoded} colis sans code.</p>
       </Modal>
 
       <ConfirmModal
         open={confirmDelete}
         title="Supprimer ce client ?"
-        message={`« ${client.name} » et ses ${parcels.length} colis seront supprimés définitivement. Son code ne fonctionnera plus.`}
+        message={`« ${client.name} » et ses ${parcels.length} colis seront supprimés définitivement. Le suivi de ses colis ne fonctionnera plus.`}
         confirmLabel="Supprimer"
         onConfirm={removeClient}
         onCancel={() => setConfirmDelete(false)}

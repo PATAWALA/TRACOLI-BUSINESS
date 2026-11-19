@@ -20,8 +20,9 @@ export async function GET(req: NextRequest, { params }: Ctx) {
   if (error || !data) {
     return NextResponse.json({ error: "Client introuvable." }, { status: 404 });
   }
-  data.parcels.sort((a: { matricule: string }, b: { matricule: string }) =>
-    a.matricule.localeCompare(b.matricule),
+  data.parcels.sort(
+    (a: { matricule: string | null; created_at: string }, b: { matricule: string | null; created_at: string }) =>
+      (a.matricule ?? "").localeCompare(b.matricule ?? "") || a.created_at.localeCompare(b.created_at),
   );
   return NextResponse.json({ client: data });
 }

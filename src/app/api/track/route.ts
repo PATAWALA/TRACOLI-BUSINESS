@@ -7,7 +7,7 @@ const mask = (name: string) =>
   name.length <= 3 ? name : `${name.slice(0, 3)}${"•".repeat(Math.min(name.length - 3, 6))}`;
 
 /**
- * Suivi public. Accepte : code client TRC-…, matricule de colis, code externe (Alibaba…),
+ * Suivi public. Accepte : code du colis (saisi par l'équipe), ancien code externe,
  * ou référence d'une demande (leads). Ne renvoie que des champs publics.
  */
 export async function GET(req: NextRequest) {
@@ -20,12 +20,8 @@ export async function GET(req: NextRequest) {
   let clientId: string | null = null;
   let highlight: string | null = null;
 
-  // 1. Code client
-  const byClient = await sb.from("clients").select("id").eq("code", code).maybeSingle();
-  clientId = byClient.data?.id ?? null;
-
-  // 2. Matricule d'un colis
-  if (!clientId) {
+  // 1. Code du colis (saisi par l'équipe)
+  {
     const { data } = await sb
       .from("parcels")
       .select("client_id, matricule")
@@ -37,7 +33,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // 3. Code externe (Alibaba, etc.)
+  // 2. Ancien code externe (anciens colis) (Alibaba, etc.)
   if (!clientId) {
     const { data } = await sb
       .from("parcels")
@@ -56,13 +52,13 @@ export async function GET(req: NextRequest) {
   if (clientId) {
     const { data: client } = await sb
       .from("clients")
-      .select("code, name, city, country, parcels(id, matricule, mode, status, description, external_code, external_platform, expected_ship_date, updated_at)")
+      .select("name, city, country, parcels(id, matricule, mode, status, description, external_code, external_platform, expected_ship_date, updated_at)")
       .eq("id", clientId)
       .single();
     if (!client) return NextResponse.json({ type: "not_found" });
 
     const parcels = [...client.parcels].sort((a, b) =>
-      a.matricule.localeCompare(b.matricule),
+      (a.matricule ?? "").localeCompare(b.matricule ?? ""),
     );
     const { data: events } = await sb
       .from("parcel_events")
@@ -74,7 +70,6 @@ export async function GET(req: NextRequest) {
       type: "client",
       highlight,
       client: {
-        code: client.code,
         name: mask(client.name),
         city: client.city,
         country: client.country,
