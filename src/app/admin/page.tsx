@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -17,7 +18,6 @@ import {
 import StatCard from "@/components/admin/ui/StatCard";
 import DataTable, { type Column } from "@/components/admin/ui/DataTable";
 import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
-import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
 interface Stats {
@@ -40,32 +40,18 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     async function load() {
-      const [leadsRes, newRes, inProgressRes, emailsRes, recentRes] =
-        await Promise.all([
-          supabase.from("leads").select("id", { count: "exact", head: true }),
-          supabase
-            .from("leads")
-            .select("id", { count: "exact", head: true })
-            .eq("status", "en_attente_paiement"),
-          supabase
-            .from("leads")
-            .select("id", { count: "exact", head: true })
-            .not("status", "in", '("en_attente_paiement","livre","cloture")'),
-          fetch("/api/newsletter").then((r) => r.json()),
-          supabase
-            .from("leads")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(5),
-        ]);
+      const [statsRes, emailsRes] = await Promise.all([
+        adminFetch("/api/leads?stats=1").then((r) => (r.ok ? r.json() : null)),
+        adminFetch("/api/newsletter").then((r) => (r.ok ? r.json() : null)),
+      ]);
 
       setStats({
-        totalDemandes: leadsRes.count ?? 0,
-        nouvelles: newRes.count ?? 0,
-        enCours: inProgressRes.count ?? 0,
-        abonnes: emailsRes.count ?? 0,
+        totalDemandes: statsRes?.total ?? 0,
+        nouvelles: statsRes?.nouvelles ?? 0,
+        enCours: statsRes?.enCours ?? 0,
+        abonnes: emailsRes?.count ?? 0,
       });
-      setRecentLeads((recentRes.data as Lead[]) ?? []);
+      setRecentLeads((statsRes?.recent as Lead[]) ?? []);
       setLoading(false);
     }
 

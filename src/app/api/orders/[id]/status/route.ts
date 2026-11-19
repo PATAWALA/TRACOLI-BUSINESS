@@ -1,3 +1,4 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -5,6 +6,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const { id } = await params;
   const { status } = await req.json();
 

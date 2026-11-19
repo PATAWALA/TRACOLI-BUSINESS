@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import {
   Package,
@@ -68,7 +69,7 @@ export default function AdminOrdersPage() {
 
   async function loadOrders() {
     setLoading(true);
-    const res = await fetch("/api/orders");
+    const res = await adminFetch("/api/orders");
     if (res.ok) {
       const data = await res.json();
       setOrders(data.orders ?? []);
@@ -79,7 +80,7 @@ export default function AdminOrdersPage() {
   async function confirmStatusChange() {
     if (!statusChange) return;
     setUpdating(statusChange.orderId);
-    await fetch(`/api/orders/${statusChange.orderId}/status`, {
+    await adminFetch(`/api/orders/${statusChange.orderId}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: statusChange.newStatus }),
@@ -100,7 +101,7 @@ export default function AdminOrdersPage() {
     setCreateError("");
     setCreating(true);
 
-    const res = await fetch("/api/orders", {
+    const res = await adminFetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -1,3 +1,4 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -16,6 +17,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!(await requireAdmin(request))) return unauthorized();
   try {
     const body = await request.json();
     const supabase = createServerClient();
@@ -48,6 +50,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!(await requireAdmin(request))) return unauthorized();
   try {
     const { id } = (await request.json()) as { id: string };
     const supabase = createServerClient();

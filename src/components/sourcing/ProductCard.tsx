@@ -8,7 +8,7 @@ import type { Product } from "@/data/products/items";
 export default function ProductCard({ product }: { product: Product }) {
   const requestHref = `/sourcer?sourcing-product=${encodeURIComponent(
     product.name
-  )}&sourcing-product-url=${encodeURIComponent(product.image)}#sourcing`;
+  )}&sourcing-product-id=${encodeURIComponent(product.id)}&sourcing-product-url=${encodeURIComponent(product.image)}#sourcing`;
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-card transition-all hover:border-tracoli-500/40 hover:shadow-card-lg">

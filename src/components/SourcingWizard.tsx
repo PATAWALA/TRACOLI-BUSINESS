@@ -19,6 +19,7 @@ import {
   Loader2,
   Package,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase/client";
 import { FLAT_DESTINATIONS } from "@/data/logistics/destinations";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
@@ -36,6 +37,12 @@ export default function SourcingWizard() {
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const [code, setCode] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [productId, setProductId] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [trap, setTrap] = useState("");
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [productUrl, setProductUrl] = useState("");
@@ -51,6 +58,7 @@ export default function SourcingWizard() {
     const productName = searchParams.get("sourcing-product");
     const productImageUrl = searchParams.get("sourcing-product-url");
 
+    setProductId(searchParams.get("sourcing-product-id"));
     if (productName) setPrefilledProduct(productName);
     if (productImageUrl) setImagePreview(productImageUrl);
   }, [searchParams]);
@@ -62,7 +70,9 @@ export default function SourcingWizard() {
   const handleFile = (file: File | undefined) => {
     if (!file || !file.type.startsWith("image/")) return;
     setImagePreview(URL.createObjectURL(file));
+    setImageFile(file);
     setPrefilledProduct(null);
+    setProductId(null);
   };
 
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -82,11 +92,47 @@ export default function SourcingWizard() {
   const next = () => setStep((s) => Math.min(2, s + 1) as Step);
   const back = () => setStep((s) => Math.max(1, s - 1) as Step);
 
+  /** Enregistre la demande dans Supabase (+ alerte admin) AVANT de proposer WhatsApp. */
   const submit = async () => {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setSubmitting(false);
-    setDone(true);
+    setError("");
+    try {
+      const imageUrls: string[] = [];
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop() || "jpg";
+        const path = `leads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("files").upload(path, imageFile);
+        if (!upErr) imageUrls.push(supabase.storage.from("files").getPublicUrl(path).data.publicUrl);
+      } else if (imagePreview && imagePreview.startsWith("http")) {
+        imageUrls.push(imagePreview);
+      }
+
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          whatsapp,
+          email: email || undefined,
+          productName: prefilledProduct || undefined,
+          productId: productId || undefined,
+          productUrl: productUrl || undefined,
+          destinationCity: destination.city,
+          destinationCountry: destination.country,
+          imageUrls: imageUrls.length ? imageUrls : undefined,
+          source: "sourcer",
+          website: trap,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Erreur d'enregistrement.");
+      setCode(data.code ?? "");
+      setDone(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur d'enregistrement. Réessayez.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const reset = () => {
@@ -97,12 +143,19 @@ export default function SourcingWizard() {
     setPrefilledProduct(null);
     setName("");
     setWhatsapp("");
+    setEmail("");
+    setImageFile(null);
+    setProductId(null);
+    setCode("");
+    setError("");
   };
 
   const summary = () => {
     return (
       `Bonjour ${CONTACT.manager},\n\n` +
-      `DEMANDE DE SOURCING — ${CONTACT.brand}\n\n` +
+      `DEMANDE DE SOURCING — ${CONTACT.brand}\n` +
+      (code ? `Réf. : ${code}\n` : "") +
+      `\n` +
       (prefilledProduct ? `Produit : ${prefilledProduct}\n` : "") +
       `Produit (URL) : ${productUrl || "-"}\n` +
       `Nom : ${name}\n` +
@@ -119,10 +172,10 @@ export default function SourcingWizard() {
             <Check className="size-8 text-emerald-600" strokeWidth={3} />
           </span>
           <h3 className="mt-6 text-2xl font-extrabold tracking-tight text-ink-900">
-            Demande transmise
+            Demande enregistrée
           </h3>
           <p className="mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-ink-600">
-            Un acheteur TRACOLI analyse votre demande et revient vers vous sous 24 heures. Nous prendrons en charge toutes les vérifications nécessaires.
+            {code && (<><span className="font-mono font-bold text-ink-900">{code}</span> — </>)}Un acheteur TRACOLI analyse votre demande et revient vers vous sous 24 heures. Nous prendrons en charge toutes les vérifications nécessaires.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
@@ -336,6 +389,36 @@ export default function SourcingWizard() {
                       className={inputCls}
                     />
                   </div>
+
+                  <div>
+                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                      Email <span className="font-medium normal-case">(facultatif)</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="vous@exemple.com"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  <input
+                    type="text"
+                    name="website"
+                    value={trap}
+                    onChange={(e) => setTrap(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                  />
+
+                  {error && (
+                    <p className="rounded-xl bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">
+                      {error}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

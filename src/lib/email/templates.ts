@@ -1,3 +1,7 @@
+/** Échappe le texte saisi par un visiteur avant de l'insérer dans un email HTML. */
+export const esc = (v: unknown): string =>
+  String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 interface LeadEmailData {
   reference?: string;
   name: string;
@@ -5,6 +9,12 @@ interface LeadEmailData {
   email?: string;
   productName?: string;
   message?: string;
+  /** Preuve de paiement jointe à la demande */
+  hasPaid?: boolean;
+  /** Demande envoyée depuis /sourcer (sans paiement à ce stade) */
+  sourcing?: boolean;
+  destination?: string;
+  link?: string;
 }
 
 export function clientConfirmationHtml(data: LeadEmailData): string {
@@ -17,18 +27,13 @@ export function clientConfirmationHtml(data: LeadEmailData): string {
       <h1 style="margin:0;color:#fff;font-size:20px">TRACOLI BUSINESS</h1>
     </div>
     <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${data.name}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(data.name)}</strong>,</p>
       <p style="margin:0 0 16px;font-size:15px;color:#374151">
         Nous avons bien reçu votre demande de projet.
       </p>
-      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px;margin:0 0 20px">
-        <p style="margin:0;font-size:14px;font-weight:700;color:#92400e">En attente de vérification</p>
-        <p style="margin:8px 0 0;font-size:13px;color:#78350f">
-          Notre équipe vérifie votre preuve de paiement. Vous recevrez votre code de suivi dès confirmation.
-        </p>
-      </div>
-      <p style="margin:0 0 8px;font-size:14px;color:#374151"><strong>Produit :</strong> ${data.productName ?? "Non précisé"}</p>
-      ${data.message ? `<p style="margin:0 0 20px;font-size:14px;color:#374151"><strong>Message :</strong> ${data.message}</p>` : ""}
+      ${statusBlock(data)}
+      <p style="margin:0 0 8px;font-size:14px;color:#374151"><strong>Produit :</strong> ${esc(data.productName ?? "Non précisé")}</p>
+      ${data.message ? `<p style="margin:0 0 20px;font-size:14px;color:#374151"><strong>Message :</strong> ${esc(data.message)}</p>` : ""}
       <p style="margin:0 0 4px;font-size:14px;color:#6b7280">
         Notre équipe vous contactera sous 24h via WhatsApp.
       </p>
@@ -48,16 +53,18 @@ export function adminAlertHtml(data: LeadEmailData): string {
 <body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
     <div style="background:#111827;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">Nouvelle demande</h1>
+      <h1 style="margin:0;color:#fff;font-size:20px">${data.hasPaid ? "Nouvelle demande — paiement soumis" : data.sourcing ? "Nouvelle demande de sourcing" : "Nouvelle demande"}</h1>
     </div>
     <div style="padding:32px">
       <table style="width:100%;font-size:14px;color:#374151;border-collapse:collapse">
-        <tr><td style="padding:8px 0;font-weight:700">Nom</td><td style="padding:8px 0">${data.name}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">WhatsApp</td><td style="padding:8px 0">${data.whatsapp}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">Email</td><td style="padding:8px 0">${data.email ?? "—"}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">Produit</td><td style="padding:8px 0">${data.productName ?? "—"}</td></tr>
-        ${data.message ? `<tr><td style="padding:8px 0;font-weight:700;vertical-align:top">Message</td><td style="padding:8px 0">${data.message}</td></tr>` : ""}
+        <tr><td style="padding:8px 0;font-weight:700">Nom</td><td style="padding:8px 0">${esc(data.name)}</td></tr>
+        <tr><td style="padding:8px 0;font-weight:700">WhatsApp</td><td style="padding:8px 0">${esc(data.whatsapp)}</td></tr>
+        <tr><td style="padding:8px 0;font-weight:700">Email</td><td style="padding:8px 0">${esc(data.email ?? "—")}</td></tr>
+        <tr><td style="padding:8px 0;font-weight:700">Destination</td><td style="padding:8px 0">${esc(data.destination ?? "—")}</td></tr>
+        <tr><td style="padding:8px 0;font-weight:700">Produit</td><td style="padding:8px 0">${esc(data.productName ?? "—")}</td></tr>
+        ${data.message ? `<tr><td style="padding:8px 0;font-weight:700;vertical-align:top">Message</td><td style="padding:8px 0">${esc(data.message)}</td></tr>` : ""}
       </table>
+    ${data.link ? `<p style="margin:24px 0 0"><a href="${data.link}" style="display:inline-block;background:#111827;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none">Ouvrir dans l'admin</a></p>` : ""}
     </div>
   </div>
 </body>
@@ -78,12 +85,12 @@ export function paymentConfirmedHtml(
       <h1 style="margin:0;color:#fff;font-size:20px">Paiement confirmé ✓</h1>
     </div>
     <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${name}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(name)}</strong>,</p>
       <p style="margin:0 0 16px;font-size:15px;color:#374151">
         Votre paiement a été vérifié et confirmé. Voici votre code de suivi :
       </p>
       <div style="background:#fef2f2;border:2px solid #fecaca;border-radius:12px;padding:20px;text-align:center;margin:0 0 20px">
-        <span style="font-size:28px;font-weight:800;color:#E60000;letter-spacing:2px">${reference}</span>
+        <span style="font-size:28px;font-weight:800;color:#E60000;letter-spacing:2px">${esc(reference)}</span>
       </div>
       <p style="margin:0 0 16px;font-size:14px;color:#374151">
         Vous pouvez désormais suivre votre projet en temps réel :
@@ -130,12 +137,12 @@ export function statusChangeHtml(
 <body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
     <div style="background:#E60000;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">Mise à jour — ${reference}</h1>
+      <h1 style="margin:0;color:#fff;font-size:20px">Mise à jour — ${esc(reference)}</h1>
     </div>
     <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${name}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(name)}</strong>,</p>
       <p style="margin:0 0 20px;font-size:15px;color:#374151">
-        Le statut de votre projet <strong>${reference}</strong> a été mis à jour :
+        Le statut de votre projet <strong>${esc(reference)}</strong> a été mis à jour :
       </p>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;text-align:center;margin:0 0 20px">
         <span style="font-size:18px;font-weight:700;color:#16a34a">${statusLabels[newStatus] ?? newStatus}</span>
@@ -150,4 +157,17 @@ export function statusChangeHtml(
   </div>
 </body>
 </html>`;
+}
+
+
+function statusBlock(d: LeadEmailData): string {
+  const [bg, border, title, text] = d.sourcing
+    ? ["#ecfdf5", "#a7f3d0", "#065f46", ["Demande enregistrée", "Un acheteur TRACOLI analyse votre demande et vous contacte sous 24h sur WhatsApp avec une cotation."]]
+    : d.hasPaid
+      ? ["#fffbeb", "#fde68a", "#92400e", ["En attente de vérification", "Notre équipe vérifie votre preuve de paiement. Vous recevrez votre code de suivi dès confirmation."]]
+      : ["#fffbeb", "#fde68a", "#92400e", ["En attente de paiement", "Envoyez votre preuve de paiement pour activer votre projet. Vous recevrez ensuite votre code de suivi."]];
+  return `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:16px;margin:0 0 20px">
+        <p style="margin:0;font-size:14px;font-weight:700;color:${title}">${text[0]}</p>
+        <p style="margin:8px 0 0;font-size:13px;color:${title}">${text[1]}</p>
+      </div>`;
 }

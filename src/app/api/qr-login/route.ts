@@ -1,3 +1,4 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextResponse } from "next/server";
 import { createHmac } from "crypto";
 import { createServerClient } from "@/lib/supabase/server";
@@ -18,6 +19,7 @@ function verifyToken(token: string): string | null {
 }
 
 export async function GET(request: Request) {
+  if (!(await requireAdmin(request))) return unauthorized();
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
 

@@ -1,3 +1,5 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
+import { notifyNewSubscriber } from "@/lib/email/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -27,10 +29,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  await notifyNewSubscriber(email.trim().toLowerCase(), source ?? "site");
   return NextResponse.json({ ok: true });
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const sb = createServerClient();
 
   const { count, error } = await sb
@@ -50,6 +54,7 @@ export async function GET() {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
 

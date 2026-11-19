@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import {
   CreditCard,
@@ -45,7 +46,7 @@ export default function AdminPaymentsPage() {
 
   async function loadMethods() {
     setLoading(true);
-    const res = await fetch("/api/payment-methods");
+    const res = await adminFetch("/api/payment-methods");
     if (res.ok) {
       const data = await res.json();
       setMethods(data.methods ?? []);
@@ -75,7 +76,7 @@ export default function AdminPaymentsPage() {
     setSaveError("");
     setSaving(true);
 
-    const res = await fetch("/api/payment-methods", {
+    const res = await adminFetch("/api/payment-methods", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -101,7 +102,7 @@ export default function AdminPaymentsPage() {
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    await fetch("/api/payment-methods", {
+    await adminFetch("/api/payment-methods", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: deleteTarget.id }),

@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import { Mail, Download, Trash2, RefreshCw } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
@@ -18,7 +19,7 @@ export default function AdminNewsletterPage() {
 
   async function loadEmails() {
     setLoading(true);
-    const res = await fetch("/api/newsletter");
+    const res = await adminFetch("/api/newsletter");
     if (res.ok) {
       const data = await res.json();
       setEmails(data.emails ?? []);
@@ -29,7 +30,7 @@ export default function AdminNewsletterPage() {
   async function confirmDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    await fetch(`/api/newsletter?id=${deleteTarget.id}`, { method: "DELETE" });
+    await adminFetch(`/api/newsletter?id=${deleteTarget.id}`, { method: "DELETE" });
     setEmails((prev) => prev.filter((e) => e.id !== deleteTarget.id));
     setDeleting(false);
     setDeleteTarget(null);

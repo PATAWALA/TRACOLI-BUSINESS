@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import {
   Ship,
@@ -51,7 +52,7 @@ export default function AdminShippingPage() {
 
   async function loadRates() {
     setLoading(true);
-    const res = await fetch("/api/shipping-rates");
+    const res = await adminFetch("/api/shipping-rates");
     if (res.ok) {
       const data = await res.json();
       setRates(data.rates ?? []);
@@ -84,7 +85,7 @@ export default function AdminShippingPage() {
     setSaveError("");
     setSaving(true);
 
-    const res = await fetch("/api/shipping-rates", {
+    const res = await adminFetch("/api/shipping-rates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -113,7 +114,7 @@ export default function AdminShippingPage() {
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    await fetch("/api/shipping-rates", {
+    await adminFetch("/api/shipping-rates", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: deleteTarget.id }),

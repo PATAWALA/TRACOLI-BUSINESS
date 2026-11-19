@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState, useRef } from "react";
 import {
   Package,
@@ -72,7 +73,7 @@ export default function AdminProductsPage() {
 
   async function loadProducts() {
     setLoading(true);
-    const res = await fetch("/api/products");
+    const res = await adminFetch("/api/products");
     if (res.ok) {
       const data = await res.json();
       setProducts(data.products ?? []);
@@ -136,7 +137,7 @@ export default function AdminProductsPage() {
       }
     }
 
-    const res = await fetch("/api/products", {
+    const res = await adminFetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -168,7 +169,7 @@ export default function AdminProductsPage() {
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
-    await fetch("/api/products", {
+    await adminFetch("/api/products", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: deleteTarget.id }),

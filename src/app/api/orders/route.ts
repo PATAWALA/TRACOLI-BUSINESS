@@ -1,3 +1,4 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -8,6 +9,7 @@ function generateOrderRef(): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const body = await req.json();
   const { lead_id, description, quantity, unit_price, total_price, currency } =
     body as {
@@ -47,7 +49,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data, { status: 201 });
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const sb = createServerClient();
 
   const { data, error } = await sb

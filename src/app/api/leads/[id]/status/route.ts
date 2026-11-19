@@ -1,3 +1,5 @@
+import { FROM } from "@/lib/email/notify";
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/email/resend";
@@ -28,6 +30,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!(await requireAdmin(request))) return unauthorized();
   try {
     const { id } = await params;
     const { status } = (await request.json()) as { status: string };
@@ -76,7 +79,7 @@ export async function PATCH(
       if (status === "confirme") {
         await resend.emails
           .send({
-            from: "TRACOLI Business <noreply@tracolibusiness.com>",
+            from: FROM,
             to: lead.email,
             subject: `Paiement confirmé — ${lead.reference}`,
             html: paymentConfirmedHtml(
@@ -89,7 +92,7 @@ export async function PATCH(
       } else {
         await resend.emails
           .send({
-            from: "TRACOLI Business <noreply@tracolibusiness.com>",
+            from: FROM,
             to: lead.email,
             subject: `Mise à jour — ${lead.reference}`,
             html: statusChangeHtml(lead.name, lead.reference, status),

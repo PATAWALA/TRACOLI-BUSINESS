@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -18,7 +19,6 @@ import {
 import PageHeader from "@/components/admin/ui/PageHeader";
 import DataTable, { type Column } from "@/components/admin/ui/DataTable";
 import { LeadStatusBadge } from "@/components/admin/ui/StatusBadge";
-import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
 const FILTERS: { value: LeadStatus | "all"; label: string }[] = [
@@ -75,17 +75,9 @@ export default function AdminLeadsPage() {
 
   async function loadLeads() {
     setLoading(true);
-    let query = supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (filter !== "all") {
-      query = query.eq("status", filter);
-    }
-
-    const { data } = await query;
-    setLeads((data as Lead[]) ?? []);
+    const res = await adminFetch(`/api/leads?status=${filter}`);
+    const data = res.ok ? await res.json() : { leads: [] };
+    setLeads((data.leads as Lead[]) ?? []);
     setLoading(false);
   }
 
@@ -94,7 +86,7 @@ export default function AdminLeadsPage() {
     setCreateError("");
     setCreating(true);
 
-    const res = await fetch("/api/leads", {
+    const res = await adminFetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

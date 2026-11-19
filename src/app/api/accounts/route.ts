@@ -1,7 +1,9 @@
+import { requireAdmin, unauthorized } from "@/lib/admin-auth";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!(await requireAdmin(req))) return unauthorized();
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("users")
@@ -16,6 +18,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!(await requireAdmin(request))) return unauthorized();
   try {
     const { email, password, role } = (await request.json()) as {
       email: string;
@@ -79,6 +82,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!(await requireAdmin(request))) return unauthorized();
   try {
     const { id } = (await request.json()) as { id: string };
 

@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
 import {
   UserPlus,
@@ -85,7 +86,7 @@ export default function AdminSettingsPage() {
 
   async function loadMembers() {
     setLoading(true);
-    const res = await fetch("/api/accounts");
+    const res = await adminFetch("/api/accounts");
     if (res.ok) {
       const data = await res.json();
       setMembers(data.members ?? []);
@@ -126,7 +127,7 @@ export default function AdminSettingsPage() {
 
     setCreating(true);
 
-    const res = await fetch("/api/accounts", {
+    const res = await adminFetch("/api/accounts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -153,7 +154,7 @@ export default function AdminSettingsPage() {
     if (!deleteTarget) return;
     setDeleting(true);
 
-    await fetch("/api/accounts", {
+    await adminFetch("/api/accounts", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: deleteTarget.id }),
@@ -204,7 +205,7 @@ export default function AdminSettingsPage() {
     setQrError("");
 
     try {
-      const res = await fetch(`/api/qr-login?userId=${currentUserId}`);
+      const res = await adminFetch(`/api/qr-login?userId=${currentUserId}`);
       if (!res.ok) {
         const data = await res.json();
         setQrError(data.error ?? "Erreur lors de la génération.");

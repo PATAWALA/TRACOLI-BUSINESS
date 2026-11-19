@@ -1,5 +1,6 @@
 "use client";
 
+import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -19,7 +20,6 @@ import {
   Clock,
   ShieldCheck,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase/client";
 import type { Lead, LeadStatus } from "@/types/database.types";
 
 const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
@@ -48,17 +48,16 @@ export default function LeadDetailPage({
   const [saving, setSaving] = useState(false);
   const [copiedRef, setCopiedRef] = useState(false);
   const [confirmBanner, setConfirmBanner] = useState<string | null>(null);
+  const [parcelCount, setParcelCount] = useState(1);
+  const [clientMsg, setClientMsg] = useState("");
 
   useEffect(() => {
-    supabase
-      .from("leads")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setLead(data as Lead);
-          setNotes((data as Lead).notes ?? "");
+    adminFetch(`/api/leads/${id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.lead) {
+          setLead(d.lead as Lead);
+          setNotes((d.lead as Lead).notes ?? "");
         }
       });
   }, [id]);
@@ -67,7 +66,7 @@ export default function LeadDetailPage({
     setSaving(true);
     setConfirmBanner(null);
 
-    const res = await fetch(`/api/leads/${id}/status`, {
+    const res = await adminFetch(`/api/leads/${id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -95,13 +94,29 @@ export default function LeadDetailPage({
 
   async function saveNotes() {
     setSaving(true);
-    await supabase
-      .from("leads")
-      .update({ notes, updated_at: new Date().toISOString() })
-      .eq("id", id);
+    await adminFetch(`/api/leads/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ notes }),
+    });
 
     setLead((prev) => (prev ? { ...prev, notes } : null));
     setSaving(false);
+  }
+
+  async function createClient() {
+    setSaving(true);
+    setClientMsg("");
+    const res = await adminFetch(`/api/leads/${id}/client`, {
+      method: "POST",
+      body: JSON.stringify({ parcels: parcelCount }),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) return setClientMsg(data.error ?? "Erreur.");
+    setLead((prev) =>
+      prev ? { ...prev, metadata: { ...(prev.metadata ?? {}), client_code: data.code } } : prev,
+    );
+    setClientMsg(data.existing ? "Ce client existe déjà." : "Client et colis créés.");
   }
 
   async function copyRef() {
@@ -353,6 +368,45 @@ export default function LeadDetailPage({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Client & colis (suivi) */}
+      <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+        <p className="text-xs font-bold tracking-wider text-ink-500 uppercase">Client &amp; colis</p>
+        {(lead.metadata as { client_code?: string } | null)?.client_code ? (
+          <p className="mt-3 text-sm text-ink-700">
+            Code de suivi client :{" "}
+            <a
+              href={`/admin/clients`}
+              className="font-mono font-bold text-tracoli-600 underline"
+            >
+              {(lead.metadata as { client_code?: string }).client_code}
+            </a>
+            . Le client peut suivre ses colis sur /suivre.
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <label className="text-xs font-semibold text-ink-600">
+              Nombre de colis
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={parcelCount}
+                onChange={(e) => setParcelCount(Number(e.target.value) || 1)}
+                className="mt-1 block w-24 rounded-xl border border-ink-200 px-3 py-2 text-sm"
+              />
+            </label>
+            <button
+              onClick={createClient}
+              disabled={saving}
+              className="rounded-xl bg-ink-900 px-5 py-2.5 text-xs font-bold text-white hover:bg-ink-800 disabled:opacity-60"
+            >
+              Créer le client et ses colis
+            </button>
+          </div>
+        )}
+        {clientMsg && <p className="mt-3 text-sm font-semibold text-emerald-700">{clientMsg}</p>}
       </div>
 
       {/* Internal notes */}
