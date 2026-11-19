@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import StatCard from "@/components/admin/ui/StatCard";
 import HelpBanner from "@/components/admin/ui/HelpBanner";
+import ParcelCodesModal from "@/components/admin/clients/ParcelCodesModal";
 import ClientFormModal from "@/components/admin/clients/ClientFormModal";
 import ImportModal from "@/components/admin/clients/ImportModal";
 import { adminFetch } from "@/lib/admin-fetch";
@@ -43,6 +44,7 @@ export default function AdminClientsPage() {
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [codesFor, setCodesFor] = useState<ClientWithParcels | null>(null);
   const [created, setCreated] = useState<{ name: string; parcels: number } | null>(null);
 
   const load = useCallback(async () => {
@@ -282,6 +284,23 @@ export default function AdminClientsPage() {
                     </button>
                   </div>
                 </div>
+                {c.parcels.length > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCodesFor(c);
+                    }}
+                    className={`mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-bold sm:w-auto ${
+                      c.parcels.some((p) => !p.matricule)
+                        ? "bg-tracoli-500 text-white shadow-sm hover:bg-tracoli-600"
+                        : "border border-ink-200 bg-white text-ink-700 hover:bg-ink-50"
+                    }`}
+                  >
+                    {c.parcels.some((p) => !p.matricule)
+                      ? `Saisir les codes des colis (${c.parcels.filter((p) => !p.matricule).length} à faire)`
+                      : "Modifier les codes des colis"}
+                  </button>
+                )}
                 <button
                   onClick={(e) => copy(clientMessage(c.name, c.parcels.map((p) => p.matricule).filter((x): x is string => !!x)), `m-${c.id}`, e)}
                   className="mt-3 min-h-10 w-full rounded-xl border border-ink-200 text-[13px] font-semibold text-ink-600 hover:bg-ink-50 sm:hidden"
@@ -303,6 +322,7 @@ export default function AdminClientsPage() {
           load();
         }}
       />
+      <ParcelCodesModal client={codesFor} open={!!codesFor} onClose={() => setCodesFor(null)} onSaved={load} />
       <ImportModal open={showImport} onClose={() => setShowImport(false)} onDone={load} />
     </div>
   );

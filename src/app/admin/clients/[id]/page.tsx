@@ -4,8 +4,6 @@ import { use, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Copy,
-  Check,
   Plus,
   Trash2,
   MapPin,
@@ -18,6 +16,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import HelpBanner from "@/components/admin/ui/HelpBanner";
 import ConfirmModal from "@/components/admin/ui/ConfirmModal";
 import Modal from "@/components/admin/ui/Modal";
+import ParcelCodesModal from "@/components/admin/clients/ParcelCodesModal";
 import ParcelStatusBadge from "@/components/admin/clients/ParcelStatusBadge";
 import { adminFetch } from "@/lib/admin-fetch";
 import { PARCEL_MODES, PARCEL_STATUSES, clientMessage, parseCodes, trackingUrl } from "@/lib/parcels";
@@ -39,7 +38,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   const [showAdd, setShowAdd] = useState(false);
   const [add, setAdd] = useState({ count: "1", mode: "a_preciser" as ParcelMode, description: "", codes: "" });
   const [showCodes, setShowCodes] = useState(false);
-  const [codesText, setCodesText] = useState("");
+
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const load = useCallback(async () => {
@@ -93,20 +92,6 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
     flash(assign.length > 1 ? `${assign.length} codes enregistrés ✓` : "Code enregistré ✓");
     await load();
     return true;
-  }
-
-  async function saveBulkCodes() {
-    const codes = parseCodes(codesText);
-    const free = (client?.parcels ?? []).filter((p) => !p.matricule);
-    if (codes.length === 0) return;
-    if (codes.length > free.length) {
-      return flash(`Vous avez collé ${codes.length} codes mais il y a seulement ${free.length} colis sans code.`);
-    }
-    const ok = await assignCodes(codes.map((code, i) => ({ id: free[i].id, code })));
-    if (ok) {
-      setShowCodes(false);
-      setCodesText("");
-    }
   }
 
   async function saveInfo() {
@@ -202,7 +187,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
               {uncoded > 0 && (
                 <button onClick={() => setShowCodes(true)} className="min-h-10 rounded-xl bg-tracoli-500 px-3 text-[13px] font-bold text-white hover:bg-tracoli-600">
-                  Saisir les codes en lot
+                  Saisir les codes des colis
                 </button>
               )}
               {codedCodes.length > 0 && (
@@ -242,9 +227,16 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
             />
             {parcels.length} colis
           </label>
-          <button onClick={() => setShowAdd(true)} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-ink-200 bg-white px-4 text-[13px] font-bold text-ink-700 hover:bg-ink-50">
-            <Plus className="size-4" /> Ajouter des colis
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {parcels.length > 0 && (
+              <button onClick={() => setShowCodes(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-tracoli-500 px-5 text-[13px] font-bold text-white shadow-sm hover:bg-tracoli-600">
+                {uncoded > 0 ? `Saisir les codes (${uncoded} à faire)` : "Modifier les codes"}
+              </button>
+            )}
+            <button onClick={() => setShowAdd(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-ink-200 bg-white px-4 text-[13px] font-bold text-ink-700 hover:bg-ink-50">
+              <Plus className="size-4" /> Ajouter des colis
+            </button>
+          </div>
         </div>
 
         {parcels.length === 0 ? (
@@ -399,21 +391,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </Modal>
 
-      <Modal
-        open={showCodes}
-        onClose={() => setShowCodes(false)}
-        title="Saisir les codes en lot"
-        description={`${uncoded} colis n'ont pas encore de code. Collez les codes, un par ligne : ils sont attribués dans l'ordre.`}
-        footer={
-          <>
-            <button onClick={() => setShowCodes(false)} className="min-h-11 rounded-xl border border-ink-200 bg-white px-5 text-sm font-semibold text-ink-700">Annuler</button>
-            <button onClick={saveBulkCodes} className="min-h-11 rounded-xl bg-tracoli-500 px-6 text-sm font-bold text-white hover:bg-tracoli-600">Enregistrer les codes</button>
-          </>
-        }
-      >
-        <textarea className={`${field} min-h-40 py-2 font-mono uppercase`} value={codesText} onChange={(e) => setCodesText(e.target.value)} placeholder={"CODE-1\nCODE-2\nCODE-3"} />
-        <p className="mt-2 text-[12px] text-ink-500">{parseCodes(codesText).length} code(s) collé(s) pour {uncoded} colis sans code.</p>
-      </Modal>
+      <ParcelCodesModal client={client} open={showCodes} onClose={() => setShowCodes(false)} onSaved={load} />
 
       <ConfirmModal
         open={confirmDelete}
