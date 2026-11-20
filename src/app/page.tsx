@@ -5,6 +5,10 @@ import HomeShipping from "@/components/home/HomeShipping";
 import HomeTracking from "@/components/home/HomeTracking";
 import HomeAboutCTA from "@/components/home/HomeAboutCTA";
 
+export const metadata = {
+  alternates: { canonical: "https://www.tracolibusiness.com" },
+};
+
 export default function HomePage() {
   return (
     <main className="relative overflow-x-clip">
