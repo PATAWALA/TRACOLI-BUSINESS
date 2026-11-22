@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/data/config/navigation";
 import Logo from "@/components/Logo";
+import { FaWhatsapp } from "react-icons/fa";
+import { waLink } from "@/data/shared/helpers";
 
 export default function Header() {
   const pathname = usePathname();
@@ -21,10 +23,10 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-40 border-b transition-colors duration-200 ${
         scrolled
-          ? "border-b border-ink-200 bg-white/95 backdrop-blur-xl"
-          : "border-b border-transparent bg-white/70 backdrop-blur-md"
+          ? "border-ink-200 bg-white lg:bg-white/95 lg:backdrop-blur-xl"
+          : "border-transparent bg-white lg:bg-white/70 lg:backdrop-blur-md"
       }`}
     >
       <div className="mx-auto flex h-[var(--header-h)] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -51,6 +53,17 @@ export default function Header() {
             );
           })}
         </nav>
+
+        <a
+          href={waLink("Bonjour TRACOLI BUSINESS, j’aimerais avoir des informations.")}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Écrire à TRACOLI sur WhatsApp"
+          className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border-2 border-ink-200 bg-white px-3.5 text-sm font-bold text-ink-900 transition-colors hover:border-emerald-500/50 active:scale-[0.97] lg:hidden"
+        >
+          <FaWhatsapp className="size-5 text-[#25D366]" aria-hidden />
+          WhatsApp
+        </a>
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link

@@ -2,43 +2,41 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
+/** Offre principale : la recherche de produit (grande carte verticale). */
 export default function HomeSourcing() {
   return (
-    <section className="bg-white py-20 lg:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl reveal-l">
-            <Image
-              src="/images/warehouse.webp"
-              alt="Entrepôt logistique TRACOLI"
-              fill
-              sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-cover"
-            />
-          </div>
+    <article className="reveal-up relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-3xl bg-ink-900 lg:row-span-2 lg:min-h-0">
+      <Image
+        src="/images/warehouse.webp"
+        alt="Entrepôt logistique : des opérateurs préparent des colis sur un tapis roulant"
+        fill
+        sizes="(max-width: 1024px) 100vw, 33vw"
+        className="-z-10 object-cover"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-900 via-ink-900/70 to-transparent"
+      />
 
-          <div className="reveal-r">
-
-            <h2 className="text-3xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl lg:text-5xl">
-              Vous cherchez un produit en Chine ?
-            </h2>
-
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-500 lg:text-lg">
-              Nous identifions les meilleurs fournisseurs, négocions les prix et
-              coordonnons l&apos;ensemble de la chaîne d&apos;approvisionnement
-              pour vous.
-            </p>
-
-            <div className="mt-8"><Link
-                href="/sourcer"
-                className="group inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-tracoli-500 px-7 py-4 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
-              >
-                Trouver un produit
-                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link></div>
-          </div>
-        </div>
+      <div className="p-6 pt-40 sm:p-8 sm:pt-48">
+        <h3 className="text-2xl leading-tight font-extrabold tracking-tight text-white text-balance sm:text-3xl">
+          Vous cherchez un produit en Chine&nbsp;?
+        </h3>
+        <p className="mt-3 max-w-md text-[15px] leading-relaxed text-white/85">
+          Nous identifions les meilleurs fournisseurs, négocions les prix et
+          coordonnons toute la chaîne pour vous.
+        </p>
+        <Link
+          href="/sourcer"
+          className="group mt-6 inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-tracoli-500 px-7 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
+        >
+          Trouver un produit
+          <ArrowRight
+            className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden
+          />
+        </Link>
       </div>
-    </section>
+    </article>
   );
 }

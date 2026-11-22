@@ -16,9 +16,25 @@ export default function HomePage() {
     <main className="relative overflow-x-clip">
       <HomeHero />
       <HomeSteps />
-      <HomeSourcing />
-      <HomeShipping />
-      <HomeTracking />
+
+      <section className="bg-white py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="max-w-2xl text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
+            Un seul interlocuteur, de la Chine jusqu&apos;à votre porte.
+          </h2>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
+            Recherche des fournisseurs, achat sécurisé, transport et livraison :
+            la même équipe s&apos;occupe de tout.
+          </p>
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:grid-rows-2 lg:gap-6">
+            <HomeSourcing />
+            <HomeShipping />
+            <HomeTracking />
+          </div>
+        </div>
+      </section>
+
       <HomeProof />
       <HomeAboutCTA />
     </main>
