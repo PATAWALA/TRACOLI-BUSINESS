@@ -58,7 +58,7 @@ export default function MobileBottomNav() {
                   <span className="grid size-11 place-items-center rounded-2xl bg-tracoli-500 shadow-[var(--shadow-red)] transition-transform active:scale-[0.92]">
                     <Icon className="size-5 text-white" strokeWidth={2.5} />
                   </span>
-                  <span className="text-[10px] font-bold text-tracoli-500">
+                  <span className="text-xs font-bold text-tracoli-500">
                     {item.label}
                   </span>
                 </Link>
@@ -90,14 +90,14 @@ export default function MobileBottomNav() {
                 >
                   <Icon
                     className={`size-[22px] transition-colors duration-300 ${
-                      active ? "text-tracoli-500" : "text-ink-400"
+                      active ? "text-tracoli-500" : "text-ink-500"
                     }`}
                     strokeWidth={active ? 2.5 : 2}
                   />
                 </span>
 
                 <span
-                  className={`relative text-[10.5px] font-semibold tracking-tight transition-colors duration-300 ${
+                  className={`relative text-xs font-semibold tracking-tight transition-colors duration-300 ${
                     active ? "text-tracoli-500" : "text-ink-500"
                   }`}
                 >
