@@ -5,7 +5,7 @@ import { IDENTITY } from "@/data/config/identity";
 
 export default function HomeHero() {
   return (
-    <section className="bg-gradient-to-b from-white via-tracoli-50/30 to-white pt-24 pb-16 sm:pt-28 lg:pt-36 lg:pb-24">
+    <section className="bg-gradient-to-b from-white via-tracoli-50/30 to-white pt-28 pb-16 sm:pt-32 lg:pt-44 lg:pb-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
           <div className="text-center lg:text-left">

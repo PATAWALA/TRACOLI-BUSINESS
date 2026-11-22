@@ -484,7 +484,7 @@ function Shell({
   return (
     <section
       id={id}
-      className={`scroll-mt-20 py-12 pb-24 lg:scroll-mt-24 lg:py-20 lg:pb-20 ${
+      className={`scroll-mt-24 py-12 pb-24 lg:scroll-mt-28 lg:py-20 lg:pb-20 ${
         variant === "alt" ? "bg-ink-50" : "bg-white"
       }`}
     >

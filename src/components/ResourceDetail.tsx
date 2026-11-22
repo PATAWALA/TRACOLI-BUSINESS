@@ -46,7 +46,7 @@ export default function ResourceDetail({ resource }: { resource: Resource }) {
   const related = RESOURCES.filter((r) => r.id !== resource.id).slice(0, 3);
 
   return (
-    <main className="pt-16 lg:pt-20">
+    <main className="pt-header">
       <section className="relative border-b border-ink-200 bg-white py-12 lg:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <Link

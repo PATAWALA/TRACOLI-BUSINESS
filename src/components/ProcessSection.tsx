@@ -4,7 +4,7 @@ import { PROCESS_STEPS } from "@/data/content";
 
 export default function ProcessSection() {
   return (
-    <section id="processus" className="scroll-mt-24 bg-white py-20 lg:py-28">
+    <section id="processus" className="scroll-mt-28 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">

@@ -13,7 +13,7 @@ export default function QuoteSection() {
   return (
     <section
       id="devis"
-      className="relative scroll-mt-20 overflow-hidden border-t border-ink-200 bg-gradient-to-b from-ink-50 via-white to-white py-12 pb-24 lg:scroll-mt-24 lg:py-28 lg:pb-28"
+      className="relative scroll-mt-24 overflow-hidden border-t border-ink-200 bg-gradient-to-b from-ink-50 via-white to-white py-12 pb-24 lg:scroll-mt-28 lg:py-28 lg:pb-28"
     >
       <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.25]" />
       <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[640px] -translate-x-1/2 rounded-full bg-tracoli-500/8 blur-[120px]" />

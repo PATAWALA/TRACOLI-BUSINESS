@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/data/config/navigation";
-import { CONTACT } from "@/data/config/contact";
+import Logo from "@/components/Logo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -28,43 +27,35 @@ export default function Header() {
           : "border-b border-transparent bg-white/70 backdrop-blur-md"
       }`}
     >
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:h-16 sm:px-6 lg:h-20 lg:px-8">
-        <Link
-          href="/"
-          className="group flex min-w-0 items-center gap-2 sm:gap-3"
-          aria-label={CONTACT.brandFull}
-        >
-          <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg border border-ink-200 bg-white shadow-sm transition-all group-hover:border-tracoli-500/40 sm:size-10 lg:size-11 lg:rounded-xl">
-            <Image
-              src="/logo.jpg"
-              alt={`Logo ${CONTACT.brand}`}
-              width={88}
-              height={88}
-              priority
-              className="size-full object-cover"
-            />
-          </span>
-          <span className="hidden truncate text-[13px] font-extrabold tracking-tight text-tracoli-500 sm:block sm:text-[14px]">
-            TRACOLI BUSINESS
-          </span>
-        </Link>
+      <div className="mx-auto flex h-[var(--header-h)] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Logo />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-lg px-3.5 py-2 text-[13.5px] font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900"
-            >
-              {l.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((l) => {
+            const active =
+              l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={active ? "page" : undefined}
+                className={`relative rounded-lg px-4 py-2.5 text-[15px] font-semibold transition-colors hover:bg-ink-100 hover:text-ink-900 ${
+                  active ? "text-tracoli-500" : "text-ink-700"
+                }`}
+              >
+                {l.label}
+                {active && (
+                  <span className="absolute inset-x-4 -bottom-0.5 h-[3px] rounded-full bg-tracoli-500" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/demande"
-            className="rounded-xl bg-tracoli-500 px-4 py-2.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+            className="rounded-xl bg-tracoli-500 px-6 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
           >
             Passer commande
           </Link>

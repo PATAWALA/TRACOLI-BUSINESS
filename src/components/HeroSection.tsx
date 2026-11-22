@@ -28,7 +28,7 @@ export default function HeroSection() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-ink-50 to-white pt-28 pb-16 lg:pt-40 lg:pb-24"
+      className="relative overflow-hidden bg-gradient-to-b from-white via-ink-50 to-white pt-32 pb-16 lg:pt-44 lg:pb-24"
     >
       <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.35]" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

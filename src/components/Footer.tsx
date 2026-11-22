@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import { usePathname } from "next/navigation";
 import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
@@ -36,25 +36,10 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-10">
           <div>
-            <Link href="/" className="flex items-center gap-3">
-              <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
-                <Image
-                  src="/logo.jpg"
-                  alt={`Logo ${CONTACT.brand}`}
-                  width={88}
-                  height={88}
-                  className="size-full object-cover"
-                />
-              </span>
-              <span className="leading-none">
-                <span className="block text-[14px] font-extrabold tracking-tight text-tracoli-500">
-                  TRACOLI BUSINESS
-                </span>
-                <span className="mt-0.5 block text-[9.5px] font-semibold tracking-[0.14em] text-ink-500 uppercase">
-                  {FOOTER.tagline}
-                </span>
-              </span>
-            </Link>
+            <Logo />
+            <p className="mt-3 text-[10px] font-semibold tracking-[0.14em] text-ink-500 uppercase">
+              {FOOTER.tagline}
+            </p>
 
             <p className="mt-5 max-w-sm text-[12.5px] leading-relaxed text-ink-500">
               Sourcing international, importation et logistique. Nous connectons

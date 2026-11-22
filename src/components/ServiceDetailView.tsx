@@ -32,7 +32,7 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
   const Icon = ICON_MAP[slug as keyof typeof ICON_MAP] ?? Search;
 
   return (
-    <main className="pt-16 lg:pt-20">
+    <main className="pt-header">
       <section className="relative overflow-hidden border-b border-ink-200 bg-gradient-to-b from-white via-ink-50 to-white py-16 lg:py-24">
         <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.3]" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">

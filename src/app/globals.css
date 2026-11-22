@@ -29,6 +29,9 @@
 }
 
 @layer base {
+  :root { --header-h: 4rem; }
+  @media (min-width: 640px)  { :root { --header-h: 4.5rem; } }
+  @media (min-width: 1024px) { :root { --header-h: 6rem; } }
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
@@ -46,6 +49,10 @@
     background-color: var(--color-tracoli-500);
     color: #ffffff;
   }
+}
+
+@utility pt-header {
+  padding-top: var(--header-h);
 }
 
 @utility bg-dot-grid {

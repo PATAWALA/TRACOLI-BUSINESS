@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import {
   Send,
@@ -310,20 +310,7 @@ export default function DemandePage() {
     <main className="min-h-screen bg-gradient-to-b from-white via-ink-50/40 to-white">
       {/* Mini header */}
       <div className="flex items-center justify-between px-5 py-4 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm">
-            <Image
-              src="/logo.jpg"
-              alt="TRACOLI"
-              width={80}
-              height={80}
-              className="size-full object-cover"
-            />
-          </span>
-          <span className="text-base font-extrabold tracking-tight text-tracoli-500">
-            TRACOLI
-          </span>
-        </Link>
+        <Logo size="md" />
         <Link
           href="/"
           className="text-sm font-semibold text-ink-500 hover:text-ink-700"

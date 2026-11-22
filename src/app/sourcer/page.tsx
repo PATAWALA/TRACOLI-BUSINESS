@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function SourcingPage() {
   return (
-    <main className="pt-14 sm:pt-16 lg:pt-20">
+    <main className="pt-header">
       <PageHero
         icon={<Search className="size-3" />}
         badge="Sourcing en Chine"
