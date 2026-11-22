@@ -54,7 +54,7 @@ export const metadata: Metadata = {
       {
         rel: "mask-icon",
         url: "/maskable-icon-512x512.png",
-        color: "#E50209",
+        color: "#e60000",
       },
     ],
   },
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#E50209",
+  themeColor: "#e60000",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
