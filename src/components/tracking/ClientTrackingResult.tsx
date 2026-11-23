@@ -1,9 +1,7 @@
 "use client";
 
-import { Check, Package, Plane, Search, Ship } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
-import { CONTACT } from "@/data/config/contact";
-import { waLink } from "@/data/shared/helpers";
+import Link from "next/link";
+import { ArrowRight, Check, Package, Plane, Search, Ship } from "lucide-react";
 import { CLIENT_STEPS, modeLabel, parcelProgress } from "@/lib/parcels";
 
 export interface PublicParcel {
@@ -224,7 +222,6 @@ export default function ClientTrackingResult({
   const { client, parcels, highlight } = data;
   const many = parcels.length > 1;
   const place = [client.city, client.country].filter(Boolean).join(", ");
-  const reorder = `Bonjour ${CONTACT.manager}, je souhaite passer une nouvelle commande.`;
 
   return (
     <div className="mt-2 space-y-6 anim-in">
@@ -269,15 +266,16 @@ export default function ClientTrackingResult({
           <Search className="size-[18px]" aria-hidden />
           Suivre le colis de quelqu&apos;un d&apos;autre
         </button>
-        <a
-          href={waLink(reorder)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white px-7 py-4 text-[15px] font-bold text-ink-800 transition-colors duration-200 hover:border-tracoli-300 active:scale-[0.98]"
+        <Link
+          href="/demande"
+          className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white px-7 py-4 text-[15px] font-bold text-ink-800 transition-colors duration-200 hover:border-tracoli-300 active:scale-[0.98]"
         >
-          <FaWhatsapp className="size-[18px]" aria-hidden />
           Passer une nouvelle commande
-        </a>
+          <ArrowRight
+            className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden
+          />
+        </Link>
       </div>
     </div>
   );
