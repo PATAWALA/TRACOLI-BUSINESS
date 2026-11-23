@@ -17,6 +17,7 @@ import {
   Ship,
   CreditCard,
   Package,
+  Images,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/admin/clients", label: "Clients & colis", icon: Package },
   { href: "/admin/leads", label: "Demandes", icon: Users },
   { href: "/admin/products", label: "Produits", icon: ShoppingBag },
+  { href: "/admin/gallery", label: "Galerie", icon: Images },
   { href: "/admin/shipping", label: "Tarifs", icon: Ship },
   { href: "/admin/payments", label: "Paiements", icon: CreditCard },
   { href: "/admin/partners", label: "Partenaires", icon: Handshake },

@@ -11,6 +11,10 @@ export const metadata = {
   alternates: { canonical: "https://www.tracolibusiness.com" },
 };
 
+// La galerie vient de la base : la page se rafraîchit toutes les 5 minutes
+// (et tout de suite quand une photo est ajoutée depuis l'admin).
+export const revalidate = 300;
+
 export default function HomePage() {
   return (
     <main className="relative overflow-x-clip">

@@ -1,8 +1,9 @@
-import { GALLERY_PHOTOS } from "@/data/home/gallery-photos";
+import { getPublishedGallery } from "@/lib/gallery";
 import GalleryGrid from "@/components/home/GalleryGrid";
 
-export default function HomeGallery() {
-  if (GALLERY_PHOTOS.length === 0) return null;
+export default async function HomeGallery() {
+  const photos = await getPublishedGallery();
+  if (photos.length === 0) return null;
 
   return (
     <section className="bg-ink-50 py-16 lg:py-24">
@@ -11,7 +12,7 @@ export default function HomeGallery() {
           Notre travail au quotidien
         </h2>
         <div className="mt-8 lg:mt-10">
-          <GalleryGrid photos={GALLERY_PHOTOS} />
+          <GalleryGrid photos={photos} />
         </div>
       </div>
     </section>
