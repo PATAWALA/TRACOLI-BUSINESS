@@ -51,6 +51,22 @@ function stepDetail(p: PublicParcel, index: number): string {
   return step.detail;
 }
 
+/**
+ * Ordre d'affichage : le colis cherché d'abord, puis ceux qui sont en route
+ * (les plus avancés en premier), puis ceux qui attendent, les livrés en dernier.
+ * Le rang (« Premier colis »…) reste celui de l'ordre d'origine : il ne change pas.
+ */
+function displayOrder(parcels: PublicParcel[], highlight: string | null) {
+  const weight = (p: PublicParcel) => {
+    if (highlight && p.matricule === highlight) return -1;
+    if (p.status === "livre") return 3;
+    return 2 - parcelProgress(p.status).percent / 100;
+  };
+  return parcels
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => weight(a.p) - weight(b.p) || a.i - b.i);
+}
+
 function ModeChip({ mode }: { mode: string }) {
   const Icon = mode === "aerien" ? Plane : mode === "maritime" ? Ship : Package;
   const label = mode === "a_preciser" ? "Transport à confirmer" : modeLabel(mode);
@@ -136,10 +152,12 @@ function ParcelCard({
   p,
   rank,
   open,
+  searched,
 }: {
   p: PublicParcel;
   rank: string;
   open: boolean;
+  searched: boolean;
 }) {
   const { index, step, total, percent } = parcelProgress(p.status);
   const current = CLIENT_STEPS[index];
@@ -154,7 +172,14 @@ function ParcelCard({
       <summary className="cursor-pointer list-none p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-sm font-bold text-ink-500">{rank}</p>
+            <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink-500">
+              {rank}
+              {searched && (
+                <span className="rounded-full bg-tracoli-50 px-2.5 py-0.5 text-sm font-bold text-tracoli-700">
+                  Le colis recherché
+                </span>
+              )}
+            </p>
             <p className="mt-0.5 truncate text-xl font-extrabold text-ink-900">
               {title ?? p.matricule ?? "Code à venir"}
             </p>
@@ -247,14 +272,18 @@ export default function ClientTrackingResult({
       </div>
 
       <div className="space-y-3">
-        {parcels.map((p, i) => (
-          <ParcelCard
-            key={p.matricule ?? `sans-code-${i}`}
-            p={p}
-            rank={many ? parcelRank(i) : "Colis"}
-            open={!many || (!!highlight && p.matricule === highlight)}
-          />
-        ))}
+        {displayOrder(parcels, highlight).map(({ p, i }) => {
+          const searched = !!highlight && p.matricule === highlight;
+          return (
+            <ParcelCard
+              key={p.matricule ?? `sans-code-${i}`}
+              p={p}
+              rank={many ? parcelRank(i) : "Colis"}
+              open={!many || searched}
+              searched={many && searched}
+            />
+          );
+        })}
       </div>
 
       <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:justify-center">
