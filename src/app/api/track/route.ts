@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   const sb = createServerClient();
   let clientId: string | null = null;
   let highlight: string | null = null;
+  let group: string | null = null;
 
   // 1. Code du colis (saisi par l'équipe)
   {
@@ -30,6 +31,16 @@ export async function GET(req: NextRequest) {
     if (data) {
       clientId = data.client_id;
       highlight = data.matricule;
+    }
+  }
+
+  // 1bis. Code groupé : un seul code pour tout un lot de colis
+  if (!clientId) {
+    const { data } = await sb.from("parcels").select("client_id").eq("group_code", code);
+    const clients = new Set((data ?? []).map((p) => p.client_id));
+    if (clients.size === 1) {
+      clientId = data![0].client_id;
+      group = code;
     }
   }
 
@@ -52,7 +63,7 @@ export async function GET(req: NextRequest) {
   if (clientId) {
     const { data: client } = await sb
       .from("clients")
-      .select("name, city, country, parcels(id, matricule, mode, status, description, external_code, external_platform, expected_ship_date, updated_at)")
+      .select("name, city, country, parcels(*)")
       .eq("id", clientId)
       .single();
     if (!client) return NextResponse.json({ type: "not_found" });
@@ -69,15 +80,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       type: "client",
       highlight,
+      group,
       client: {
         name: mask(client.name),
         city: client.city,
         country: client.country,
       },
-      parcels: parcels.map(({ id, ...p }) => ({
-        ...p,
+      parcels: parcels.map((p) => ({
+        matricule: p.matricule,
+        group_code: p.group_code ?? null,
+        mode: p.mode,
+        status: p.status,
+        description: p.description,
+        external_code: p.external_code,
+        external_platform: p.external_platform,
+        expected_ship_date: p.expected_ship_date,
         history: (events ?? [])
-          .filter((e) => e.parcel_id === id)
+          .filter((e) => e.parcel_id === p.id)
           .map((e) => ({ status: e.status, at: e.created_at })),
       })),
     });

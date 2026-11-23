@@ -166,6 +166,8 @@ export interface Parcel {
   mode: ParcelMode;
   status: ParcelStatus;
   description: string | null;
+  /** Code partagé par plusieurs colis d'un même client (lot), ou null. */
+  group_code: string | null;
   external_code: string | null;
   external_platform: string | null;
   expected_ship_date: string | null;

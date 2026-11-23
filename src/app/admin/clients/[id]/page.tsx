@@ -11,6 +11,7 @@ import {
   Mail,
   Pencil,
   ExternalLink,
+  Layers,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import HelpBanner from "@/components/admin/ui/HelpBanner";
@@ -23,7 +24,7 @@ import { PARCEL_MODES, PARCEL_STATUSES, clientMessage, parseCodes, trackingUrl }
 import type { ClientWithParcels, Parcel, ParcelMode } from "@/types/database.types";
 
 const field =
-  "w-full min-h-10 rounded-lg border border-ink-200 bg-white px-3 text-[13px] text-ink-900 outline-none focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/15";
+  "w-full min-h-11 rounded-lg border border-ink-200 bg-white px-3 text-[15px] text-ink-900 outline-none focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/15";
 
 export default function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -38,6 +39,9 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   const [showAdd, setShowAdd] = useState(false);
   const [add, setAdd] = useState({ count: "1", mode: "a_preciser" as ParcelMode, description: "", codes: "" });
   const [showCodes, setShowCodes] = useState(false);
+  const [showGroup, setShowGroup] = useState(false);
+  const [groupCode, setGroupCode] = useState("");
+  const [groupError, setGroupError] = useState("");
 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -94,6 +98,27 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
     return true;
   }
 
+  /** Un seul code pour tous les colis cochés (code null = les retirer du lot). */
+  async function saveGroup(code: string | null) {
+    setGroupError("");
+    const res = await adminFetch("/api/parcels", {
+      method: "PATCH",
+      body: JSON.stringify({ group: { ids: [...selected], code } }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return setGroupError(data.error ?? "Erreur : code non enregistré.");
+    flash(code ? `Code ${code} donné à ${selected.size} colis ✓` : "Colis retirés du lot ✓");
+    setShowGroup(false);
+    setSelected(new Set());
+    await load();
+  }
+
+  function suggestGroupCode() {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const rnd = Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
+    return `LOT-${rnd}`;
+  }
+
   async function saveInfo() {
     const res = await adminFetch(`/api/clients/${id}`, { method: "PATCH", body: JSON.stringify(info) });
     const data = await res.json();
@@ -148,8 +173,11 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
 
   const parcels = client.parcels;
   const allSelected = parcels.length > 0 && selected.size === parcels.length;
-  const codedCodes = parcels.map((p) => p.matricule).filter((c): c is string => !!c);
-  const uncoded = parcels.length - codedCodes.length;
+  const groupCodes = [...new Set(parcels.map((p) => p.group_code).filter((c): c is string => !!c))];
+  const soloCodes = parcels.filter((p) => !p.group_code).map((p) => p.matricule).filter((c): c is string => !!c);
+  const codedCodes = [...groupCodes, ...soloCodes];
+  const uncoded = parcels.filter((p) => !p.group_code && !p.matricule).length;
+  const selectedInGroup = parcels.some((p) => selected.has(p.id) && p.group_code);
   const message = clientMessage(client.name, codedCodes);
   const wa = client.whatsapp
     ? `https://wa.me/${client.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`
@@ -181,7 +209,8 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
           <div className="rounded-2xl bg-tracoli-50 p-4 lg:min-w-72">
             <p className="text-[11px] font-bold tracking-wider text-tracoli-600 uppercase">Suivi par code de colis</p>
             <p className="mt-1 text-[13px] text-ink-700">
-              <strong>{codedCodes.length}</strong> colis avec code
+              <strong>{parcels.length - uncoded}</strong> colis avec code
+              {groupCodes.length > 0 && <> · <strong>{groupCodes.length}</strong> lot{groupCodes.length > 1 ? "s" : ""}</>}
               {uncoded > 0 && <> · <strong className="text-amber-700">{uncoded} sans code</strong></>}
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
@@ -210,22 +239,25 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
-      <HelpBanner title="Mettre à jour les colis">
-        Changez le statut d&apos;un colis avec le menu de sa ligne. Pour en changer plusieurs d&apos;un coup,
-        cochez-les : une barre apparaît en bas de l&apos;écran. Le client voit la mise à jour immédiatement sur le site.
+      <HelpBanner title="Comment ça marche ?">
+        <ul className="list-disc space-y-1 pl-5">
+          <li><strong>Un colis :</strong> changez son statut avec le menu de sa ligne. Le client voit la mise à jour tout de suite.</li>
+          <li><strong>Plusieurs colis :</strong> cochez-les (ou « Tout sélectionner »). Une barre apparaît en bas de l&apos;écran.</li>
+          <li><strong>Un seul code pour plusieurs colis :</strong> cochez-les, puis « Donner un seul code ». Le client tape ce code et voit tous ces colis dans une seule carte.</li>
+        </ul>
       </HelpBanner>
 
       {/* Colis */}
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <label className="inline-flex min-h-10 cursor-pointer items-center gap-2.5 text-sm font-bold text-ink-800">
+          <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-base font-bold text-ink-900">
             <input
               type="checkbox"
               checked={allSelected}
               onChange={() => setSelected(allSelected ? new Set() : new Set(parcels.map((p) => p.id)))}
-              className="size-4 accent-[#e60000]"
+              className="size-5 accent-[#e60000]"
             />
-            {parcels.length} colis
+            {allSelected ? "Tout désélectionner" : "Tout sélectionner"} ({parcels.length} colis)
           </label>
           <div className="flex flex-wrap gap-2">
             {parcels.length > 0 && (
@@ -257,20 +289,25 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                       if (n.has(p.id)) n.delete(p.id); else n.add(p.id);
                       setSelected(n);
                     }}
-                    className="size-4 accent-[#e60000]"
+                    className="size-5 accent-[#e60000]"
                   />
                   <input
                     key={`${p.id}-${p.matricule ?? ""}`}
                     aria-label="Code du colis"
                     defaultValue={p.matricule ?? ""}
                     placeholder="Code du colis…"
-                    className="min-h-10 w-52 rounded-lg border border-ink-200 bg-white px-3 font-mono text-[13px] font-bold text-ink-900 uppercase outline-none placeholder:font-sans placeholder:font-medium placeholder:normal-case placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/15"
+                    className="min-h-11 w-56 rounded-lg border border-ink-200 bg-white px-3 font-mono text-base font-bold text-ink-900 uppercase outline-none placeholder:font-sans placeholder:font-medium placeholder:normal-case placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/15"
                     onBlur={(e) => {
                       const v = e.target.value.trim().toUpperCase().replace(/\s+/g, "");
                       if (v !== (p.matricule ?? "")) assignCodes([{ id: p.id, code: v || null }]);
                     }}
                     onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
                   />
+                  {p.group_code && (
+                    <span className="inline-flex min-h-9 items-center rounded-lg bg-tracoli-50 px-3 font-mono text-sm font-bold text-tracoli-700">
+                      Lot : {p.group_code}
+                    </span>
+                  )}
                   <ParcelStatusBadge status={p.status} />
                   <button onClick={() => removeParcel(p)} aria-label="Supprimer ce colis" className="ml-auto grid size-9 place-items-center rounded-lg text-ink-300 hover:bg-red-50 hover:text-red-500">
                     <Trash2 className="size-4" />
@@ -278,23 +315,23 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <label className="block">
-                    <span className="text-[11px] font-bold text-ink-500">Statut</span>
+                    <span className="text-sm font-bold text-ink-700">Statut</span>
                     <select className={field} value={p.status} onChange={(e) => patchParcels([p.id], { status: e.target.value })}>
                       {PARCEL_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-bold text-ink-500">Mode</span>
+                    <span className="text-sm font-bold text-ink-700">Mode</span>
                     <select className={field} value={p.mode} onChange={(e) => patchParcels([p.id], { mode: e.target.value })}>
                       {PARCEL_MODES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                     </select>
                   </label>
                   <label className="block sm:col-span-2 xl:col-span-2">
-                    <span className="text-[11px] font-bold text-ink-500">Contenu</span>
+                    <span className="text-sm font-bold text-ink-700">Contenu</span>
                     <input className={field} defaultValue={p.description ?? ""} placeholder="Ex : 2 cartons de vêtements" onBlur={(e) => e.target.value !== (p.description ?? "") && patchParcels([p.id], { description: e.target.value })} />
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-bold text-ink-500">Date d&apos;expédition prévue</span>
+                    <span className="text-sm font-bold text-ink-700">Date d&apos;expédition prévue</span>
                     <input type="date" className={field} defaultValue={p.expected_ship_date ?? ""} onBlur={(e) => e.target.value !== (p.expected_ship_date ?? "") && patchParcels([p.id], { expected_ship_date: e.target.value })} />
                   </label>
                 </div>
@@ -310,22 +347,46 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
 
       {/* Barre d'action groupée */}
       {selected.size > 0 && (
-        <div className="fixed inset-x-3 bottom-20 z-50 flex flex-col gap-2 rounded-2xl border border-ink-200 bg-white p-3 shadow-2xl sm:flex-row sm:items-center lg:right-8 lg:bottom-6 lg:left-auto lg:w-[34rem]">
-          <p className="px-1 text-[13px] font-bold text-ink-800">{selected.size} colis sélectionné(s)</p>
-          <select
-            defaultValue=""
-            onChange={async (e) => {
-              if (!e.target.value) return;
-              await patchParcels([...selected], { status: e.target.value });
-              setSelected(new Set());
-              e.target.value = "";
+        <div className="fixed inset-x-3 bottom-20 z-50 max-h-[80dvh] space-y-3 overflow-y-auto rounded-2xl border border-ink-200 bg-white p-4 shadow-2xl lg:right-8 lg:bottom-6 lg:left-auto lg:w-[36rem]">
+          <p className="text-base font-extrabold text-ink-900">
+            {selected.size} colis sélectionné{selected.size > 1 ? "s" : ""}
+          </p>
+          <button
+            onClick={() => {
+              setGroupCode(suggestGroupCode());
+              setGroupError("");
+              setShowGroup(true);
             }}
-            className={`${field} sm:ml-auto sm:w-56`}
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-4 text-[15px] font-bold text-white hover:bg-tracoli-600"
           >
-            <option value="">Changer le statut…</option>
-            {PARCEL_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
-          <button onClick={() => setSelected(new Set())} className="min-h-10 rounded-lg px-3 text-[13px] font-semibold text-ink-500 hover:bg-ink-50">Annuler</button>
+            <Layers className="size-5" aria-hidden /> Donner un seul code à ces colis
+          </button>
+          <label className="block">
+            <span className="text-sm font-bold text-ink-700">Ou changer le statut de ces colis</span>
+            <select
+              defaultValue=""
+              onChange={async (e) => {
+                if (!e.target.value) return;
+                await patchParcels([...selected], { status: e.target.value });
+                setSelected(new Set());
+                e.target.value = "";
+              }}
+              className={field}
+            >
+              <option value="">Choisir le nouveau statut…</option>
+              {PARCEL_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </select>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {selectedInGroup && (
+              <button onClick={() => saveGroup(null)} className="min-h-11 rounded-lg border border-ink-200 px-4 text-sm font-bold text-ink-700 hover:bg-ink-50">
+                Retirer du lot
+              </button>
+            )}
+            <button onClick={() => setSelected(new Set())} className="min-h-11 rounded-lg px-4 text-sm font-semibold text-ink-600 hover:bg-ink-50">
+              Annuler la sélection
+            </button>
+          </div>
         </div>
       )}
 
@@ -389,6 +450,38 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
             <span className="mt-1 block text-[12px] text-ink-400">Facultatif. Le nombre de colis s&apos;ajuste au nombre de codes.</span>
           </label>
         </div>
+      </Modal>
+
+      <Modal
+        open={showGroup}
+        onClose={() => setShowGroup(false)}
+        title={`Un seul code pour ${selected.size} colis`}
+        description="Le client tape ce code sur la page de suivi et voit tous ces colis dans une seule carte, avec leur nom et leur pourcentage."
+        footer={
+          <>
+            <button onClick={() => setShowGroup(false)} className="min-h-12 rounded-xl border border-ink-200 bg-white px-5 text-[15px] font-semibold text-ink-700">Annuler</button>
+            <button onClick={() => saveGroup(groupCode)} disabled={groupCode.trim().length < 4} className="min-h-12 rounded-xl bg-tracoli-500 px-6 text-[15px] font-bold text-white hover:bg-tracoli-600 disabled:opacity-50">
+              Enregistrer le code
+            </button>
+          </>
+        }
+      >
+        <label className="block">
+          <span className="text-sm font-bold text-ink-800">Code du lot</span>
+          <input
+            value={groupCode}
+            onChange={(e) => setGroupCode(e.target.value)}
+            autoFocus
+            className={`${field} min-h-12 font-mono text-lg font-bold uppercase`}
+          />
+        </label>
+        <button type="button" onClick={() => setGroupCode(suggestGroupCode())} className="mt-3 min-h-11 rounded-lg border border-ink-200 px-4 text-sm font-bold text-ink-700 hover:bg-ink-50">
+          Proposer un autre code
+        </button>
+        <p className="mt-3 text-sm text-ink-600">
+          Au moins 4 caractères. Le code proposé convient tel quel, ou remplacez-le par le vôtre. Envoyez-le ensuite au client avec « Copier le message avec les codes ».
+        </p>
+        {groupError && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{groupError}</p>}
       </Modal>
 
       <ParcelCodesModal client={client} open={showCodes} onClose={() => setShowCodes(false)} onSaved={load} />

@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Package, Plane, Search, Ship } from "lucide-react";
 import { CLIENT_STEPS, modeLabel, parcelProgress } from "@/lib/parcels";
 
 export interface PublicParcel {
   matricule: string | null;
+  group_code?: string | null;
   mode: string;
   status: string;
   description: string | null;
@@ -19,6 +21,7 @@ export interface PublicClient {
   client: { name: string; city: string | null; country: string | null };
   parcels: PublicParcel[];
   highlight: string | null;
+  group?: string | null;
 }
 
 const fmt = (iso: string) =>
@@ -65,6 +68,93 @@ function displayOrder(parcels: PublicParcel[], highlight: string | null) {
   return parcels
     .map((p, i) => ({ p, i }))
     .sort((a, b) => weight(a.p) - weight(b.p) || a.i - b.i);
+}
+
+const GROUP_PREVIEW = 8;
+
+/**
+ * Un lot de colis suivis avec un seul code : une seule carte, les noms des colis
+ * et leur pourcentage. Évite d'ouvrir les colis un par un.
+ */
+function GroupCard({
+  code,
+  items,
+  searched,
+}: {
+  code: string;
+  items: { p: PublicParcel; i: number }[];
+  searched: boolean;
+}) {
+  const [showAll, setShowAll] = useState(false);
+  const rows = items.map(({ p, i }) => ({
+    name: p.description?.trim() || `Colis n° ${i + 1}`,
+    ...parcelProgress(p.status),
+    status: p.status,
+  }));
+  const avg = Math.round(rows.reduce((t, r) => t + r.percent, 0) / rows.length);
+  const delivered = rows.filter((r) => r.status === "livre").length;
+  const counts = CLIENT_STEPS.map((st, k) => ({
+    label: st.label,
+    n: rows.filter((r) => r.index === k && r.status !== "livre").length,
+  })).filter((c) => c.n > 0);
+  const shown = showAll ? rows : rows.slice(0, GROUP_PREVIEW);
+
+  return (
+    <section className="rounded-3xl border border-ink-200 bg-white p-5 shadow-card sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink-500">
+            Lot de {rows.length} colis
+            {searched && (
+              <span className="rounded-full bg-tracoli-50 px-2.5 py-0.5 text-sm font-bold text-tracoli-700">
+                Le lot recherché
+              </span>
+            )}
+          </p>
+          <p className="mt-0.5 font-mono text-xl font-extrabold break-all text-ink-900">{code}</p>
+        </div>
+        <p className="shrink-0 text-4xl leading-none font-extrabold tracking-tight text-tracoli-500 tabular-nums">
+          {avg}&nbsp;%
+        </p>
+      </div>
+      <div className="mt-4">
+        <ProgressBar percent={avg} />
+      </div>
+      <p className="mt-3 text-base text-ink-700">
+        {delivered === rows.length
+          ? "Tous vos colis sont livrés."
+          : [delivered > 0 ? `${delivered} livré${delivered > 1 ? "s" : ""}` : null, ...counts.map((c) => `${c.n} · ${c.label}`)]
+              .filter(Boolean)
+              .join("  ·  ")}
+      </p>
+
+      <ul className="mt-5 divide-y divide-ink-100 border-t border-ink-100">
+        {shown.map((r, k) => (
+          <li key={k} className="flex items-center gap-3 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-base font-bold text-ink-900">{r.name}</p>
+              <p className="text-sm text-ink-500">{CLIENT_STEPS[r.index].label}</p>
+            </div>
+            <div className="hidden w-24 sm:block">
+              <ProgressBar percent={r.percent} />
+            </div>
+            <p className="w-14 shrink-0 text-right text-lg font-extrabold text-ink-900 tabular-nums">
+              {r.percent}&nbsp;%
+            </p>
+          </li>
+        ))}
+      </ul>
+      {rows.length > GROUP_PREVIEW && (
+        <button
+          type="button"
+          onClick={() => setShowAll((v) => !v)}
+          className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink-200 px-5 text-base font-bold text-ink-800 hover:border-tracoli-300"
+        >
+          {showAll ? "Réduire la liste" : `Voir les ${rows.length - GROUP_PREVIEW} autres colis`}
+        </button>
+      )}
+    </section>
+  );
 }
 
 function ModeChip({ mode }: { mode: string }) {
@@ -244,8 +334,20 @@ export default function ClientTrackingResult({
   data: PublicClient;
   onReset: () => void;
 }) {
-  const { client, parcels, highlight } = data;
+  const { client, parcels, highlight, group } = data;
   const many = parcels.length > 1;
+  const indexed = parcels.map((p, i) => ({ p, i }));
+  const groups = new Map<string, { p: PublicParcel; i: number }[]>();
+  for (const it of indexed) {
+    const g = it.p.group_code;
+    if (g) groups.set(g, [...(groups.get(g) ?? []), it]);
+  }
+  const groupList = [...groups.entries()].sort(
+    ([a, ia], [b, ib]) =>
+      Number(b === group || ib.some(({ p }) => p.matricule === highlight && !!highlight)) -
+      Number(a === group || ia.some(({ p }) => p.matricule === highlight && !!highlight)),
+  );
+  const singles = parcels.filter((p) => !p.group_code);
   const place = [client.city, client.country].filter(Boolean).join(", ");
 
   return (
@@ -264,7 +366,7 @@ export default function ClientTrackingResult({
           {client.name}
           {place && ` · ${place}`}
         </p>
-        {many && (
+        {singles.length > 1 && (
           <p className="mt-3 text-base text-ink-700">
             Touchez un colis pour voir où il se trouve.
           </p>
@@ -272,15 +374,24 @@ export default function ClientTrackingResult({
       </div>
 
       <div className="space-y-3">
-        {displayOrder(parcels, highlight).map(({ p, i }) => {
+        {groupList.map(([code, items]) => (
+          <GroupCard
+            key={code}
+            code={code}
+            items={items}
+            searched={code === group || items.some(({ p }) => !!highlight && p.matricule === highlight)}
+          />
+        ))}
+        {displayOrder(singles, highlight).map(({ p }) => {
+          const i = parcels.indexOf(p);
           const searched = !!highlight && p.matricule === highlight;
           return (
             <ParcelCard
               key={p.matricule ?? `sans-code-${i}`}
               p={p}
               rank={many ? parcelRank(i) : "Colis"}
-              open={!many || searched}
-              searched={many && searched}
+              open={singles.length === 1 || searched}
+              searched={singles.length > 1 && searched}
             />
           );
         })}

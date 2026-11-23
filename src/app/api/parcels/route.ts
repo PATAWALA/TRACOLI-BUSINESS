@@ -55,9 +55,37 @@ export async function PATCH(req: NextRequest) {
     patch?: Record<string, string | null>;
     note?: string;
     assign?: { id: string; code: string | null }[];
+    group?: { ids: string[]; code: string | null };
   };
   const sb = createServerClient();
   const now = new Date().toISOString();
+
+  // Code groupé : un seul code pour plusieurs colis du même client (code null = retirer du lot)
+  if (body.group) {
+    const ids = body.group.ids ?? [];
+    const code = cleanCode(body.group.code);
+    if (!ids.length || ids.length > 1000) {
+      return NextResponse.json({ error: "Sélectionnez au moins un colis." }, { status: 400 });
+    }
+    if (code) {
+      if (code.length < 4 || code.length > 60) {
+        return NextResponse.json({ error: "Le code doit faire entre 4 et 60 caractères." }, { status: 400 });
+      }
+      const { data: rows } = await sb.from("parcels").select("client_id").in("id", ids);
+      if (new Set((rows ?? []).map((r) => r.client_id)).size !== 1) {
+        return NextResponse.json({ error: "Un code groupé ne peut réunir que les colis d'un même client." }, { status: 400 });
+      }
+      const clientId = rows![0].client_id;
+      const { data: asParcel } = await sb.from("parcels").select("id").eq("matricule", code).limit(1);
+      const { data: asGroup } = await sb.from("parcels").select("id").eq("group_code", code).neq("client_id", clientId).limit(1);
+      if (asParcel?.length || asGroup?.length) {
+        return NextResponse.json({ error: `Le code « ${code} » est déjà utilisé. Choisissez-en un autre.` }, { status: 409 });
+      }
+    }
+    const { error } = await sb.from("parcels").update({ group_code: code, updated_at: now }).in("id", ids);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
 
   // Attribution / modification des codes de colis
   if (body.assign) {
@@ -66,6 +94,17 @@ export async function PATCH(req: NextRequest) {
     }
     const dup = findDuplicateCode(body.assign);
     if (dup) return NextResponse.json({ error: new DuplicateCodeError(dup).message }, { status: 409 });
+
+    const wanted = body.assign.map((a) => cleanCode(a.code)).filter((c): c is string => !!c);
+    if (wanted.length) {
+      const { data: clash } = await sb.from("parcels").select("group_code").in("group_code", wanted).limit(1);
+      if (clash?.length) {
+        return NextResponse.json(
+          { error: new DuplicateCodeError(clash[0].group_code ?? undefined).message },
+          { status: 409 },
+        );
+      }
+    }
 
     for (const a of body.assign) {
       const { error } = await sb
