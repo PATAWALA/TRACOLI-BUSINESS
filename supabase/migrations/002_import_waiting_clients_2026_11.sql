@@ -50,3 +50,4 @@ select id, 'en_agence', 'Colis enregistré' from new_parcels;
 select (select count(*) from public.clients where source = 'import') as clients,
        (select count(*) from public.parcels p join public.clients c on c.id = p.client_id
          where c.code between 'TRC-2026-1001' and 'TRC-2026-1021') as colis;
+

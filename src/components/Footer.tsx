@@ -37,23 +37,23 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-10">
           <div>
             <Logo />
-            <p className="mt-3 text-xs font-semibold tracking-[0.1em] text-ink-500 uppercase">
+            <p className="mt-3 text-sm font-semibold text-ink-700">
               {FOOTER.tagline}
             </p>
 
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-ink-500">
+            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ink-700">
               Sourcing international, importation et logistique. Nous connectons
               les entrepreneurs africains aux meilleurs fournisseurs d&apos;Asie.
             </p>
 
-            <p className="mt-5 max-w-sm text-sm font-semibold text-tracoli-500">
+            <p className="mt-5 max-w-sm text-[15px] font-bold text-tracoli-600">
               {IDENTITY.motto}
             </p>
 
             <div className="mt-7 space-y-2.5">
               <a
                 href={`tel:+${CONTACT.phoneRaw}`}
-                className="flex items-center gap-3 text-sm font-semibold text-ink-700 transition-colors hover:text-tracoli-500"
+                className="flex items-center gap-3 text-[15px] font-semibold text-ink-700 transition-colors hover:text-tracoli-600"
               >
                 <span className="grid size-8 place-items-center rounded-lg border border-ink-200 bg-white">
                   <Phone className="size-3.5" />
@@ -67,7 +67,7 @@ export default function Footer() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm font-semibold text-ink-700 transition-colors hover:text-emerald-600"
+                className="flex items-center gap-3 text-[15px] font-semibold text-ink-700 transition-colors hover:text-emerald-700"
               >
                 <span className="grid size-8 place-items-center rounded-lg border border-ink-200 bg-white">
                   <FaWhatsapp className="size-3.5" />
@@ -77,7 +77,7 @@ export default function Footer() {
 
               <a
                 href={`mailto:${CONTACT.email}`}
-                className="flex items-center gap-3 text-sm font-semibold text-ink-700 transition-colors hover:text-tracoli-500"
+                className="flex items-center gap-3 text-[15px] font-semibold text-ink-700 transition-colors hover:text-tracoli-600"
               >
                 <span className="grid size-8 place-items-center rounded-lg border border-ink-200 bg-white">
                   <Mail className="size-3.5" />
@@ -109,7 +109,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs font-bold tracking-[0.1em] text-tracoli-500 uppercase">
+            <h3 className="text-sm font-extrabold text-ink-900">
               Services
             </h3>
             <ul className="mt-5 space-y-3">
@@ -117,7 +117,7 @@ export default function Footer() {
                 <li key={s.id}>
                   <Link
                     href={`/services/${SLUG_MAP[s.id]}`}
-                    className="group inline-flex items-center gap-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900"
+                    className="group inline-flex items-center gap-1.5 text-[15px] text-ink-700 transition-colors hover:text-ink-900"
                   >
                     {s.title}
                     <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -127,7 +127,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/expedier"
-                  className="group inline-flex items-center gap-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900"
+                  className="group inline-flex items-center gap-1.5 text-[15px] text-ink-700 transition-colors hover:text-ink-900"
                 >
                   Estimation de fret
                   <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -136,7 +136,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/suivre"
-                  className="group inline-flex items-center gap-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900"
+                  className="group inline-flex items-center gap-1.5 text-[15px] text-ink-700 transition-colors hover:text-ink-900"
                 >
                   Suivi de colis
                   <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -146,7 +146,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs font-bold tracking-[0.1em] text-tracoli-500 uppercase">
+            <h3 className="text-sm font-extrabold text-ink-900">
               Navigation
             </h3>
             <ul className="mt-5 space-y-3">
@@ -154,7 +154,7 @@ export default function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="group inline-flex items-center gap-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900"
+                    className="group inline-flex items-center gap-1.5 text-[15px] text-ink-700 transition-colors hover:text-ink-900"
                   >
                     {l.label}
                     <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -165,16 +165,16 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs font-bold tracking-[0.1em] text-tracoli-500 uppercase">
+            <h3 className="text-sm font-extrabold text-ink-900">
               {FOOTER.zonesTitle}
             </h3>
             <ul className="mt-5 space-y-3">
               {DESTINATIONS.map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-start gap-2.5 text-sm text-ink-600"
+                  className="flex items-start gap-2.5 text-[15px] text-ink-700"
                 >
-                  <MapPin className="mt-0.5 size-3.5 shrink-0 text-ink-400" />
+                  <MapPin className="mt-0.5 size-3.5 shrink-0 text-ink-500" />
                   <span className="leading-snug">
                     <span className="font-semibold text-ink-800">
                       {c.country}
@@ -189,7 +189,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-4 border-t border-ink-200 pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-ink-500">
+          <p className="text-sm text-ink-700">
             © {year} {IDENTITY.legalName}.{" "}
             <Link
               href="/admin/login"
@@ -198,7 +198,7 @@ export default function Footer() {
               {FOOTER.legal}
             </Link>
           </p>
-          <p className="text-xs text-ink-500">
+          <p className="text-sm text-ink-700">
             {FOOTER.credit}
           </p>
         </div>

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
 import {
-  Send,
   Upload,
   CheckCircle,
   User,
@@ -200,7 +199,7 @@ export default function DemandePage() {
   /* ─── Écran de confirmation ─── */
   if (result) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-tracoli-50/30 to-white px-5 py-16">
+      <main className="flex min-h-screen items-center justify-center bg-white px-5 py-16">
         <div className="w-full max-w-lg text-center anim-in">
           <div className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-100">
             <CheckCircle className="size-10 text-emerald-600" />
@@ -265,7 +264,7 @@ export default function DemandePage() {
                       className="flex items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-3 text-left"
                     >
                       <div>
-                        <p className="text-xs font-bold text-ink-500">
+                        <p className="text-xs font-bold text-ink-700">
                           {pm.country} — {pm.provider}
                         </p>
                         <p className="text-base font-extrabold text-ink-900">
@@ -307,7 +306,7 @@ export default function DemandePage() {
 
   /* ─── Page formulaire ─── */
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-ink-50/40 to-white">
+    <main className="min-h-screen bg-white">
       {/* Mini header */}
       <div className="flex items-center justify-between px-5 py-4 sm:px-8">
         <Logo size="md" />
@@ -322,14 +321,10 @@ export default function DemandePage() {
       {/* Hero */}
       <div className="mx-auto max-w-3xl px-5 pt-6 pb-2 text-center sm:px-8">
         <div className="anim-in">
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white/80 px-4 py-2 text-sm font-bold tracking-wider text-tracoli-500 uppercase backdrop-blur-sm">
-            <Send className="size-4" />
-            Projet d&apos;import
-          </span>
-          <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+          <h1 className="text-4xl leading-[1.08] font-extrabold tracking-tight text-ink-900 sm:text-5xl">
             Déposez votre projet d&apos;import
           </h1>
-          <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-ink-500">
+          <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-ink-700">
             Décrivez votre besoin, on s&apos;occupe du reste. Seuls le{" "}
             <strong className="text-ink-700">nom</strong> et le{" "}
             <strong className="text-ink-700">WhatsApp</strong> sont
@@ -366,13 +361,13 @@ export default function DemandePage() {
 
           {/* Champs obligatoires */}
           <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm sm:p-8">
-            <p className="text-xs font-bold tracking-widest text-tracoli-500 uppercase">
+            <p className="text-sm font-bold text-tracoli-600">
               Informations obligatoires
             </p>
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-700">
-                  <User className="size-4 text-ink-400" /> Nom complet
+                  <User className="size-4 text-ink-500" /> Nom complet
                 </label>
                 <input
                   type="text"
@@ -385,7 +380,7 @@ export default function DemandePage() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-700">
-                  <Phone className="size-4 text-ink-400" /> Numéro WhatsApp
+                  <Phone className="size-4 text-ink-500" /> Numéro WhatsApp
                 </label>
                 <input
                   type="tel"
@@ -403,18 +398,18 @@ export default function DemandePage() {
 
           {/* Champs optionnels */}
           <div className="rounded-2xl border border-dashed border-ink-300 bg-white/60 p-6 sm:p-8">
-            <p className="text-xs font-bold tracking-widest text-ink-400 uppercase">
+            <p className="text-sm font-bold text-ink-700">
               Informations optionnelles
             </p>
-            <p className="mt-1 text-sm text-ink-400">
+            <p className="mt-1 text-sm text-ink-500">
               Plus vous nous donnez de détails, plus notre devis sera précis.
             </p>
 
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                  <Mail className="size-4 text-ink-400" /> Email
-                  <span className="text-xs font-normal text-ink-400">
+                  <Mail className="size-4 text-ink-500" /> Email
+                  <span className="text-xs font-normal text-ink-500">
                     — optionnel
                   </span>
                 </label>
@@ -430,8 +425,8 @@ export default function DemandePage() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                  <Package className="size-4 text-ink-400" /> Produit recherché
-                  <span className="text-xs font-normal text-ink-400">
+                  <Package className="size-4 text-ink-500" /> Produit recherché
+                  <span className="text-xs font-normal text-ink-500">
                     — optionnel
                   </span>
                 </label>
@@ -447,8 +442,8 @@ export default function DemandePage() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                  <LinkIcon className="size-4 text-ink-400" /> Lien du produit
-                  <span className="text-xs font-normal text-ink-400">
+                  <LinkIcon className="size-4 text-ink-500" /> Lien du produit
+                  <span className="text-xs font-normal text-ink-500">
                     — optionnel
                   </span>
                 </label>
@@ -464,9 +459,9 @@ export default function DemandePage() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                  <MapPin className="size-4 text-ink-400" /> Ville de
+                  <MapPin className="size-4 text-ink-500" /> Ville de
                   destination
-                  <span className="text-xs font-normal text-ink-400">
+                  <span className="text-xs font-normal text-ink-500">
                     — optionnel
                   </span>
                 </label>
@@ -485,8 +480,8 @@ export default function DemandePage() {
             {/* Photos multiples */}
             <div className="mt-5">
               <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                <Upload className="size-4 text-ink-400" /> Photos du produit
-                <span className="text-xs font-normal text-ink-400">
+                <Upload className="size-4 text-ink-500" /> Photos du produit
+                <span className="text-xs font-normal text-ink-500">
                   — optionnel
                 </span>
               </label>
@@ -533,8 +528,8 @@ export default function DemandePage() {
             {/* Message */}
             <div className="mt-5">
               <label className="flex items-center gap-2 text-sm font-bold text-ink-600">
-                <MessageSquare className="size-4 text-ink-400" /> Message
-                <span className="text-xs font-normal text-ink-400">
+                <MessageSquare className="size-4 text-ink-500" /> Message
+                <span className="text-xs font-normal text-ink-500">
                   — optionnel
                 </span>
               </label>
@@ -551,7 +546,7 @@ export default function DemandePage() {
           </div>
 
           {/* ─── Section Frais de dossier ─── */}
-          <div className="rounded-2xl border-2 border-tracoli-200 bg-gradient-to-br from-tracoli-50/60 via-white to-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-2xl border-2 border-tracoli-200 bg-tracoli-50/40 p-6 shadow-sm sm:p-8">
             <div className="flex items-center gap-3">
               <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-tracoli-500 text-white">
                 <CreditCard className="size-5" />
@@ -560,7 +555,7 @@ export default function DemandePage() {
                 <p className="text-base font-extrabold text-ink-900">
                   Frais de dossier : 10 $
                 </p>
-                <p className="text-sm text-ink-500">
+                <p className="text-sm text-ink-700">
                   Obligatoire pour démarrer votre projet
                 </p>
               </div>
@@ -569,7 +564,7 @@ export default function DemandePage() {
             {/* Numéros de paiement */}
             {paymentMethods.length > 0 && (
               <div className="mt-5 space-y-2">
-                <p className="text-xs font-bold tracking-widest text-ink-500 uppercase">
+                <p className="text-sm font-bold text-ink-700">
                   Envoyez 10 $ à l&apos;un de ces numéros
                 </p>
                 {paymentMethods.map((pm) => (
@@ -578,7 +573,7 @@ export default function DemandePage() {
                     className="flex items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-3"
                   >
                     <div>
-                      <p className="text-xs font-bold text-ink-500">
+                      <p className="text-xs font-bold text-ink-700">
                         {pm.country} — {pm.provider}
                       </p>
                       <p className="text-lg font-extrabold tracking-wide text-ink-900">
@@ -597,7 +592,7 @@ export default function DemandePage() {
                 <FileCheck className="size-4 text-tracoli-500" />
                 Preuve de paiement
               </label>
-              <p className="mt-1 text-sm text-ink-500">
+              <p className="mt-1 text-sm text-ink-700">
                 Capture d&apos;écran ou photo du reçu de transfert (image ou
                 PDF)
               </p>
@@ -652,7 +647,7 @@ export default function DemandePage() {
             {loading ? "Envoi en cours…" : "Soumettre mon projet"}
           </button>
 
-          <p className="text-center text-base text-ink-400">
+          <p className="text-center text-base text-ink-500">
             Ou contactez-nous directement sur{" "}
             <a
               href={waLink(
@@ -669,7 +664,7 @@ export default function DemandePage() {
       </div>
 
       {/* ─── Newsletter section ─── */}
-      <section className="border-t border-ink-200 bg-gradient-to-b from-ink-50 to-white px-5 py-16 sm:px-8">
+      <section className="border-t border-ink-200 bg-ink-50 px-5 py-16 sm:px-8">
         <div className="mx-auto max-w-lg text-center">
           <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-tracoli-500 shadow-lg">
             <Sparkles className="size-6 text-white" />
@@ -681,7 +676,7 @@ export default function DemandePage() {
           <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
             Recevez les meilleures opportunités
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-ink-500">
+          <p className="mt-3 text-base leading-relaxed text-ink-700">
             Inscrivez-vous gratuitement pour recevoir les offres de groupage,
             les bons plans fournisseurs et les conseils import/export.
           </p>
@@ -697,7 +692,7 @@ export default function DemandePage() {
               className="mt-6 flex flex-col gap-3 sm:flex-row"
             >
               <div className="relative flex-1">
-                <Mail className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-ink-400" />
+                <Mail className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-ink-500" />
                 <input
                   type="email"
                   required
@@ -716,7 +711,7 @@ export default function DemandePage() {
               </button>
             </form>
           )}
-          <p className="mt-3 text-sm text-ink-400">
+          <p className="mt-3 text-sm text-ink-500">
             Gratuit. Pas de spam. Désinscription en un clic.
           </p>
         </div>
@@ -731,7 +726,7 @@ export default function DemandePage() {
           Découvrir TRACOLI Business
           <ArrowRight className="size-5" />
         </Link>
-        <p className="mt-3 text-sm text-ink-400">
+        <p className="mt-3 text-sm text-ink-500">
           &copy; {new Date().getFullYear()} TRACOLI Business — Tous droits
           réservés.
         </p>

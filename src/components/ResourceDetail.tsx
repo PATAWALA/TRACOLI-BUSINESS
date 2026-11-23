@@ -1,18 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  Check,
-  Download,
-  FileText,
-  GraduationCap,
-  Lock,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import {
   CONTACT,
   RESOURCES,
@@ -20,13 +8,6 @@ import {
   type Resource,
   type ResourceType,
 } from "@/data/content";
-
-const TYPE_ICONS: Record<ResourceType, typeof BookOpen> = {
-  guide: FileText,
-  ebook: BookOpen,
-  formation: GraduationCap,
-  template: FileText,
-};
 
 const TYPE_LABELS: Record<ResourceType, string> = {
   guide: "Guide",
@@ -37,7 +18,6 @@ const TYPE_LABELS: Record<ResourceType, string> = {
 
 export default function ResourceDetail({ resource }: { resource: Resource }) {
   const isPremium = resource.access === "premium";
-  const Icon = TYPE_ICONS[resource.type];
 
   const ctaMessage = isPremium
     ? `Bonjour ${CONTACT.manager}, je souhaite acheter la ressource : "${resource.title}".`
@@ -47,64 +27,41 @@ export default function ResourceDetail({ resource }: { resource: Resource }) {
 
   return (
     <main className="pt-header">
-      <section className="relative border-b border-ink-200 bg-white py-12 lg:py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <section className="border-b border-ink-200 bg-white py-10 sm:py-14 lg:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Link
             href="/ressources"
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-500 transition-colors hover:text-tracoli-500"
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-ink-700 transition-colors hover:text-tracoli-600"
           >
-            <ArrowLeft className="size-3.5" />
+            <ArrowLeft className="size-4" aria-hidden />
             Toutes les ressources
           </Link>
 
-          <div className="mt-8 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-14">
+          <div className="mt-6 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14">
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-ink-100 px-2.5 py-1 text-[10.5px] font-bold tracking-wide text-ink-700 uppercase">
-                  <Icon className="size-3" />
-                  {TYPE_LABELS[resource.type]}
-                </span>
-                <span className="rounded-md bg-ink-100 px-2.5 py-1 text-[10.5px] font-bold tracking-wide text-ink-700 uppercase">
-                  {resource.level}
-                </span>
-                {isPremium ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-tracoli-500 px-2.5 py-1 text-[10.5px] font-bold tracking-wide text-white uppercase">
-                    <Lock className="size-2.5" />
-                    Premium
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-2.5 py-1 text-[10.5px] font-bold tracking-wide text-emerald-700 uppercase">
-                    <Download className="size-2.5" />
-                    Gratuit
-                  </span>
-                )}
-              </div>
+              <p className="text-sm font-semibold text-ink-700">
+                {TYPE_LABELS[resource.type]} · {resource.level} ·{" "}
+                {isPremium ? "Premium" : "Gratuit"}
+              </p>
 
-              <h1 className="mt-5 text-3xl leading-tight font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl lg:text-[2.75rem]">
+              <h1 className="mt-3 text-4xl leading-[1.08] font-extrabold tracking-tight text-ink-900 text-balance sm:text-5xl">
                 {resource.title}
               </h1>
 
-              <p className="mt-5 text-[14.5px] leading-relaxed text-ink-500">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
                 {resource.longDescription}
               </p>
 
-              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-ink-500">
-                <span className="flex items-center gap-1.5">
-                  <FileText className="size-3.5" />
-                  {resource.meta}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <BookOpen className="size-3.5" />
-                  {resource.format}
-                </span>
-              </div>
+              <p className="mt-5 text-sm text-ink-700">
+                {resource.meta} · {resource.format}
+              </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl border border-ink-200 bg-ink-50 p-5">
+              <div className="mt-7 flex flex-wrap items-center gap-5 rounded-3xl bg-ink-50 p-5 sm:p-6">
                 <div className="flex-1">
-                  <p className="text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                  <p className="text-sm font-semibold text-ink-700">
                     {isPremium ? "Accès premium" : "Accès gratuit"}
                   </p>
-                  <p className="mt-1 text-2xl font-extrabold text-ink-900">
+                  <p className="mt-0.5 text-3xl font-extrabold tracking-tight text-ink-900">
                     {isPremium ? resource.price : "0 USD"}
                   </p>
                 </div>
@@ -113,183 +70,167 @@ export default function ResourceDetail({ resource }: { resource: Resource }) {
                   href={waLink(ctaMessage)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+                  className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
                 >
                   {isPremium ? "Acheter maintenant" : "Télécharger gratuitement"}
-                  <ArrowRight className="size-3.5" />
+                  <ArrowRight
+                    className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden
+                  />
                 </a>
               </div>
             </div>
 
-            <div className="relative">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-ink-200 shadow-card-lg">
-                <Image
-                  src={resource.image}
-                  alt={resource.imageAlt}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/40 via-transparent to-transparent" />
-              </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-100">
+              <Image
+                src={resource.image}
+                alt={resource.imageAlt}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover"
+              />
             </div>
           </div>
         </div>
       </section>
 
       <section className="bg-white py-16 lg:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-            <div className="space-y-14">
-              <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-                  Ce que vous allez apprendre
-                </h2>
-                <ul className="mt-6 space-y-3">
-                  {resource.outcomes.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-tracoli-50 text-tracoli-500">
-                        <Check className="size-3" strokeWidth={3} />
-                      </span>
-                      <span className="text-[14px] leading-relaxed text-ink-700">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-                  Contenu détaillé
-                </h2>
-                <div className="mt-6 space-y-4">
-                  {resource.chapters.map((chapter, i) => (
-                    <div
-                      key={i}
-                      className="overflow-hidden rounded-2xl border border-ink-200 bg-white"
-                    >
-                      <div className="flex items-center gap-3 border-b border-ink-200 bg-ink-50 px-5 py-3.5">
-                        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-tracoli-500 text-[11px] font-extrabold text-white">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <h3 className="text-[13.5px] font-extrabold tracking-tight text-ink-900">
-                          {chapter.title}
-                        </h3>
-                      </div>
-                      <ul className="space-y-2 px-5 py-4">
-                        {chapter.items.map((item) => (
-                          <li
-                            key={item}
-                            className="flex items-start gap-2.5 text-[13px] text-ink-600"
-                          >
-                            <span className="mt-1.5 size-1 shrink-0 rounded-full bg-ink-400" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1.3fr_1fr] lg:gap-16 lg:px-8">
+          <div className="space-y-14">
+            <div>
+              <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+                Ce que vous allez apprendre
+              </h2>
+              <ul className="mt-6 space-y-3.5">
+                {resource.outcomes.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <Check
+                      className="mt-0.5 size-5 shrink-0 text-tracoli-500"
+                      strokeWidth={3}
+                      aria-hidden
+                    />
+                    <span className="text-base leading-relaxed text-ink-800">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-              <div className="rounded-2xl border border-ink-200 bg-ink-50 p-6">
-                <div className="flex items-center gap-2.5">
-                  <Users className="size-4 text-tracoli-500" />
-                  <h3 className="text-[13px] font-extrabold tracking-wide text-ink-900 uppercase">
-                    Pour qui ?
-                  </h3>
-                </div>
-                <ul className="mt-4 space-y-2.5">
-                  {resource.audience.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-2.5 text-[12.5px] leading-relaxed text-ink-600"
-                    >
-                      <span className="mt-1.5 size-1 shrink-0 rounded-full bg-tracoli-500" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-card">
-                <h3 className="text-[13px] font-extrabold tracking-wide text-ink-900 uppercase">
-                  Besoin d&apos;aide ?
-                </h3>
-                <p className="mt-3 text-[12.5px] leading-relaxed text-ink-500">
-                  Contactez {CONTACT.manager}, notre responsable service client. Réponse sous 2 heures ouvrées.
-                </p>
-                <a
-                  href={waLink(
-                    `Bonjour ${CONTACT.manager}, j'ai une question sur la ressource : "${resource.title}".`
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-4 py-3 text-[12.5px] font-bold text-ink-800 transition-colors hover:border-ink-300"
-                >
-                  Contacter par WhatsApp
-                  <ArrowRight className="size-3.5" />
-                </a>
-              </div>
-            </aside>
+            <div>
+              <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+                Contenu détaillé
+              </h2>
+              <ol className="mt-6 divide-y divide-ink-200 border-y border-ink-200">
+                {resource.chapters.map((chapter, i) => (
+                  <li key={i} className="py-6">
+                    <h3 className="flex items-baseline gap-3 text-lg font-extrabold tracking-tight text-ink-900">
+                      <span className="text-tracoli-600 tabular-nums">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      {chapter.title}
+                    </h3>
+                    <ul className="mt-3 space-y-2 pl-9">
+                      {chapter.items.map((item) => (
+                        <li
+                          key={item}
+                          className="list-disc text-base leading-relaxed text-ink-700"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
+
+          <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+            <div className="rounded-3xl bg-ink-50 p-6 sm:p-7">
+              <h3 className="text-lg font-extrabold tracking-tight text-ink-900">
+                Pour qui ?
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {resource.audience.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2.5 text-base leading-relaxed text-ink-800"
+                  >
+                    <Check
+                      className="mt-0.5 size-5 shrink-0 text-tracoli-500"
+                      strokeWidth={3}
+                      aria-hidden
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-3xl border border-ink-200 bg-white p-6 sm:p-7">
+              <h3 className="text-lg font-extrabold tracking-tight text-ink-900">
+                Besoin d&apos;aide ?
+              </h3>
+              <p className="mt-2 text-base leading-relaxed text-ink-700">
+                Contactez {CONTACT.manager}, notre responsable service client.
+                Réponse sous 2 heures ouvrées.
+              </p>
+              <a
+                href={waLink(
+                  `Bonjour ${CONTACT.manager}, j'ai une question sur la ressource : "${resource.title}".`
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink-200 bg-white px-5 text-[15px] font-bold text-ink-800 transition-colors hover:border-ink-300"
+              >
+                Contacter par WhatsApp
+                <ArrowRight className="size-4" aria-hidden />
+              </a>
+            </div>
+          </aside>
         </div>
       </section>
 
       {related.length > 0 && (
-        <section className="bg-ink-50 py-16 lg:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <section className="bg-ink-50 py-16 pb-28 lg:py-20 lg:pb-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 sm:text-4xl">
               À découvrir également
             </h2>
 
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {related.map((r) => {
-                const RelIcon = TYPE_ICONS[r.type];
                 const relPremium = r.access === "premium";
                 return (
                   <Link
                     key={r.id}
                     href={`/ressources/${r.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-card transition-all hover:border-tracoli-500/40 hover:shadow-card-lg"
+                    className="group flex flex-col overflow-hidden rounded-3xl border border-ink-200 bg-white transition-colors hover:border-tracoli-500/40"
                   >
-                    <div className="relative aspect-video overflow-hidden">
+                    <div className="relative aspect-video overflow-hidden bg-ink-100">
                       <Image
                         src={r.image}
                         alt={r.imageAlt}
                         fill
                         sizes="(max-width: 640px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover"
                       />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/60 via-transparent to-transparent" />
-                      <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-md bg-white/95 px-2 py-0.5 text-[9.5px] font-bold tracking-wide text-ink-800 uppercase backdrop-blur">
-                        <RelIcon className="size-2.5" />
-                        {TYPE_LABELS[r.type]}
-                      </span>
                     </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <h3 className="text-[14px] font-extrabold tracking-tight text-ink-900 group-hover:text-tracoli-600">
+                    <div className="flex flex-1 flex-col p-5 sm:p-6">
+                      <p className="text-sm font-semibold text-ink-700">
+                        {TYPE_LABELS[r.type]} · {r.meta}
+                      </p>
+                      <h3 className="mt-2 text-lg leading-snug font-extrabold tracking-tight text-ink-900 group-hover:text-tracoli-600">
                         {r.title}
                       </h3>
-                      <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-ink-500">
+                      <p className="mt-2 line-clamp-2 text-[15px] leading-relaxed text-ink-700">
                         {r.description}
                       </p>
-                      <div className="mt-4 flex items-center justify-between border-t border-ink-200 pt-4">
-                        <span className="text-[11px] text-ink-500">
-                          {r.meta}
-                        </span>
-                        <span
-                          className={`text-[13px] font-extrabold ${
-                            relPremium ? "text-ink-900" : "text-emerald-600"
-                          }`}
-                        >
-                          {relPremium ? r.price : "Gratuit"}
-                        </span>
-                      </div>
+                      <p className="mt-auto pt-4 text-base font-extrabold text-ink-900">
+                        {relPremium ? r.price : "Gratuit"}
+                      </p>
                     </div>
                   </Link>
                 );

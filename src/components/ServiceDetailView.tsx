@@ -1,162 +1,170 @@
-"use client";
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  HelpCircle,
-  Target,
-  TrendingUp,
-  Search,
-  ShieldCheck,
-  Plane,
-  FileCheck2,
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { SERVICE_DETAILS } from "@/data/services/details";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
-
-const ICON_MAP = {
-  "sourcing-negotiation": Search,
-  "inspection-conformite": ShieldCheck,
-  "fret-international": Plane,
-  "dedouanement-livraison": FileCheck2,
-} as const;
 
 export default function ServiceDetailView({ slug }: { slug: string }) {
   const service = SERVICE_DETAILS.find((s) => s.slug === slug);
   if (!service) notFound();
 
-  const Icon = ICON_MAP[slug as keyof typeof ICON_MAP] ?? Search;
-
   return (
     <main className="pt-header">
-      <section className="relative overflow-hidden border-b border-ink-200 bg-gradient-to-b from-white via-ink-50 to-white py-16 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-[0.3]" />
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <Link href="/#services" className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-500 transition-colors hover:text-tracoli-500">
-            <ArrowLeft className="size-3.5" />
-            Tous les services
-          </Link>
-          <div className="mt-6 max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-              <Icon className="size-3" />
-              Service
-            </span>
-            <h1 className="mt-5 text-3xl leading-tight font-extrabold tracking-tight text-ink-900 text-balance sm:text-5xl lg:text-[3rem]">
-              {service.title}
-            </h1>
-            <p className="mt-4 text-[16px] font-semibold text-ink-700">{service.subtitle}</p>
-            <p className="mt-5 text-[14.5px] leading-relaxed text-ink-500">{service.hero}</p>
-          </div>
-          <div className="mt-10 inline-flex items-center gap-4 rounded-2xl border border-ink-200 bg-white px-6 py-5 shadow-card">
-            <span className="grid size-12 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
-              <TrendingUp className="size-5" />
-            </span>
-            <div>
-              <p className="text-2xl font-extrabold tracking-tight text-tracoli-500">{service.stat.value}</p>
-              <p className="text-[12.5px] font-semibold text-ink-600">{service.stat.label}</p>
-            </div>
+      <section className="border-b border-ink-200 bg-white py-12 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="max-w-3xl text-4xl leading-[1.08] font-extrabold tracking-tight text-ink-900 text-balance sm:text-5xl lg:text-6xl">
+            {service.title}
+          </h1>
+          <p className="mt-5 max-w-2xl text-xl font-bold text-ink-800">
+            {service.subtitle}
+          </p>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
+            {service.hero}
+          </p>
+
+          <div className="mt-8 inline-block rounded-2xl bg-ink-50 px-6 py-5">
+            <p className="text-3xl font-extrabold tracking-tight text-ink-900">
+              {service.stat.value}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-ink-700">
+              {service.stat.label}
+            </p>
           </div>
         </div>
       </section>
 
       <section className="bg-white py-16 lg:py-24">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">Notre processus</h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+            Notre processus
+          </h2>
+
+          <ol className="mt-10 grid gap-x-12 md:grid-cols-2">
             {service.processSteps.map((step) => (
-              <div key={step.step} className="rounded-2xl border border-ink-200 bg-white p-6 shadow-card transition-all hover:border-tracoli-500/40 hover:shadow-card-lg">
-                <span className="grid size-10 place-items-center rounded-xl bg-tracoli-500 text-[13px] font-extrabold text-white">{step.step}</span>
-                <h3 className="mt-4 text-[15px] font-extrabold tracking-tight text-ink-900">{step.title}</h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-ink-500">{step.description}</p>
-              </div>
+              <li
+                key={step.step}
+                className="flex gap-5 border-t border-ink-200 py-7"
+              >
+                <span className="text-3xl leading-none font-extrabold text-tracoli-600 tabular-nums">
+                  {step.step}
+                </span>
+                <div>
+                  <h3 className="text-lg font-extrabold tracking-tight text-ink-900">
+                    {step.title}
+                  </h3>
+                  <p className="mt-1.5 text-base leading-relaxed text-ink-700">
+                    {step.description}
+                  </p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       <section className="bg-ink-50 py-16 lg:py-24">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-card lg:p-8">
-              <h3 className="text-[15px] font-extrabold tracking-wide text-ink-900 uppercase">Ce qui est inclus</h3>
-              <ul className="mt-5 space-y-3">
-                {service.includes.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-tracoli-50 text-tracoli-500">
-                      <Check className="size-3" strokeWidth={3} />
-                    </span>
-                    <span className="text-[13.5px] leading-relaxed text-ink-700">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-card lg:p-8">
-              <h3 className="flex items-center gap-2 text-[15px] font-extrabold tracking-wide text-ink-900 uppercase">
-                <Target className="size-4 text-tracoli-500" />
-                Vos bénéfices
-              </h3>
-              <ul className="mt-5 space-y-3">
-                {service.benefits.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <span className="mt-1.5 size-1 shrink-0 rounded-full bg-tracoli-500" />
-                    <span className="text-[13.5px] leading-relaxed text-ink-700">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+              Ce qui est inclus
+            </h2>
+            <ul className="mt-6 space-y-3.5">
+              {service.includes.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <Check
+                    className="mt-0.5 size-5 shrink-0 text-tracoli-500"
+                    strokeWidth={3}
+                    aria-hidden
+                  />
+                  <span className="text-base leading-relaxed text-ink-800">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+              Vos bénéfices
+            </h2>
+            <ul className="mt-6 space-y-3.5">
+              {service.benefits.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <Check
+                    className="mt-0.5 size-5 shrink-0 text-tracoli-500"
+                    strokeWidth={3}
+                    aria-hidden
+                  />
+                  <span className="text-base leading-relaxed text-ink-800">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
       <section className="bg-white py-16 lg:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-            <HelpCircle className="size-6 text-tracoli-500" />
+          <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 sm:text-4xl">
             Questions fréquentes
           </h2>
-          <div className="mt-8 space-y-4">
+          <div className="mt-8 divide-y divide-ink-200 border-y border-ink-200">
             {service.faq.map((item, i) => (
-              <details key={i} className="group rounded-2xl border border-ink-200 bg-white p-5 shadow-card transition-all open:border-tracoli-500/40 open:shadow-card-lg">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
-                  <span className="text-[14px] font-bold text-ink-900">{item.question}</span>
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-tracoli-50 text-[14px] font-bold text-tracoli-500 transition-transform group-open:rotate-45">+</span>
+              <details key={i} className="group py-1">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3">
+                  <span className="text-base font-bold text-ink-900">
+                    {item.question}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="grid size-8 shrink-0 place-items-center rounded-full bg-ink-100 text-lg font-bold text-ink-800 transition-transform group-open:rotate-45"
+                  >
+                    +
+                  </span>
                 </summary>
-                <p className="mt-3 text-[13.5px] leading-relaxed text-ink-500">{item.answer}</p>
+                <p className="pb-4 text-base leading-relaxed text-ink-700">
+                  {item.answer}
+                </p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-gradient-to-b from-white to-ink-50 py-16 pb-24 lg:py-24 lg:pb-28">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-tracoli-200 bg-white p-8 text-center shadow-card-lg sm:p-12">
-            <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-tracoli-500/10 blur-3xl" />
-            <div className="relative">
-              <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl">
-                Prêt à lancer votre projet ?
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-[14.5px] leading-relaxed text-ink-500">
-                Envoyez-nous votre projet et recevez une proposition personnalisée sous 2 heures ouvrées.
-              </p>
-              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <Link href="/#devis" className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]">
-                  Envoyer mon projet
-                  <ArrowRight className="size-3.5" />
-                </Link>
-                <a
-                  href={waLink(`Bonjour ${CONTACT.manager}, je souhaite discuter du service : ${service.title}.`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-[13px] font-bold text-ink-800 transition-colors hover:border-ink-300"
-                >
-                  Discuter sur WhatsApp
-                </a>
-              </div>
+      <section className="bg-white py-12 pb-28 lg:py-20 lg:pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-ink-900 px-6 py-12 sm:px-12 sm:py-16 lg:px-16">
+            <h2 className="max-w-2xl text-3xl leading-[1.15] font-extrabold tracking-tight text-white text-balance sm:text-4xl">
+              Prêt à lancer votre projet ?
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-white/80 lg:text-lg">
+              Envoyez-nous votre projet et recevez une proposition
+              personnalisée sous 2 heures ouvrées.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/demande"
+                className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
+              >
+                Envoyer mon projet
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden
+                />
+              </Link>
+              <a
+                href={waLink(
+                  `Bonjour ${CONTACT.manager}, je souhaite discuter du service : ${service.title}.`
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[56px] items-center justify-center rounded-2xl border-2 border-white/30 px-8 py-4 text-[15px] font-bold text-white transition-colors duration-200 hover:border-white active:scale-[0.98]"
+              >
+                Discuter sur WhatsApp
+              </a>
             </div>
           </div>
         </div>
