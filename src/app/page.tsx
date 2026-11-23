@@ -4,7 +4,7 @@ import HomeSteps from "@/components/home/HomeSteps";
 import HomeSourcing from "@/components/home/HomeSourcing";
 import HomeShipping from "@/components/home/HomeShipping";
 import HomeTracking from "@/components/home/HomeTracking";
-import HomeProof from "@/components/home/HomeProof";
+import HomeGallery from "@/components/home/HomeGallery";
 import HomeAboutCTA from "@/components/home/HomeAboutCTA";
 
 export const metadata = {
@@ -27,7 +27,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <HomeProof />
+      <HomeGallery />
       <HomeAboutCTA />
     </main>
   );
