@@ -10,8 +10,7 @@ export default function HomeTracking() {
           Suivez votre marchandise
         </h3>
         <p className="mt-3 max-w-md text-[15px] leading-relaxed text-ink-700">
-          Entrez le code de votre colis et consultez l&apos;avancement de votre
-          expédition, de l&apos;entrepôt en Chine jusqu&apos;à votre porte.
+          Entrez le code de votre colis pour voir où il en est.
         </p>
 
         <form

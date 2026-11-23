@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/data/config/navigation";
 import Logo from "@/components/Logo";
-import { FaWhatsapp } from "react-icons/fa";
-import { waLink } from "@/data/shared/helpers";
 
 export default function Header() {
   const pathname = usePathname();
@@ -53,17 +51,6 @@ export default function Header() {
             );
           })}
         </nav>
-
-        <a
-          href={waLink("Bonjour TRACOLI BUSINESS, j’aimerais avoir des informations.")}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Écrire à TRACOLI sur WhatsApp"
-          className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border-2 border-ink-200 bg-white px-3.5 text-sm font-bold text-ink-900 transition-colors hover:border-emerald-500/50 active:scale-[0.97] lg:hidden"
-        >
-          <FaWhatsapp className="size-5 text-[#25D366]" aria-hidden />
-          WhatsApp
-        </a>
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link

@@ -11,9 +11,7 @@ export default function HomeShipping() {
           Vous devez expédier vers l&apos;Afrique&nbsp;?
         </h3>
         <p className="mt-3 max-w-md text-[15px] leading-relaxed text-ink-700">
-          Fret aérien ou maritime, groupage ou conteneur complet. Formalités
-          douanières coordonnées : nous organisons votre expédition de bout en
-          bout.
+          Fret aérien ou maritime, groupage ou conteneur complet, douane comprise.
         </p>
         <div>
           <Link

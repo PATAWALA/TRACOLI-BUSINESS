@@ -37,16 +37,7 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-10">
           <div>
             <Logo />
-            <p className="mt-3 text-sm font-semibold text-ink-700">
-              {FOOTER.tagline}
-            </p>
-
-            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ink-700">
-              Sourcing international, importation et logistique. Nous connectons
-              les entrepreneurs africains aux meilleurs fournisseurs d&apos;Asie.
-            </p>
-
-            <p className="mt-5 max-w-sm text-[15px] font-bold text-tracoli-600">
+            <p className="mt-4 max-w-sm text-[15px] font-bold text-tracoli-600">
               {IDENTITY.motto}
             </p>
 

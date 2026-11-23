@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import NewsletterForm from "@/components/home/NewsletterForm";
 
 export default function HomeAboutCTA() {
   return (
@@ -12,13 +11,7 @@ export default function HomeAboutCTA() {
             fournisseurs d&apos;Asie.
           </h2>
 
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white lg:text-lg">
-            Nous accompagnons les commerçants et entrepreneurs dans leurs
-            opérations de sourcing, d&apos;expédition et de coordination
-            douanière sur le corridor Chine–Afrique.
-          </p>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/demande"
               className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-white px-8 py-4 text-[15px] font-bold text-tracoli-600 transition-colors duration-200 hover:bg-tracoli-50 active:scale-[0.98]"
@@ -38,12 +31,6 @@ export default function HomeAboutCTA() {
           </div>
         </div>
 
-        <div className="mx-auto mt-14 max-w-md text-center">
-          <p className="text-sm font-bold text-ink-700">
-            Recevez nos conseils import &amp; les offres de groupage
-          </p>
-          <NewsletterForm />
-        </div>
       </div>
     </section>
   );

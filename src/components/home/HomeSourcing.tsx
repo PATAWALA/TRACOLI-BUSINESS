@@ -23,8 +23,7 @@ export default function HomeSourcing() {
           Vous cherchez un produit en Chine&nbsp;?
         </h3>
         <p className="mt-3 max-w-md text-[15px] leading-relaxed text-white/85">
-          Nous identifions les meilleurs fournisseurs, négocions les prix et
-          coordonnons toute la chaîne pour vous.
+          Nous trouvons les fournisseurs et négocions les prix.
         </p>
         <Link
           href="/sourcer"

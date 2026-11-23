@@ -27,9 +27,6 @@ export default function HomeProof() {
                 sizes="(max-width: 768px) 92vw, 380px"
                 className="aspect-[4/3] w-full object-cover object-top md:aspect-[4/5]"
               />
-              <p className="p-4 text-base font-bold text-ink-800">
-                {item.caption}
-              </p>
             </li>
           ))}
         </ul>
