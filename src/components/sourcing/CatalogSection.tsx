@@ -9,6 +9,9 @@ import ProductCard from "./ProductCard";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "moq-asc";
 
+/** En dessous de ce nombre de produits en base, les exemples complètent le catalogue. */
+const MIN_DB_PRODUCTS = 8;
+
 interface DBProduct {
   id: string;
   name: string;
@@ -76,7 +79,14 @@ export default function CatalogSection() {
       .catch(() => setDbProducts(null));
   }, []);
 
-  const allProducts = dbProducts ?? STATIC_PRODUCTS;
+  // Les produits de l'admin passent en premier. Tant qu'il y en a peu, on complète
+  // avec les exemples : un catalogue d'un seul produit ressemble à une page cassée.
+  const allProducts = useMemo(() => {
+    if (!dbProducts) return STATIC_PRODUCTS;
+    return dbProducts.length >= MIN_DB_PRODUCTS
+      ? dbProducts
+      : [...dbProducts, ...STATIC_PRODUCTS];
+  }, [dbProducts]);
   const fromDB = dbProducts !== null;
 
   const categories = useMemo(() => {

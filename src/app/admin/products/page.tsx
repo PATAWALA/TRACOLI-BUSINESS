@@ -120,21 +120,22 @@ export default function AdminProductsPage() {
     setCreateError("");
     setCreating(true);
 
-    let imageUrl: string | null = imagePreview;
+    // Une photo existante est une vraie adresse https ; l'aperçu d'une nouvelle photo
+    // (blob:) n'est jamais enregistré.
+    let imageUrl: string | null =
+      imagePreview && imagePreview.startsWith("https://") ? imagePreview : null;
 
     if (imageFile) {
-      const ext = imageFile.name.split(".").pop();
-      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("files")
-        .upload(path, imageFile);
-
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage
-          .from("files")
-          .getPublicUrl(path);
-        imageUrl = urlData.publicUrl;
+      const fd = new FormData();
+      fd.append("file", imageFile);
+      const up = await adminFetch("/api/products/upload", { method: "POST", body: fd });
+      const upData = await up.json().catch(() => ({}));
+      if (!up.ok || !upData.url) {
+        setCreateError(upData.error ?? "La photo n'a pas pu être envoyée. Le produit n'a pas été enregistré.");
+        setCreating(false);
+        return;
       }
+      imageUrl = upData.url;
     }
 
     const res = await adminFetch("/api/products", {

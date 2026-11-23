@@ -8,7 +8,7 @@ export async function adminFetch(url: string, init: RequestInit = {}) {
   return fetch(url, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(init.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
       ...(init.headers ?? {}),
       Authorization: `Bearer ${session?.access_token ?? ""}`,
     },

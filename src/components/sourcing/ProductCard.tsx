@@ -1,25 +1,40 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Package } from "lucide-react";
 import type { Product } from "@/data/products/items";
+import { isDisplayableImage } from "@/lib/product-image";
 
 export default function ProductCard({ product }: { product: Product }) {
+  const [broken, setBroken] = useState(false);
+  const showImage = isDisplayableImage(product.image) && !broken;
+
   const requestHref = `/sourcer?sourcing-product=${encodeURIComponent(
     product.name
-  )}&sourcing-product-id=${encodeURIComponent(product.id)}&sourcing-product-url=${encodeURIComponent(product.image)}#sourcing`;
+  )}&sourcing-product-id=${encodeURIComponent(product.id)}&sourcing-product-url=${encodeURIComponent(
+    isDisplayableImage(product.image) ? product.image : ""
+  )}#sourcing`;
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white transition-colors hover:border-tracoli-500/40">
       <div className="relative aspect-square w-full overflow-hidden bg-ink-100">
-        <Image
-          src={product.image}
-          alt={product.imageAlt}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover"
-        />
+        {showImage ? (
+          <Image
+            src={product.image}
+            alt={product.imageAlt}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover"
+            onError={() => setBroken(true)}
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center text-ink-500">
+            <Package className="size-10" aria-hidden />
+            <span className="sr-only">Photo à venir</span>
+          </div>
+        )}
 
         {product.featured && (
           <span className="absolute top-2.5 left-2.5 rounded-full bg-tracoli-500 px-2.5 py-1 text-xs font-bold text-white">
