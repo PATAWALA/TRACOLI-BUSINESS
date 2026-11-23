@@ -488,17 +488,17 @@ export default function SmartTrackingWidget() {
             </div>
 
             {/* CTA */}
-            <div className="mt-8 rounded-3xl bg-ink-900 p-6 text-center text-white sm:p-8">
+            <div className="mt-8 rounded-3xl bg-tracoli-500 p-6 text-center text-white sm:p-8">
               <p className="text-lg font-bold">
                 Pas encore de commande ?
               </p>
-              <p className="mt-1 text-base text-white/80">
+              <p className="mt-1 text-base text-white">
                 Passez votre première commande et recevez votre code de suivi
                 instantanément.
               </p>
               <a
                 href="/demande"
-                className="mt-5 inline-flex min-h-[56px] items-center gap-2 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors hover:bg-tracoli-600 active:scale-[0.98]"
+                className="mt-5 inline-flex min-h-[56px] items-center gap-2 rounded-2xl bg-white px-8 py-4 text-[15px] font-bold text-tracoli-600 transition-colors hover:bg-tracoli-50 active:scale-[0.98]"
               >
                 Passer commande
                 <ArrowRight className="size-4" />

@@ -96,7 +96,7 @@ components:
 
 Le site se comporte comme un guichet bien tenu : on arrive, on voit tout de suite où aller, et une seule couleur forte dit « c'est ici qu'on agit ». Le rouge TRACOLI est net, le fond est blanc, les cartes sont arrondies et posées avec une ombre douce. Le ton est direct et rassurant, sans jargon : un commerçant sur téléphone doit comprendre en une seconde s'il faut chercher un produit ou suivre une commande.
 
-La densité est aérée : sections généreuses, cibles tactiles larges (56px pour les actions principales), textes courts. Le rouge reste un signal, pas une ambiance : il marque l'action principale, l'état actif et quelques repères, jamais de grandes surfaces rouges. Rien de décoratif qui alourdit une connexion lente.
+La densité est aérée : sections généreuses, cibles tactiles larges (56px pour les actions principales), textes courts. Le rouge reste un signal, pas une ambiance : il marque l'action principale, l'état actif et quelques repères, une seule grande surface rouge par page : le panneau d'appel final. Rien de décoratif qui alourdit une connexion lente.
 
 **Key Characteristics:**
 - Rouge vif `#e60000` rare et fonctionnel sur fond blanc et gris très clair.
@@ -125,7 +125,7 @@ Un rouge corporate unique, porté par une échelle de gris neutres légèrement 
 - **Blanc** (#ffffff) : fond de page et de cartes.
 
 ### Named Rules
-**The Signal Rule.** Le rouge sert à agir ou à situer (bouton, lien actif, icône d'accent). Aucune grande surface rouge, aucun fond de section rouge.
+**The Signal Rule.** Le rouge sert à agir ou à situer (bouton, lien actif, icône d'accent). Une seule grande surface rouge par page est permise : le panneau d'appel final (fond `tracoli-500`, texte blanc plein, bouton principal blanc au texte `tracoli-600`, bouton secondaire en contour blanc, sans ombre rouge). Aucun autre fond de section rouge.
 
 **The One Red Rule.** Une seule teinte de rouge par état ; ne pas introduire d'autre rouge, orange ou rose saturé à côté.
 
@@ -206,7 +206,7 @@ Tuile rouge dégradée (#ff1a1a → #c40000) avec flèche blanche en « T », su
 - **Do** désactiver toute animation d'apparition sous `prefers-reduced-motion`.
 
 ### Don't:
-- **Don't** remplir de grandes surfaces ou sections en rouge.
+- **Don't** remplir de sections en rouge, hors le panneau d'appel final (un seul par page).
 - **Don't** appliquer l'ombre rouge ailleurs que sur les boutons principaux.
 - **Don't** ajouter de dégradés de texte, de halos ou d'effets décoratifs qui alourdissent le site sur connexion lente.
 - **Don't** introduire une seconde police ou un second rouge.
