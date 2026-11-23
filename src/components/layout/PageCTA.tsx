@@ -1,7 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { CONTACT } from "@/data/config/contact";
 import { waLink } from "@/data/shared/helpers";
 
@@ -15,9 +14,9 @@ type PageCTAProps = {
 
 export default function PageCTA({
   title = "Prêt à lancer votre projet ?",
-  description = "Notre équipe vous répond sous 2 heures ouvrées avec une proposition concrète.",
-  primaryLabel = "Demander une cotation",
-  primaryHref = "/#devis",
+  description = "Notre équipe vous répond avec une proposition concrète.",
+  primaryLabel = "Passer commande",
+  primaryHref = "/demande",
   waMessage,
 }: PageCTAProps) {
   const message =
@@ -25,37 +24,36 @@ export default function PageCTA({
     `Bonjour ${CONTACT.manager}, je souhaite discuter de mon projet.`;
 
   return (
-    <section className="bg-white py-12 pb-24 lg:py-16 lg:pb-20">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-tracoli-200 bg-gradient-to-br from-tracoli-50 via-white to-white p-8 text-center shadow-card-lg sm:p-12">
-          <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-tracoli-500/10 blur-3xl" />
+    <section className="bg-white py-12 pb-28 lg:py-20 lg:pb-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl bg-ink-900 px-6 py-12 sm:px-12 sm:py-16 lg:px-16">
+          <h2 className="max-w-2xl text-3xl leading-[1.15] font-extrabold tracking-tight text-white text-balance sm:text-4xl">
+            {title}
+          </h2>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-white/80 lg:text-lg">
+            {description}
+          </p>
 
-          <div className="relative">
-            <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl">
-              {title}
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-[14px] leading-relaxed text-ink-500 lg:text-[14.5px]">
-              {description}
-            </p>
-
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                href={primaryHref}
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
-              >
-                {primaryLabel}
-                <ArrowRight className="size-3.5" />
-              </Link>
-              <a
-                href={waLink(message)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3.5 text-[13px] font-bold text-ink-800 transition-colors hover:border-ink-300"
-              >
-                <MessageCircle className="size-3.5 text-emerald-500" />
-                WhatsApp direct
-              </a>
-            </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={primaryHref}
+              className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
+            >
+              {primaryLabel}
+              <ArrowRight
+                className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden
+              />
+            </Link>
+            <a
+              href={waLink(message)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-white/30 px-8 py-4 text-[15px] font-bold text-white transition-colors duration-200 hover:border-white active:scale-[0.98]"
+            >
+              <FaWhatsapp className="size-5 text-[#25D366]" aria-hidden />
+              Écrire sur WhatsApp
+            </a>
           </div>
         </div>
       </div>

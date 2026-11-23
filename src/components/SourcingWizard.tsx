@@ -29,7 +29,7 @@ type Step = 1 | 2;
 const STEP_LABELS = ["Le produit", "Votre contact"];
 
 const inputCls =
-  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
+  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-sm text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
 
 export default function SourcingWizard() {
   const searchParams = useSearchParams();
@@ -174,7 +174,7 @@ export default function SourcingWizard() {
           <h3 className="mt-6 text-2xl font-extrabold tracking-tight text-ink-900">
             Demande enregistrée
           </h3>
-          <p className="mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-ink-600">
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-600">
             {code && (<><span className="font-mono font-bold text-ink-900">{code}</span> — </>)}Un acheteur TRACOLI analyse votre demande et revient vers vous sous 24 heures. Nous prendrons en charge toutes les vérifications nécessaires.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -202,9 +202,9 @@ export default function SourcingWizard() {
     <Shell id="sourcing" variant="alt">
       <div className="rounded-3xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8 lg:p-10">
         <div className="mb-8">
-          <div className="mb-3 flex items-center justify-between text-[11px] font-bold tracking-wide uppercase">
+          <div className="mb-3 flex items-center justify-between text-xs font-bold tracking-wide uppercase">
             <span className="text-tracoli-500">Étape {step} sur 2</span>
-            <span className="text-ink-400">{STEP_LABELS[step - 1]}</span>
+            <span className="text-ink-500">{STEP_LABELS[step - 1]}</span>
           </div>
           <div className="flex gap-1.5">
             {[1, 2].map((n) => (
@@ -225,7 +225,7 @@ export default function SourcingWizard() {
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   Quel produit souhaitez-vous sourcer ?
                 </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
+                <p className="mt-2 text-sm text-ink-500">
                   Envoyez-nous une photo ou un lien. Nous nous occupons de toutes les vérifications et contraintes techniques.
                 </p>
 
@@ -235,10 +235,10 @@ export default function SourcingWizard() {
                       <Package className="size-4" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10.5px] font-bold tracking-wide text-tracoli-600 uppercase">
+                      <p className="text-xs font-bold tracking-wide text-tracoli-600 uppercase">
                         Produit sélectionné
                       </p>
-                      <p className="truncate text-[13.5px] font-extrabold text-ink-900">
+                      <p className="truncate text-sm font-extrabold text-ink-900">
                         {prefilledProduct}
                       </p>
                     </div>
@@ -303,10 +303,10 @@ export default function SourcingWizard() {
                       <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white text-tracoli-500 shadow-sm">
                         <UploadCloud className="size-5" />
                       </span>
-                      <p className="mt-4 text-[14px] font-bold text-ink-900">
+                      <p className="mt-4 text-sm font-bold text-ink-900">
                         Glissez une photo ici
                       </p>
-                      <p className="mt-1 text-[12px] text-ink-500">
+                      <p className="mt-1 text-sm text-ink-500">
                         ou cliquez pour parcourir · JPG, PNG jusqu&apos;à 5 Mo
                       </p>
                     </>
@@ -314,7 +314,7 @@ export default function SourcingWizard() {
                 </div>
 
                 <div className="mt-5">
-                  <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                  <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                     Lien du produit{" "}
                     <span className="text-ink-400 normal-case">(optionnel)</span>
                   </label>
@@ -330,7 +330,7 @@ export default function SourcingWizard() {
                   </div>
                 </div>
 
-                <p className="mt-5 flex items-start gap-2 rounded-xl bg-ink-50 p-3 text-[11.5px] leading-relaxed text-ink-500">
+                <p className="mt-5 flex items-start gap-2 rounded-xl bg-ink-50 p-3 text-sm leading-relaxed text-ink-500">
                   <Package className="mt-0.5 size-3.5 shrink-0 text-tracoli-500" />
                   Pas besoin de préciser les contraintes techniques. Nos équipes vérifient la nature du produit, les restrictions de transport et les formalités douanières.
                 </p>
@@ -342,13 +342,13 @@ export default function SourcingWizard() {
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   Comment vous joindre ?
                 </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
+                <p className="mt-2 text-sm text-ink-500">
                   Nous revenons vers vous sous 24 heures avec une cotation sourcing.
                 </p>
 
                 <div className="mt-6 space-y-5">
                   <div>
-                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                    <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                       Nom complet
                     </label>
                     <input
@@ -361,7 +361,7 @@ export default function SourcingWizard() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                    <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                       Ville de destination
                     </label>
                     <select
@@ -378,7 +378,7 @@ export default function SourcingWizard() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                    <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                       Numéro WhatsApp
                     </label>
                     <input
@@ -391,7 +391,7 @@ export default function SourcingWizard() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                    <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                       Email <span className="font-medium normal-case">(facultatif)</span>
                     </label>
                     <input
@@ -415,7 +415,7 @@ export default function SourcingWizard() {
                   />
 
                   {error && (
-                    <p className="rounded-xl bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">
+                    <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                       {error}
                     </p>
                   )}
@@ -430,7 +430,7 @@ export default function SourcingWizard() {
             type="button"
             onClick={back}
             disabled={step === 1}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
           >
             <ArrowLeft className="size-3.5" />
             Retour
@@ -441,7 +441,7 @@ export default function SourcingWizard() {
               type="button"
               onClick={next}
               disabled={!canProceed()}
-              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Continuer
               <ArrowRight className="size-3.5" />
@@ -451,7 +451,7 @@ export default function SourcingWizard() {
               type="button"
               onClick={submit}
               disabled={!canProceed() || submitting}
-              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -490,13 +490,10 @@ function Shell({
     >
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center lg:mb-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-            Formulaire de sourcing
-          </span>
-          <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl lg:text-4xl">
+          <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
             Faites sourcer votre produit en 2 étapes
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
             Décrivez votre besoin. Nous identifions le fournisseur, vérifions la qualité et gérons l&apos;expédition.
           </p>
         </div>

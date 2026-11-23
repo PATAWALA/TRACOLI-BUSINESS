@@ -1,5 +1,3 @@
-"use client";
-
 import { Plane, Ship, Check, Clock } from "lucide-react";
 import { FREIGHT_RATES } from "@/data/logistics/rates";
 
@@ -35,76 +33,78 @@ export default function ShippingOptionsGrid() {
 
   return (
     <div>
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-          Deux modes d&apos;expédition
-        </h2>
-        <p className="mx-auto mt-2 max-w-xl text-[14px] text-ink-500">
-          Choisissez selon votre arbitrage vitesse / coût. Cotation ferme après contrôle en entrepôt.
-        </p>
-      </div>
+      <h2 className="max-w-2xl text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
+        Deux modes d&apos;expédition
+      </h2>
+      <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
+        Choisissez selon votre arbitrage vitesse / coût. Cotation ferme après
+        contrôle en entrepôt.
+      </p>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="mt-10 grid gap-5 lg:grid-cols-2 lg:gap-6">
         {options.map((opt) => {
           const Icon = opt.icon;
           const { rate } = opt;
 
           return (
-            <div
+            <article
               key={opt.id}
-              className={`relative flex flex-col rounded-3xl border p-6 lg:p-7 ${
+              className={`flex flex-col rounded-3xl bg-white p-6 sm:p-8 ${
                 opt.recommended
-                  ? "border-tracoli-500/30 bg-gradient-to-br from-tracoli-50 via-white to-white shadow-card-lg"
-                  : "border-ink-200 bg-white shadow-card"
+                  ? "border-2 border-tracoli-500"
+                  : "border border-ink-200"
               }`}
             >
-              {opt.recommended && (
-                <span className="absolute -top-3 right-6 rounded-full bg-tracoli-500 px-3 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow-[var(--shadow-red)]">
-                  Meilleur coût
-                </span>
-              )}
-
-              <div className="flex items-center gap-3">
-                <span className="grid size-12 place-items-center rounded-2xl bg-tracoli-500 text-white">
-                  <Icon className="size-5" />
-                </span>
-                <div>
-                  <h3 className="text-[16px] font-extrabold tracking-tight text-ink-900">
-                    {rate.label}
-                  </h3>
-                  <p className="text-[11.5px] font-semibold text-tracoli-500">
-                    {opt.tagline}
-                  </p>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-12 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
+                    <Icon className="size-6" aria-hidden />
+                  </span>
+                  <div>
+                    <h3 className="text-xl font-extrabold tracking-tight text-ink-900">
+                      {rate.label}
+                    </h3>
+                    <p className="text-sm font-semibold text-ink-700">
+                      {opt.tagline}
+                    </p>
+                  </div>
                 </div>
+                {opt.recommended && (
+                  <span className="rounded-full bg-tracoli-500 px-3 py-1 text-xs font-bold text-white">
+                    Meilleur coût
+                  </span>
+                )}
               </div>
 
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold tracking-tight text-tracoli-500">
+              <p className="mt-7 flex items-baseline gap-2">
+                <span className="text-4xl font-extrabold tracking-tight text-ink-900 tabular-nums">
                   {rate.min}–{rate.max}
                 </span>
-                <span className="text-[13px] font-semibold text-ink-500">
+                <span className="text-sm font-semibold text-ink-700">
                   USD / {rate.unit}
                 </span>
-              </div>
+              </p>
 
-              <p className="mt-3 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-700">
-                <Clock className="size-3.5 text-tracoli-500" />
+              <p className="mt-3 flex items-center gap-2 text-[15px] font-semibold text-ink-700">
+                <Clock className="size-4 text-tracoli-500" aria-hidden />
                 {rate.delay}
               </p>
 
-              <ul className="mt-5 space-y-2 border-t border-ink-200 pt-5">
+              <ul className="mt-7 grid gap-3 border-t border-ink-200 pt-7 sm:grid-cols-2">
                 {opt.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5">
-                    <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-emerald-100">
-                      <Check className="size-2.5 text-emerald-600" strokeWidth={3} />
-                    </span>
-                    <span className="text-[12px] leading-snug text-ink-600">
+                    <Check
+                      className="mt-0.5 size-4 shrink-0 text-tracoli-500"
+                      strokeWidth={3}
+                      aria-hidden
+                    />
+                    <span className="text-[15px] leading-snug text-ink-800">
                       {f}
                     </span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </article>
           );
         })}
       </div>

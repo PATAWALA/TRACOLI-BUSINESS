@@ -1,38 +1,21 @@
-"use client";
-
-import { Users, Package, Globe, Clock } from "lucide-react";
-
 export default function QuickStats() {
   const stats = [
-    { icon: Users, value: "5", label: "Pays desservis" },
-    { icon: Package, value: "Guangzhou", label: "Hub principal" },
-    { icon: Globe, value: "14", label: "Villes couvertes" },
-    { icon: Clock, value: "24h", label: "Réponse max" },
+    { value: "5", label: "Pays desservis" },
+    { value: "14", label: "Villes couvertes" },
+    { value: "Guangzhou", label: "Hub principal" },
+    { value: "24h", label: "Réponse max" },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
-      {stats.map((s) => {
-        const Icon = s.icon;
-        return (
-          <div
-            key={s.label}
-            className="flex items-center gap-3 rounded-2xl border border-ink-200 bg-white p-4 shadow-card"
-          >
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-tracoli-50 text-tracoli-500">
-              <Icon className="size-4" strokeWidth={2} />
-            </span>
-            <div className="min-w-0">
-              <p className="text-[18px] leading-none font-extrabold tracking-tight text-ink-900">
-                {s.value}
-              </p>
-              <p className="mt-1 text-[10.5px] font-semibold text-ink-500">
-                {s.label}
-              </p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-ink-200 bg-ink-200 sm:grid-cols-4">
+      {stats.map((s) => (
+        <div key={s.label} className="bg-white px-5 py-6 sm:px-6">
+          <dd className="text-2xl leading-none font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+            {s.value}
+          </dd>
+          <dt className="mt-2 text-sm font-semibold text-ink-700">{s.label}</dt>
+        </div>
+      ))}
+    </dl>
   );
 }

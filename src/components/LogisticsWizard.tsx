@@ -24,7 +24,7 @@ const STEP_LABELS = ["Mode d'expédition", "Dédouanement", "Détails du colis"]
 const nf = new Intl.NumberFormat("fr-FR");
 
 const inputCls =
-  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-[14px] text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
+  "w-full min-h-[52px] rounded-xl border border-ink-200 bg-white px-4 py-3.5 text-sm text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-tracoli-500 focus:ring-4 focus:ring-tracoli-500/10";
 
 const DEPARTURE_HUBS = [
   "Guangzhou, China",
@@ -89,14 +89,14 @@ export default function LogisticsWizard() {
             Estimation disponible
           </h3>
           <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-ink-200 bg-white p-6">
-            <p className="text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+            <p className="text-xs font-bold tracking-wide text-ink-500 uppercase">
               Estimation de fret
             </p>
             <p className="mt-2 text-3xl font-extrabold text-ink-900">
-              {nf.format(low)} USD <span className="text-ink-400">-</span>{" "}
+              {nf.format(low)} USD <span className="text-ink-500">-</span>{" "}
               {nf.format(high)} USD
             </p>
-            <p className="mt-2 text-[13px] text-ink-500">
+            <p className="mt-2 text-sm text-ink-500">
               {qty} {rate.unit} · {destination.city} · {rate.delay}
             </p>
           </div>
@@ -128,9 +128,9 @@ export default function LogisticsWizard() {
     <Shell>
       <div className="rounded-3xl border border-ink-200 bg-white p-6 shadow-card-lg sm:p-8 lg:p-10">
         <div className="mb-8">
-          <div className="mb-3 flex items-center justify-between text-[11px] font-bold tracking-wide uppercase">
+          <div className="mb-3 flex items-center justify-between text-xs font-bold tracking-wide uppercase">
             <span className="text-tracoli-500">Étape {step} sur 3</span>
-            <span className="text-ink-400">{STEP_LABELS[step - 1]}</span>
+            <span className="text-ink-500">{STEP_LABELS[step - 1]}</span>
           </div>
           <div className="flex gap-1.5">
             {[1, 2, 3].map((n) => (
@@ -151,7 +151,7 @@ export default function LogisticsWizard() {
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   Quel mode d&apos;expédition ?
                 </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
+                <p className="mt-2 text-sm text-ink-500">
                   Sélectionnez le mode pour votre envoi. Vous pourrez affiner les détails à l&apos;étape suivante.
                 </p>
 
@@ -174,7 +174,7 @@ export default function LogisticsWizard() {
                         }`}
                       >
                         {isSea && (
-                          <span className="absolute -top-2.5 right-3 rounded-full bg-tracoli-500 px-2 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase">
+                          <span className="absolute -top-2.5 right-3 rounded-full bg-tracoli-500 px-2 py-0.5 text-xs font-bold tracking-wide text-white uppercase">
                             Recommandé
                           </span>
                         )}
@@ -191,7 +191,7 @@ export default function LogisticsWizard() {
 
                         <div className="min-w-0 flex-1">
                           <p
-                            className={`text-[14px] font-extrabold tracking-tight ${
+                            className={`text-sm font-extrabold tracking-tight ${
                               active ? "text-tracoli-600" : "text-ink-900"
                             }`}
                           >
@@ -209,7 +209,7 @@ export default function LogisticsWizard() {
                   })}
                 </div>
 
-                <p className="mt-4 text-center text-[11.5px] text-ink-400">
+                <p className="mt-4 text-center text-sm text-ink-500">
                   Tarifs et délais détaillés affichés dans la section « Deux modes d&apos;expédition » ci-dessus.
                 </p>
               </div>
@@ -220,7 +220,7 @@ export default function LogisticsWizard() {
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   Qui gère le dédouanement ?
                 </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
+                <p className="mt-2 text-sm text-ink-500">
                   Nous recommandons notre service de dédouanement clé en main.
                 </p>
 
@@ -246,7 +246,7 @@ export default function LogisticsWizard() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p
-                          className={`text-[14px] font-extrabold ${
+                          className={`text-sm font-extrabold ${
                             customsManagedByTracoli
                               ? "text-tracoli-600"
                               : "text-ink-900"
@@ -254,11 +254,11 @@ export default function LogisticsWizard() {
                         >
                           TRACOLI s&apos;occupe de tout
                         </p>
-                        <span className="rounded-full bg-tracoli-500 px-2 py-0.5 text-[9.5px] font-bold tracking-wide text-white uppercase">
+                        <span className="rounded-full bg-tracoli-500 px-2 py-0.5 text-xs font-bold tracking-wide text-white uppercase">
                           Recommandé
                         </span>
                       </div>
-                      <p className="mt-1 text-[12px] leading-relaxed text-ink-500">
+                      <p className="mt-1 text-sm leading-relaxed text-ink-500">
                         Nous gérons les documents, les taxes et le retrait douanier jusqu&apos;à la destination finale.
                       </p>
                     </div>
@@ -284,7 +284,7 @@ export default function LogisticsWizard() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p
-                        className={`text-[14px] font-extrabold ${
+                        className={`text-sm font-extrabold ${
                           !customsManagedByTracoli
                             ? "text-tracoli-600"
                             : "text-ink-900"
@@ -292,7 +292,7 @@ export default function LogisticsWizard() {
                       >
                         Je gère la douane moi-même
                       </p>
-                      <p className="mt-1 text-[12px] leading-relaxed text-ink-500">
+                      <p className="mt-1 text-sm leading-relaxed text-ink-500">
                         Vous avez votre propre transitaire. Nous livrons au port, vous prenez le relais.
                       </p>
                     </div>
@@ -306,14 +306,14 @@ export default function LogisticsWizard() {
                 <h3 className="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">
                   Détails de votre expédition
                 </h3>
-                <p className="mt-2 text-[13.5px] text-ink-500">
+                <p className="mt-2 text-sm text-ink-500">
                   Estimation automatique. Cotation ferme confirmée après contrôle en entrepôt.
                 </p>
 
                 <div className="mt-6 space-y-5">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                      <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                         Ville de départ
                       </label>
                       <select
@@ -330,7 +330,7 @@ export default function LogisticsWizard() {
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                      <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                         Ville d&apos;arrivée
                       </label>
                       <select
@@ -348,7 +348,7 @@ export default function LogisticsWizard() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-[11px] font-bold tracking-wide text-ink-500 uppercase">
+                    <label className="mb-2 block text-xs font-bold tracking-wide text-ink-500 uppercase">
                       {mode === "air" ? "Poids total (KG)" : "Volume total (CBM)"}
                     </label>
                     <div className="relative">
@@ -361,7 +361,7 @@ export default function LogisticsWizard() {
                         onChange={(e) => setQuantity(e.target.value)}
                         className={`${inputCls} pr-20`}
                       />
-                      <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-[12px] font-bold text-ink-400">
+                      <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm font-bold text-ink-500">
                         {rate.unit}
                       </span>
                     </div>
@@ -369,15 +369,15 @@ export default function LogisticsWizard() {
 
                   {qty >= rate.minQty && (
                     <div className="rounded-2xl border border-tracoli-200 bg-tracoli-50 p-5 anim-in">
-                      <p className="text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
+                      <p className="text-xs font-bold tracking-wide text-tracoli-600 uppercase">
                         Estimation instantanée
                       </p>
                       <p className="mt-2 text-2xl font-extrabold text-ink-900">
                         {nf.format(low)} USD{" "}
-                        <span className="text-ink-400">-</span>{" "}
+                        <span className="text-ink-500">-</span>{" "}
                         {nf.format(high)} USD
                       </p>
-                      <p className="mt-1 text-[12px] text-ink-500">
+                      <p className="mt-1 text-sm text-ink-500">
                         {qty} {rate.unit} · {destination.city}
                       </p>
                     </div>
@@ -393,7 +393,7 @@ export default function LogisticsWizard() {
             type="button"
             onClick={back}
             disabled={step === 1}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-500 transition-colors hover:text-ink-900 disabled:pointer-events-none disabled:opacity-0"
           >
             <ArrowLeft className="size-3.5" />
             Retour
@@ -403,7 +403,7 @@ export default function LogisticsWizard() {
             <button
               type="button"
               onClick={next}
-              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
             >
               Continuer
               <ArrowRight className="size-3.5" />
@@ -413,7 +413,7 @@ export default function LogisticsWizard() {
               type="button"
               onClick={submit}
               disabled={submitting || qty < rate.minQty}
-              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-tracoli-500 px-5 py-3 text-sm font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -439,13 +439,10 @@ function Shell({ children }: { children: ReactNode }) {
     <section className="bg-white py-12 pb-24 lg:py-20 lg:pb-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center lg:mb-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-tracoli-50 px-3.5 py-1.5 text-[11px] font-bold tracking-wide text-tracoli-600 uppercase">
-            Formulaire de fret
-          </span>
-          <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl lg:text-4xl">
+          <h2 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
             Estimez votre fret en 3 étapes
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[13.5px] text-ink-500 lg:text-[14.5px]">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
             Mode, dédouanement, destination. Vous obtenez un tarif indicatif immédiat.
           </p>
         </div>

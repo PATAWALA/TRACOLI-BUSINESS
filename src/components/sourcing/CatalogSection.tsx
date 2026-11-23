@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Filter, Package, X } from "lucide-react";
+import { Filter, X } from "lucide-react";
 import { PRODUCT_CATEGORIES } from "@/data/products/categories";
 import { PRODUCTS as STATIC_PRODUCTS } from "@/data/products/items";
 import type { Product as StaticProduct } from "@/data/products/items";
@@ -131,14 +131,10 @@ export default function CatalogSection() {
   return (
     <div>
       <div className="mb-8">
-        <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3 py-1.5 text-[10.5px] font-bold tracking-wide text-tracoli-600 uppercase">
-          <Package className="size-3" />
-          Catalogue
-        </span>
-        <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <h2 className="max-w-2xl text-3xl leading-[1.15] font-extrabold tracking-tight text-ink-900 text-balance sm:text-4xl">
           Produits souvent commandés par nos clients
         </h2>
-        <p className="mt-2 max-w-2xl text-[14px] text-ink-500">
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-700 lg:text-lg">
           Ces exemples vous donnent une idée des prix et des quantités
           minimums. Vous cherchez autre chose ? Envoyez-nous votre besoin.
         </p>
@@ -149,16 +145,16 @@ export default function CatalogSection() {
           <button
             type="button"
             onClick={() => setActiveCategory("all")}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-bold transition-all active:scale-[0.98] ${
+            className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-bold transition-colors active:scale-[0.98] ${
               activeCategory === "all"
-                ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)]"
-                : "border-ink-200 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900"
+                ? "border-tracoli-500 bg-tracoli-500 text-white"
+                : "border-ink-200 bg-white text-ink-700 hover:border-ink-300 hover:text-ink-900"
             }`}
           >
-            <Filter className="size-3.5" />
+            <Filter className="size-4" aria-hidden />
             Toutes
             <span
-              className={`rounded-md px-1.5 text-[10px] ${
+              className={`rounded-md px-1.5 text-xs ${
                 activeCategory === "all"
                   ? "bg-white/20 text-white"
                   : "bg-ink-100 text-ink-600"
@@ -178,15 +174,15 @@ export default function CatalogSection() {
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(cat.slug)}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-bold transition-all active:scale-[0.98] ${
+                className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-bold transition-colors active:scale-[0.98] ${
                   active
-                    ? "border-tracoli-500 bg-tracoli-500 text-white shadow-[var(--shadow-red)]"
-                    : "border-ink-200 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900"
+                    ? "border-tracoli-500 bg-tracoli-500 text-white"
+                    : "border-ink-200 bg-white text-ink-700 hover:border-ink-300 hover:text-ink-900"
                 }`}
               >
                 {cat.label}
                 <span
-                  className={`rounded-md px-1.5 text-[10px] ${
+                  className={`rounded-md px-1.5 text-xs ${
                     active
                       ? "bg-white/20 text-white"
                       : "bg-ink-100 text-ink-600"
@@ -202,7 +198,7 @@ export default function CatalogSection() {
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink-200 bg-white px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[12.5px] text-ink-600">
+          <p className="text-sm text-ink-700">
             <span className="font-extrabold text-ink-900">
               {products.length}
             </span>{" "}
@@ -222,7 +218,7 @@ export default function CatalogSection() {
             <button
               type="button"
               onClick={resetFilters}
-              className="inline-flex items-center gap-1 rounded-md border border-ink-200 bg-ink-50 px-2 py-1 text-[11px] font-semibold text-ink-600 transition-colors hover:border-ink-300 hover:text-ink-900"
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-ink-200 bg-ink-50 px-3 py-1 text-sm font-semibold text-ink-700 transition-colors hover:border-ink-300 hover:text-ink-900"
             >
               <X className="size-3" />
               Retirer le filtre
@@ -233,7 +229,7 @@ export default function CatalogSection() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
-          className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-[12px] font-semibold text-ink-700 outline-none transition-colors focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/10"
+          className="min-h-11 rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm font-semibold text-ink-700 outline-none transition-colors focus:border-tracoli-500 focus:ring-2 focus:ring-tracoli-500/10"
         >
           <option value="default">Tri par défaut</option>
           <option value="price-asc">Prix croissant</option>
@@ -264,7 +260,7 @@ export default function CatalogSection() {
         </div>
       )}
 
-      <p className="mt-6 text-center text-[11.5px] text-ink-400">
+      <p className="mt-6 text-center text-sm text-ink-700">
         Tarifs indicatifs hors fret, taxes et frais de dédouanement.
       </p>
     </div>

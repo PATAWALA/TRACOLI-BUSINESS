@@ -1,36 +1,29 @@
-"use client";
-
-import { Camera, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function CustomRequestBanner() {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-tracoli-200 bg-gradient-to-br from-tracoli-50 via-white to-white p-6 shadow-card-lg sm:p-8 lg:p-10">
-      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-tracoli-500/10 blur-3xl" />
-
-      <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-tracoli-200 bg-white px-3 py-1.5 text-[10.5px] font-bold tracking-wide text-tracoli-600 uppercase">
-            <Camera className="size-3" />
-            Recherche personnalisée
-          </span>
-
-          <h3 className="mt-3 text-xl font-extrabold tracking-tight text-ink-900 text-balance sm:text-2xl">
-            Vous ne trouvez pas votre produit ?
-          </h3>
-
-          <p className="mt-2 max-w-xl text-[13.5px] leading-relaxed text-ink-500">
-            Envoyez-nous simplement une photo, un lien ou une description. Nos acheteurs en Chine trouvent le fournisseur idéal et vous envoient une cotation sous 24h.
-          </p>
-        </div>
-
-        <a
-          href="#sourcing"
-          className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-6 py-3.5 text-[13px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
-        >
-          Lancer une recherche
-          <ArrowRight className="size-3.5" />
-        </a>
+    <div className="grid gap-6 rounded-3xl bg-ink-50 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10 lg:p-12">
+      <div>
+        <h3 className="text-2xl leading-tight font-extrabold tracking-tight text-ink-900 text-balance sm:text-3xl">
+          Vous ne trouvez pas votre produit&nbsp;?
+        </h3>
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-700">
+          Envoyez-nous simplement une photo, un lien ou une description. Nos
+          acheteurs en Chine trouvent le fournisseur idéal et vous envoient une
+          cotation sous 24h.
+        </p>
       </div>
+
+      <a
+        href="#sourcing"
+        className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
+      >
+        Lancer une recherche
+        <ArrowRight
+          className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+          aria-hidden
+        />
+      </a>
     </div>
   );
 }

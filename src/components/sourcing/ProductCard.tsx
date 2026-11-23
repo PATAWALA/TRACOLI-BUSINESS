@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MapPin, Package } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import type { Product } from "@/data/products/items";
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -11,59 +11,48 @@ export default function ProductCard({ product }: { product: Product }) {
   )}&sourcing-product-id=${encodeURIComponent(product.id)}&sourcing-product-url=${encodeURIComponent(product.image)}#sourcing`;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-card transition-all hover:border-tracoli-500/40 hover:shadow-card-lg">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-ink-200 bg-white transition-colors hover:border-tracoli-500/40">
       <div className="relative aspect-square w-full overflow-hidden bg-ink-100">
         <Image
           src={product.image}
           alt={product.imageAlt}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover"
         />
 
         {product.featured && (
-          <span className="absolute top-2.5 left-2.5 rounded-full bg-tracoli-500 px-2.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase shadow-[var(--shadow-red)]">
+          <span className="absolute top-2.5 left-2.5 rounded-full bg-tracoli-500 px-2.5 py-1 text-xs font-bold text-white">
             Populaire
           </span>
         )}
-
-        <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[9.5px] font-bold text-ink-700 backdrop-blur">
-          <MapPin className="size-2.5" />
-          {product.origin}
-        </span>
-
-        <div className="absolute inset-x-2 bottom-2 flex flex-wrap gap-1">
-          {product.tags.slice(0, 2).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-white/95 px-2 py-0.5 text-[9px] font-semibold text-ink-700 backdrop-blur"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-3.5">
-        <h3 className="line-clamp-2 text-[13px] leading-snug font-extrabold tracking-tight text-ink-900">
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="line-clamp-2 text-[15px] leading-snug font-extrabold tracking-tight text-ink-900">
           {product.name}
         </h3>
 
-        <p className="mt-2 text-[13px] font-extrabold text-tracoli-500">
+        <p className="mt-1.5 flex items-center gap-1 text-sm text-ink-700">
+          <MapPin className="size-3.5 shrink-0 text-ink-500" aria-hidden />
+          {product.origin}
+        </p>
+
+        <p className="mt-3 text-base font-extrabold text-ink-900">
           {product.priceRange}
         </p>
 
-        <p className="mt-0.5 flex items-center gap-1 text-[10.5px] text-ink-500">
-          <Package className="size-3" />
-          MOQ : <span className="font-semibold text-ink-700">{product.moq}</span>
+        <p className="mt-0.5 text-sm text-ink-700">
+          Commande min. :{" "}
+          <span className="font-semibold text-ink-900">{product.moq}</span>
         </p>
 
         <Link
           href={requestHref}
-          className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-tracoli-500 px-3 py-2.5 text-[11.5px] font-bold text-white shadow-[var(--shadow-red)] transition-all hover:bg-tracoli-600 active:scale-[0.98]"
+          className="mt-4 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-tracoli-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-tracoli-600 active:scale-[0.98]"
         >
           Demander ce produit
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-4" aria-hidden />
         </Link>
       </div>
     </article>
