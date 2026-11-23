@@ -47,6 +47,30 @@ export const PARCEL_STATUSES: ParcelStatusInfo[] = [
   },
 ];
 
+/**
+ * Étapes telles que le client les lit : mots simples, une phrase par étape.
+ * Même ordre et mêmes valeurs que PARCEL_STATUSES (l'admin garde ses libellés).
+ */
+export const CLIENT_STEPS: { value: ParcelStatus; label: string; detail: string }[] = [
+  { value: "en_agence", label: "À l'agence", detail: "Votre colis est reçu à l'agence TRACOLI. Il attend son départ." },
+  { value: "expedie", label: "Parti", detail: "Votre colis vient de quitter l'agence." },
+  { value: "en_transit", label: "En voyage", detail: "Votre colis voyage vers votre pays." },
+  { value: "douane", label: "En douane", detail: "Votre colis est arrivé dans votre pays. Les formalités de douane sont en cours." },
+  { value: "livre", label: "Disponible", detail: "Votre colis est prêt. Vous pouvez venir le récupérer." },
+];
+
+/** Avancement d'un colis : position (0 à 4) et pourcentage (20, 40, 60, 80, 100). */
+export function parcelProgress(status: string) {
+  const found = CLIENT_STEPS.findIndex((x) => x.value === status);
+  const index = found < 0 ? 0 : found;
+  return {
+    index,
+    step: index + 1,
+    total: CLIENT_STEPS.length,
+    percent: Math.round(((index + 1) / CLIENT_STEPS.length) * 100),
+  };
+}
+
 export const PARCEL_MODES: { value: ParcelMode; label: string }[] = [
   { value: "maritime", label: "Maritime" },
   { value: "aerien", label: "Aérien" },

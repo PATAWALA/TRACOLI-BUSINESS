@@ -11,12 +11,9 @@ import {
   AlertCircle,
   ArrowRight,
 } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
 import ClientTrackingResult, {
   type PublicClient,
 } from "@/components/tracking/ClientTrackingResult";
-import { CONTACT } from "@/data/config/contact";
-import { waLink } from "@/data/shared/helpers";
 import type { LeadStatus } from "@/types/database.types";
 
 type StageStatus = "done" | "active" | "pending";
@@ -222,20 +219,8 @@ export default function SmartTrackingWidget() {
                 Référence introuvable
               </p>
               <p className="mt-2 text-base leading-relaxed text-red-600">
-                Vérifiez votre code de suivi ou contactez-nous sur WhatsApp pour
-                obtenir de l&apos;aide.
+                Vérifiez le code inscrit sur votre colis, puis réessayez.
               </p>
-              <a
-                href={waLink(
-                  `Bonjour ${CONTACT.manager}, je n'arrive pas à tracer ma commande. Pouvez-vous m'aider ?`,
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-base font-bold text-white hover:bg-emerald-700"
-              >
-                <FaWhatsapp className="size-5" />
-                Contacter le support
-              </a>
             </div>
           )}
 
@@ -247,8 +232,7 @@ export default function SmartTrackingWidget() {
                 Ce code correspond à plusieurs colis
               </p>
               <p className="mt-2 text-base text-amber-700">
-                Entrez plutôt le code de votre colis ou
-                contactez-nous sur WhatsApp.
+                Entrez plutôt le code inscrit sur votre colis.
               </p>
             </div>
           )}
@@ -316,7 +300,7 @@ export default function SmartTrackingWidget() {
                     </span>
                   </div>
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-100">
-                    <div className="h-full rounded-full bg-gradient-to-r from-tracoli-500 to-emerald-500 anim-in" />
+                    <div style={{ width: `${progress}%` }} className="h-full rounded-full bg-tracoli-500 transition-[width] duration-700" />
                   </div>
                   <p className="mt-1.5 text-sm text-ink-400">
                     Étape {doneCount + (activeStage ? 1 : 0)} sur{" "}
@@ -399,38 +383,16 @@ export default function SmartTrackingWidget() {
                   })}
                 </ol>
 
-                {/* Bottom actions */}
-                <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-ink-200 bg-ink-50 p-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-base font-semibold text-ink-800">
-                      Une question sur votre commande ?
-                    </p>
-                    <p className="mt-0.5 text-sm text-ink-500">
-                      Notre équipe répond sous 24h sur WhatsApp.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <a
-                      href={waLink(
-                        `Bonjour ${CONTACT.manager}, je souhaite des informations sur ma commande ${lead.reference}.`,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-700"
-                    >
-                      <FaWhatsapp className="size-4" />
-                      Contacter sur WhatsApp
-                    </a>
-                    <button
-                      onClick={() => {
-                        setLead(null);
-                        setCode("");
-                      }}
-                      className="rounded-xl border border-ink-200 bg-white px-5 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-100"
-                    >
-                      Nouvelle recherche
-                    </button>
-                  </div>
+                <div className="mt-8 flex justify-end">
+                  <button
+                    onClick={() => {
+                      setLead(null);
+                      setCode("");
+                    }}
+                    className="rounded-xl border border-ink-200 bg-white px-5 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-100"
+                  >
+                    Nouvelle recherche
+                  </button>
                 </div>
               </div>
             </div>
