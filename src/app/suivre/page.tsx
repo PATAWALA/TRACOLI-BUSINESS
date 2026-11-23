@@ -1,5 +1,4 @@
 ﻿import type { Metadata } from "next";
-import TrackingHero from "@/components/tracking/TrackingHero";
 import SmartTrackingWidget from "@/components/SmartTrackingWidget";
 
 export const metadata: Metadata = {
@@ -20,7 +19,6 @@ export const metadata: Metadata = {
 export default function TrackingPage() {
   return (
     <main className="pt-header">
-      <TrackingHero />
       <SmartTrackingWidget />
     </main>
   );

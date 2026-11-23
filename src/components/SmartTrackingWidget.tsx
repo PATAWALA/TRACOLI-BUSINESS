@@ -11,6 +11,7 @@ import {
   AlertCircle,
   ArrowRight,
 } from "lucide-react";
+import TrackingHero from "@/components/tracking/TrackingHero";
 import ClientTrackingResult, {
   type PublicClient,
 } from "@/components/tracking/ClientTrackingResult";
@@ -162,6 +163,19 @@ export default function SmartTrackingWidget() {
     search(code);
   };
 
+  const hasResult = !!(lead || clientData);
+
+  /** Retour au champ de saisie : pour un autre colis, ou pour un proche. */
+  const reset = () => {
+    setLead(null);
+    setClientData(null);
+    setNotFound(false);
+    setAmbiguous(false);
+    setCode("");
+    window.history.replaceState(null, "", "/suivre");
+    window.scrollTo({ top: 0 });
+  };
+
   const stages = lead ? buildTimeline(lead) : [];
   const activeStage = stages.find((s) => s.status === "active");
   const doneCount = stages.filter((s) => s.status === "done").length;
@@ -174,9 +188,12 @@ export default function SmartTrackingWidget() {
     : 0;
 
   return (
-    <section className="bg-white py-10 pb-28 lg:py-14 lg:pb-24">
+    <>
+    {!hasResult && <TrackingHero />}
+    <section className={`bg-white pb-28 lg:pb-24 ${hasResult ? "pt-8 lg:pt-12" : "py-10 lg:py-14"}`}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         {/* Search bar */}
+        {!hasResult && (
         <form
           onSubmit={onSearch}
           className="mx-auto flex max-w-2xl flex-col gap-3 sm:flex-row"
@@ -209,6 +226,7 @@ export default function SmartTrackingWidget() {
             )}
           </button>
         </form>
+        )}
 
         <>
           {/* Not found */}
@@ -239,7 +257,9 @@ export default function SmartTrackingWidget() {
 
           {/* Result : client avec ses colis */}
           {clientData && (
-            <ClientTrackingResult key="client-result" data={clientData} />
+            <div key="client-result">
+              <ClientTrackingResult data={clientData} onReset={reset} />
+            </div>
           )}
 
           {/* Result : demande de sourcing */}
@@ -385,13 +405,10 @@ export default function SmartTrackingWidget() {
 
                 <div className="mt-8 flex justify-end">
                   <button
-                    onClick={() => {
-                      setLead(null);
-                      setCode("");
-                    }}
+                    onClick={reset}
                     className="rounded-xl border border-ink-200 bg-white px-5 py-3 text-sm font-semibold text-ink-700 hover:bg-ink-100"
                   >
-                    Nouvelle recherche
+                    Suivre un autre colis
                   </button>
                 </div>
               </div>
@@ -401,56 +418,9 @@ export default function SmartTrackingWidget() {
 
         {/* Empty state */}
         {!lead && !clientData && !notFound && !ambiguous && (
-          <div className="mx-auto mt-12 max-w-xl anim-in">
-            <div className="rounded-2xl border border-dashed border-ink-300 bg-ink-50/60 p-8 text-center">
-              <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-white text-ink-500 shadow-sm">
-                <Package className="size-6" />
-              </span>
-              <p className="mt-5 text-lg font-bold text-ink-800">
-                Entrez votre référence ci-dessus
-              </p>
-              <p className="mt-2 text-base leading-relaxed text-ink-500">
-                Votre code de suivi vous a été communiqué par WhatsApp ou par
-                email lors de votre commande (format : TRC-2026-XXXX).
-              </p>
-            </div>
-
-            {/* How it works */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {[
-                {
-                  step: "1",
-                  title: "Entrez votre code",
-                  desc: "Tapez le code reçu après votre commande.",
-                },
-                {
-                  step: "2",
-                  title: "Suivez en temps réel",
-                  desc: "Voyez chaque étape de votre commande.",
-                },
-                {
-                  step: "3",
-                  title: "Restez informé",
-                  desc: "Recevez des mises à jour par email.",
-                },
-              ].map((item) => (
-                <div
-                  key={item.step}
-                  className="rounded-2xl border border-ink-200 bg-white p-5 text-center"
-                >
-                  <span className="mx-auto grid size-10 place-items-center rounded-xl bg-tracoli-50 text-base font-extrabold text-tracoli-500">
-                    {item.step}
-                  </span>
-                  <p className="mt-3 text-sm font-bold text-ink-800">
-                    {item.title}
-                  </p>
-                  <p className="mt-1 text-sm text-ink-500">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-
+          <div className="mx-auto mt-10 max-w-xl anim-in">
             {/* CTA */}
-            <div className="mt-8 rounded-3xl bg-tracoli-500 p-6 text-center text-white sm:p-8">
+            <div className="rounded-3xl bg-tracoli-500 p-6 text-center text-white sm:p-8">
               <p className="text-lg font-bold">
                 Pas encore de commande ?
               </p>
@@ -470,5 +440,6 @@ export default function SmartTrackingWidget() {
         )}
       </div>
     </section>
+    </>
   );
 }

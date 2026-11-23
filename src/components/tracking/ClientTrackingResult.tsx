@@ -1,6 +1,9 @@
 "use client";
 
-import { Check, Package, Plane, Ship } from "lucide-react";
+import { Check, Package, Plane, Search, Ship } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
+import { CONTACT } from "@/data/config/contact";
+import { waLink } from "@/data/shared/helpers";
 import { CLIENT_STEPS, modeLabel, parcelProgress } from "@/lib/parcels";
 
 export interface PublicParcel {
@@ -23,6 +26,23 @@ export interface PublicClient {
 const fmt = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
 
+const ORDINALS = [
+  "Premier",
+  "Deuxième",
+  "Troisième",
+  "Quatrième",
+  "Cinquième",
+  "Sixième",
+  "Septième",
+  "Huitième",
+  "Neuvième",
+  "Dixième",
+];
+
+/** « Premier colis », « Deuxième colis »… puis « Colis n° 11 » au-delà de dix. */
+const parcelRank = (i: number) =>
+  i < ORDINALS.length ? `${ORDINALS[i]} colis` : `Colis n° ${i + 1}`;
+
 /** Phrase de l'étape en cours, précisée selon le mode de transport. */
 function stepDetail(p: PublicParcel, index: number): string {
   const step = CLIENT_STEPS[index];
@@ -44,7 +64,7 @@ function ModeChip({ mode }: { mode: string }) {
   );
 }
 
-function ProgressBar({ percent, height = "h-3" }: { percent: number; height?: string }) {
+function ProgressBar({ percent }: { percent: number }) {
   return (
     <div
       role="progressbar"
@@ -52,7 +72,7 @@ function ProgressBar({ percent, height = "h-3" }: { percent: number; height?: st
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label="Avancement du colis"
-      className={`${height} overflow-hidden rounded-full bg-ink-100`}
+      className="h-3 overflow-hidden rounded-full bg-ink-100"
     >
       <div
         style={{ width: `${percent}%` }}
@@ -110,122 +130,155 @@ function Steps({ p, index }: { p: PublicParcel; index: number }) {
   );
 }
 
-/** Le colis cherché : pourcentage, étape en cours et étapes à venir, d'un seul coup d'œil. */
-function MainParcel({ p }: { p: PublicParcel }) {
+/**
+ * Un colis du client. Résumé toujours visible : rang, titre saisi par l'équipe,
+ * pourcentage, barre, étape. Le détail s'ouvre au toucher.
+ */
+function ParcelCard({
+  p,
+  rank,
+  open,
+}: {
+  p: PublicParcel;
+  rank: string;
+  open: boolean;
+}) {
   const { index, step, total, percent } = parcelProgress(p.status);
   const current = CLIENT_STEPS[index];
   const next = CLIENT_STEPS[index + 1];
+  const title = p.description?.trim() || null;
 
   return (
-    <section className="rounded-3xl border border-ink-200 bg-white p-6 shadow-card sm:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-lg font-extrabold text-ink-900">
-          {p.matricule ?? "Code à venir"}
-        </p>
-        <ModeChip mode={p.mode} />
-      </div>
-      {p.description && <p className="mt-1 text-base text-ink-700">{p.description}</p>}
-
-      <div className="mt-6 flex items-end gap-4">
-        <p className="text-6xl leading-none font-extrabold tracking-tight text-tracoli-500 tabular-nums">
-          {percent}&nbsp;%
-        </p>
-        <p className="pb-1 text-base text-ink-700">
-          Étape {step} sur {total}
-        </p>
-      </div>
-      <div className="mt-3">
-        <ProgressBar percent={percent} />
-      </div>
-
-      <h2 className="mt-6 text-2xl font-extrabold text-ink-900">{current.label}</h2>
-      <p className="mt-1 text-base leading-relaxed text-ink-700">{stepDetail(p, index)}</p>
-      {next && (
-        <p className="mt-2 text-base text-ink-500">
-          Prochaine étape : <b className="text-ink-700">{next.label}</b>
-        </p>
-      )}
-      {p.expected_ship_date && p.status === "en_agence" && (
-        <p className="mt-4 rounded-xl bg-ink-50 px-4 py-3 text-base font-semibold text-ink-800">
-          Départ prévu le {fmt(p.expected_ship_date)}
-        </p>
-      )}
-
-      <div className="mt-7 border-t border-ink-100 pt-6">
-        <Steps p={p} index={index} />
-      </div>
-
-      {p.external_code && (
-        <p className="mt-5 text-sm text-ink-500">
-          Code {p.external_platform || "externe"} : {p.external_code}
-        </p>
-      )}
-    </section>
-  );
-}
-
-/** Un autre colis du même client : pourcentage toujours visible, détail au toucher. */
-function OtherParcel({ p }: { p: PublicParcel }) {
-  const { index, percent } = parcelProgress(p.status);
-  const current = CLIENT_STEPS[index];
-
-  return (
-    <details className="group rounded-2xl border border-ink-200 bg-white open:shadow-card">
-      <summary className="cursor-pointer list-none p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="truncate font-mono text-base font-extrabold text-ink-900">
-            {p.matricule ?? "Code à venir"}
-          </p>
-          <p className="shrink-0 text-xl font-extrabold text-tracoli-500 tabular-nums">
+    <details
+      open={open}
+      className="group rounded-3xl border border-ink-200 bg-white open:shadow-card"
+    >
+      <summary className="cursor-pointer list-none p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-ink-500">{rank}</p>
+            <p className="mt-0.5 truncate text-xl font-extrabold text-ink-900">
+              {title ?? p.matricule ?? "Code à venir"}
+            </p>
+          </div>
+          <p className="shrink-0 text-4xl leading-none font-extrabold tracking-tight text-tracoli-500 tabular-nums">
             {percent}&nbsp;%
           </p>
         </div>
-        <div className="mt-2.5">
-          <ProgressBar percent={percent} height="h-2" />
+
+        <div className="mt-4">
+          <ProgressBar percent={percent} />
         </div>
-        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-base font-bold text-ink-900">{current.label}</p>
-          <ModeChip mode={p.mode} />
+
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <p className="text-base font-extrabold text-ink-900">{current.label}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            {title && p.matricule && (
+              <span className="font-mono text-sm font-semibold text-ink-500">
+                {p.matricule}
+              </span>
+            )}
+            <ModeChip mode={p.mode} />
+          </div>
         </div>
       </summary>
-      <div className="border-t border-ink-100 p-4 sm:p-5">
-        <p className="mb-4 text-base text-ink-700">{stepDetail(p, index)}</p>
-        <Steps p={p} index={index} />
+
+      <div className="border-t border-ink-100 p-5 sm:p-6">
+        <p className="text-base leading-relaxed text-ink-700">{stepDetail(p, index)}</p>
+        <p className="mt-1 text-base text-ink-500">
+          Étape {step} sur {total}
+          {next && (
+            <>
+              {" "}
+              · Prochaine étape : <b className="text-ink-700">{next.label}</b>
+            </>
+          )}
+        </p>
+        {p.expected_ship_date && p.status === "en_agence" && (
+          <p className="mt-4 rounded-xl bg-ink-50 px-4 py-3 text-base font-semibold text-ink-800">
+            Départ prévu le {fmt(p.expected_ship_date)}
+          </p>
+        )}
+
+        <div className="mt-6">
+          <Steps p={p} index={index} />
+        </div>
+
+        {p.external_code && (
+          <p className="mt-5 text-sm text-ink-500">
+            Code {p.external_platform || "externe"} : {p.external_code}
+          </p>
+        )}
       </div>
     </details>
   );
 }
 
-export default function ClientTrackingResult({ data }: { data: PublicClient }) {
+export default function ClientTrackingResult({
+  data,
+  onReset,
+}: {
+  data: PublicClient;
+  onReset: () => void;
+}) {
   const { client, parcels, highlight } = data;
-
-  const main =
-    parcels.find((p) => highlight && p.matricule === highlight) ??
-    (parcels.length === 1 ? parcels[0] : null);
-  const others = parcels.filter((p) => p !== main);
+  const many = parcels.length > 1;
   const place = [client.city, client.country].filter(Boolean).join(", ");
+  const reorder = `Bonjour ${CONTACT.manager}, je souhaite passer une nouvelle commande.`;
 
   return (
-    <div className="mt-10 space-y-6 anim-in">
-      <p className="text-base text-ink-700">
-        Colis de <b className="text-ink-900">{client.name}</b>
-        {place && <span className="text-ink-500"> · {place}</span>}
-      </p>
+    <div className="mt-2 space-y-6 anim-in">
+      <div>
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+          {many ? (
+            <>
+              Vous avez <span className="text-tracoli-500">{parcels.length}</span> colis
+            </>
+          ) : (
+            "Votre colis"
+          )}
+        </h1>
+        <p className="mt-2 text-base text-ink-500">
+          {client.name}
+          {place && ` · ${place}`}
+        </p>
+        {many && (
+          <p className="mt-3 text-base text-ink-700">
+            Touchez un colis pour voir où il se trouve.
+          </p>
+        )}
+      </div>
 
-      {main && <MainParcel p={main} />}
+      <div className="space-y-3">
+        {parcels.map((p, i) => (
+          <ParcelCard
+            key={p.matricule ?? `sans-code-${i}`}
+            p={p}
+            rank={many ? parcelRank(i) : "Colis"}
+            open={!many || (!!highlight && p.matricule === highlight)}
+          />
+        ))}
+      </div>
 
-      {others.length > 0 && (
-        <section>
-          <h2 className="text-lg font-extrabold text-ink-900">
-            {main ? "Autres colis de ce client" : "Vos colis"} ({others.length})
-          </h2>
-          <div className="mt-3 space-y-3">
-            {others.map((p, i) => (
-              <OtherParcel key={p.matricule ?? `sans-code-${i}`} p={p} />
-            ))}
-          </div>
-        </section>
-      )}
+      <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:justify-center">
+        <button
+          type="button"
+          onClick={onReset}
+          className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white px-7 py-4 text-[15px] font-bold text-ink-800 transition-colors duration-200 hover:border-tracoli-300 active:scale-[0.98]"
+        >
+          <Search className="size-[18px]" aria-hidden />
+          Suivre le colis de quelqu&apos;un d&apos;autre
+        </button>
+        <a
+          href={waLink(reorder)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl border-2 border-ink-200 bg-white px-7 py-4 text-[15px] font-bold text-ink-800 transition-colors duration-200 hover:border-tracoli-300 active:scale-[0.98]"
+        >
+          <FaWhatsapp className="size-[18px]" aria-hidden />
+          Passer une nouvelle commande
+        </a>
+      </div>
     </div>
   );
 }
