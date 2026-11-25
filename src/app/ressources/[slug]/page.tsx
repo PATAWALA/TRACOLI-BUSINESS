@@ -1,19 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { RESOURCES, getResourceBySlug } from "@/data/content";
 import ResourceDetail from "@/components/ResourceDetail";
+import { getShopResource, getShopResources } from "@/lib/resources";
+import { isDisplayableImage } from "@/lib/product-image";
 
-/* ------------------------------------------------------------------ */
-/*  Génération des 6 pages statiques au build                          */
-/* ------------------------------------------------------------------ */
-
-export function generateStaticParams() {
-  return RESOURCES.map((r) => ({ slug: r.slug }));
-}
-
-/* ------------------------------------------------------------------ */
-/*  Metadata SEO dynamique par ressource                               */
-/* ------------------------------------------------------------------ */
+// Les livres viennent de la base : chaque fiche se rafraîchit toutes les 5 minutes
+// (et tout de suite quand le livre est modifié depuis l'admin).
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -21,10 +14,10 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const resource = getResourceBySlug(slug);
+  const resource = await getShopResource(slug);
 
   if (!resource) {
-    return { title: "Ressource introuvable — TRACOLI BUSINESS" };
+    return { title: "Livre introuvable — TRACOLI BUSINESS" };
   }
 
   return {
@@ -33,7 +26,7 @@ export async function generateMetadata({
     openGraph: {
       title: resource.title,
       description: resource.description,
-      images: [{ url: resource.image }],
+      ...(isDisplayableImage(resource.image) ? { images: [{ url: resource.image }] } : {}),
       type: "article",
     },
     alternates: {
@@ -42,19 +35,21 @@ export async function generateMetadata({
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Page                                                               */
-/* ------------------------------------------------------------------ */
-
 export default async function ResourceDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const resource = getResourceBySlug(slug);
+  const all = await getShopResources();
+  const resource = all.find((r) => r.slug === slug);
 
   if (!resource) notFound();
 
-  return <ResourceDetail resource={resource} />;
+  return (
+    <ResourceDetail
+      resource={resource}
+      related={all.filter((r) => r.id !== resource.id).slice(0, 3)}
+    />
+  );
 }

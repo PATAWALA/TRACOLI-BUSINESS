@@ -1,10 +1,10 @@
-﻿import type { MetadataRoute } from "next";
-import { RESOURCES } from "@/data/resources/items";
+import type { MetadataRoute } from "next";
 import { SERVICE_DETAILS } from "@/data/services/details";
+import { getShopResources } from "@/lib/resources";
 
 const BASE_URL = "https://www.tracolibusiness.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   /* Pages statiques */
@@ -27,8 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  /* Pages ressources */
-  const resourcePages: MetadataRoute.Sitemap = RESOURCES.map((r) => ({
+  /* Fiches de la boutique (venant de la base) */
+  const resourcePages: MetadataRoute.Sitemap = (await getShopResources()).map((r) => ({
     url: `${BASE_URL}/ressources/${r.slug}`,
     lastModified: now,
     changeFrequency: "monthly",

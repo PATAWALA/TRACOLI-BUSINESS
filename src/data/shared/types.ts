@@ -96,6 +96,12 @@ export type Resource = {
     title: string;
     items: string[];
   }[];
+  /** Renseignés pour les livres venant de la base (Admin > Boutique). */
+  sellerName?: string;
+  /** Numéro WhatsApp du vendeur (chiffres seuls). Vide = TRACOLI. */
+  sellerWhatsapp?: string;
+  /** Lien direct de téléchargement (PDF hébergé ou lien externe) : gratuit uniquement. */
+  downloadUrl?: string;
 };
 
 /* ---------- Navigation ---------- */

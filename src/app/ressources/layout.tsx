@@ -1,11 +1,11 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ressources — Guides & formations import Chine–Afrique",
+  title: "Boutique — Guides, ebooks & formations import Chine–Afrique",
   description:
-    "Guides pratiques, e-books et formations pour réussir votre import de Chine vers l'Afrique. Apprenez le sourcing, le fret et le dédouanement.",
+    "Guides gratuits, livres PDF et formations pour réussir votre import de Chine vers l'Afrique. Apprenez le sourcing, le fret et le dédouanement.",
   openGraph: {
-    title: "Ressources — TRACOLI BUSINESS",
+    title: "Boutique — TRACOLI BUSINESS",
     description:
       "Guides, e-books et formations pour réussir votre import Chine–Afrique.",
     type: "website",

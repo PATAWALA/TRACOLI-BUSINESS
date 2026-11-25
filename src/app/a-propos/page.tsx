@@ -213,7 +213,7 @@ export default function AboutPage() {
                 href="/ressources"
                 className="inline-flex min-h-[56px] items-center justify-center rounded-2xl border-2 border-white px-8 py-4 text-[15px] font-bold text-white transition-colors duration-200 hover:bg-white/10 active:scale-[0.98]"
               >
-                Voir nos ressources
+                Voir la boutique
               </Link>
             </div>
           </div>

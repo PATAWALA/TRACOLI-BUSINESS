@@ -64,7 +64,7 @@ test("404 : la page introuvable propose le retour à l'accueil", async ({ page }
 
 test("ressources : filtres et liens WhatsApp", async ({ page }) => {
   await page.goto("/ressources");
-  const wa = page.getByRole("link", { name: /Télécharger|Acheter/ }).first();
+  const wa = page.getByRole("link", { name: /Télécharger|Commander/ }).first();
   expect(await wa.getAttribute("href")).toContain("https://wa.me/25769032765?text=");
   await page.goto("/ressources/premiers-pas-import");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

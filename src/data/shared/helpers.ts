@@ -5,8 +5,8 @@ import { RESOURCES } from "../resources/items";
 import type { ServiceDetail, Resource } from "./types";
 
 /** Génère un lien WhatsApp avec message pré-rempli. */
-export const waLink = (message: string): string =>
-  `https://wa.me/${CONTACT.phoneRaw}?text=${encodeURIComponent(message)}`;
+export const waLink = (message: string, phone: string = CONTACT.phoneRaw): string =>
+  `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
 /** Récupère les villes d'une destination par pays. */
 export const getCitiesForCountry = (
