@@ -80,8 +80,8 @@ export function adminAlertHtml(data: LeadEmailData): string {
         ["Produit", data.productName],
         ["Message", data.message],
       ]) +
-      (wa ? button("Répondre sur WhatsApp", `https://wa.me/${wa}`, "#25D366") : "") +
-      button("Ouvrir la demande dans l'admin", data.link ?? ADMIN_LOGIN_URL, "#111827"),
+      (wa ? button("Répondre sur WhatsApp", `https://wa.me/${wa}`) : "") +
+      button("Ouvrir la demande dans l'admin", data.link ?? ADMIN_LOGIN_URL, "#6b7280"),
   });
 }
 

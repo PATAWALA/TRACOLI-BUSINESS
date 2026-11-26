@@ -30,9 +30,9 @@ const SHARE_TEXT =
   "Salut ! Je te recommande TRACOLI BUSINESS : ils trouvent les fournisseurs en Chine, sécurisent l'achat et livrent à Bujumbura, Kinshasa, Goma, Kampala et Mombasa. Regarde ici : " +
   SITE;
 
-const bullet = (icon: string, title: string, text: string) =>
+const bullet = (_icon: string, title: string, text: string) =>
   `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px"><tr>
-    <td width="44" valign="top" style="font-size:24px;line-height:1">${icon}</td>
+    <td width="22" valign="top" style="padding-top:7px"><div style="width:8px;height:8px;background:#E60000;border-radius:2px"></div></td>
     <td style="font-size:14px;line-height:1.55;color:#374151"><strong style="color:#111827">${title}</strong><br/>${text}</td>
   </tr></table>`;
 
@@ -56,7 +56,7 @@ function build(kind: CampaignKind, first: string | null, to: string) {
           bullet("🚚", "Les agences de transport et transitaires", "qui ont des clients à servir sur le corridor Chine – Afrique") +
           bullet("🤝", "Vos amis, famille, collègues", "qui veulent faire venir un colis en toute sécurité") +
           p("Un seul geste suffit : transférez-leur notre message sur WhatsApp.", "margin-top:8px") +
-          button("Recommander sur WhatsApp", `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}`, "#25D366") +
+          button("Recommander sur WhatsApp", `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}`, "#E60000") +
           p(`Ou partagez simplement ce lien : <a href="${SITE}" style="color:#E60000;font-weight:600">tracolibusiness.com</a>`, "text-align:center;font-size:13px;color:#6b7280"),
       }),
     };

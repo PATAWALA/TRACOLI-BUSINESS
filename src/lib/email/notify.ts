@@ -83,7 +83,7 @@ export async function notifyNewSubscriber(email: string, source: string) {
       body:
         h2("Nouvel abonné newsletter") +
         detailsTable([["Email", email], ["Source", source]]) +
-        button("Voir les inscrits", `${SITE}/admin/newsletter`, "#111827"),
+        button("Voir les inscrits", `${SITE}/admin/newsletter`),
     }),
   });
 }
@@ -94,7 +94,7 @@ export async function notifyAdmin(subject: string, htmlBody: string) {
     from: FROM,
     to: adminTo(),
     subject,
-    html: emailShell({ admin: true, preheader: subject, body: htmlBody + button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#111827") }),
+    html: emailShell({ admin: true, preheader: subject, body: htmlBody + button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#6b7280") }),
   });
 }
 
@@ -147,10 +147,10 @@ export async function notifyVisitorAction(a: VisitorAction) {
           ["Heure", new Date().toLocaleString("fr-FR", { timeZone: "Africa/Bujumbura" })],
         ]) +
         (a.type === "tracking_search"
-          ? button("Voir les colis et clients", `${SITE}/admin/clients`, "#111827")
+          ? button("Voir les colis et clients", `${SITE}/admin/clients`)
           : a.type === "resource_open"
-            ? button("Voir les inscrits newsletter", `${SITE}/admin/newsletter`, "#111827")
-            : button("Voir les demandes", `${SITE}/admin/leads`, "#111827")) +
+            ? button("Voir les inscrits newsletter", `${SITE}/admin/newsletter`)
+            : button("Voir les demandes", `${SITE}/admin/leads`)) +
         button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#6b7280"),
     }),
   });
