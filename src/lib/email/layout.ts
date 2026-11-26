@@ -68,11 +68,11 @@ export interface ShellOptions {
 export function emailShell({ preheader, body, admin, unsubscribeUrl }: ShellOptions): string {
   return `<!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><meta name="color-scheme" content="light" /></head>
-<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><meta name="color-scheme" content="light only" /><meta name="supported-color-schemes" content="light only" /><style>:root{color-scheme:light only;supported-color-schemes:light only}</style></head>
+<body bgcolor="#ffffff" style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(preheader)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff"><tr><td align="center" style="padding:28px 12px">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid ${LINE}">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background:#ffffff"><tr><td align="center" bgcolor="#ffffff" style="padding:28px 12px">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid ${LINE}">
       <tr><td style="height:5px;background:${RED};line-height:5px;font-size:0">&nbsp;</td></tr>
       <tr><td style="padding:26px 36px 20px">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
