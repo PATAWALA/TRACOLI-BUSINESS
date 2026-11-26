@@ -15,7 +15,7 @@ export const p = (html: string, style = "") =>
   `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#374151;${style}">${html}</p>`;
 
 export const h2 = (text: string) =>
-  `<h2 style="margin:0 0 18px;font-size:24px;line-height:1.25;color:${INK};font-weight:800;letter-spacing:-.3px">${text}</h2>`;
+  `<h2 style="margin:0 0 18px;font-size:24px;line-height:1.25;color:${RED};font-weight:800;letter-spacing:-.3px">${text}</h2>`;
 
 /**
  * Bouton. Le 3e paramètre est conservé pour compatibilité : "#6b7280" = bouton secondaire (contour),
@@ -37,7 +37,7 @@ export function detailsTable(rows: [string, string | null | undefined][]): strin
     .filter(([, v]) => v)
     .map(
       ([k, v]) =>
-        `<tr><td style="padding:11px 0;font-size:12px;font-weight:700;color:${MUTED};text-transform:uppercase;letter-spacing:.6px;width:120px;vertical-align:top;border-top:1px solid ${LINE}">${esc(k)}</td><td style="padding:11px 0;font-size:14px;color:${INK};border-top:1px solid ${LINE}">${esc(v)}</td></tr>`,
+        `<tr><td style="padding:11px 0;font-size:12px;font-weight:700;color:${RED};text-transform:uppercase;letter-spacing:.6px;width:120px;vertical-align:top;border-top:1px solid ${LINE}">${esc(k)}</td><td style="padding:11px 0;font-size:14px;color:${INK};border-top:1px solid ${LINE}">${esc(v)}</td></tr>`,
     )
     .join("");
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-bottom:1px solid ${LINE}">${body}</table>`;
@@ -47,7 +47,7 @@ export function detailsTable(rows: [string, string | null | undefined][]): strin
 export function callout(_kind: "ok" | "warn" | "info", title: string, text = ""): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px"><tr>
     <td width="3" style="background:${RED};border-radius:3px"></td>
-    <td style="background:#fafafa;padding:14px 18px;border-radius:0 10px 10px 0">
+    <td style="background:#ffffff;border:1px solid ${LINE};border-left:0;padding:14px 18px;border-radius:0 10px 10px 0">
       <p style="margin:0;font-size:14px;font-weight:700;color:${INK}">${title}</p>
       ${text ? `<p style="margin:6px 0 0;font-size:13px;line-height:1.6;color:#4b5563">${text}</p>` : ""}
     </td>
@@ -69,9 +69,9 @@ export function emailShell({ preheader, body, admin, unsubscribeUrl }: ShellOpti
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><meta name="color-scheme" content="light" /></head>
-<body style="margin:0;padding:0;background:#f5f5f7;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(preheader)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f7"><tr><td align="center" style="padding:28px 12px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff"><tr><td align="center" style="padding:28px 12px">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid ${LINE}">
       <tr><td style="height:5px;background:${RED};line-height:5px;font-size:0">&nbsp;</td></tr>
       <tr><td style="padding:26px 36px 20px">
