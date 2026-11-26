@@ -5,9 +5,9 @@ import { ADMIN_LOGIN_URL, button, detailsTable, emailShell, h2 } from "@/lib/ema
 export const FROM = process.env.EMAIL_FROM || "TRACOLI Business <contact@tracolibusiness.com>";
 const SITE = "https://www.tracolibusiness.com";
 
-/** Destinataire des alertes admin : ADMIN_EMAIL, sinon ADMIN_ALERT_EMAIL, sinon l'adresse de contact. */
+/** Destinataire des alertes admin : ADMIN_ALERT_EMAIL, sinon ADMIN_EMAIL, sinon l'adresse de contact. */
 const adminTo = () =>
-  (process.env.ADMIN_EMAIL || process.env.ADMIN_ALERT_EMAIL || "contact@tracolibusiness.com")
+  (process.env.ADMIN_ALERT_EMAIL || process.env.ADMIN_EMAIL || "contact@tracolibusiness.com")
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
