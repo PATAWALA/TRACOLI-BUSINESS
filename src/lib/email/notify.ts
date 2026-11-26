@@ -146,7 +146,12 @@ export async function notifyVisitorAction(a: VisitorAction) {
           ["Message", a.detail],
           ["Heure", new Date().toLocaleString("fr-FR", { timeZone: "Africa/Bujumbura" })],
         ]) +
-        button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#111827"),
+        (a.type === "tracking_search"
+          ? button("Voir les colis et clients", `${SITE}/admin/clients`, "#111827")
+          : a.type === "resource_open"
+            ? button("Voir les inscrits newsletter", `${SITE}/admin/newsletter`, "#111827")
+            : button("Voir les demandes", `${SITE}/admin/leads`, "#111827")) +
+        button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#6b7280"),
     }),
   });
 }
