@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/cron/monthly-recommendation?kind=reco", "schedule": "0 8 1 * *" },
+    { "path": "/api/cron/monthly-recommendation?kind=services", "schedule": "0 8 15 * *" }
+  ]
+}

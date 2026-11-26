@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Download, ShoppingBag } from "lucide-react";
 import ResourceCover from "@/components/shop/ResourceCover";
-import { TYPE_LABELS, getResourceAction } from "@/lib/resource-actions";
+import ResourceActionButton from "@/components/shop/ResourceActionButton";
+import { TYPE_LABELS } from "@/lib/resource-actions";
 import type { Resource, ResourceType } from "@/data/shared/types";
 
 type Filter = "all" | "free" | "premium" | ResourceType;
@@ -66,7 +66,6 @@ export default function ResourcesBrowser({ resources }: { resources: Resource[] 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
         {filtered.map((resource) => {
           const isPremium = resource.access === "premium";
-          const action = getResourceAction(resource);
           const subtitle = [TYPE_LABELS[resource.type], resource.level, resource.meta].filter(Boolean).join(" · ");
 
           return (
@@ -111,23 +110,12 @@ export default function ResourcesBrowser({ resources }: { resources: Resource[] 
                       Détails
                     </Link>
 
-                    <a
-                      href={action.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <ResourceActionButton
+                      resource={resource}
                       className={`inline-flex min-h-11 items-center gap-1.5 rounded-xl px-4 text-sm font-bold text-white transition-colors active:scale-[0.98] ${
                         isPremium ? "bg-tracoli-500 hover:bg-tracoli-600" : "bg-ink-900 hover:bg-ink-800"
                       }`}
-                    >
-                      {action.label}
-                      {isPremium ? (
-                        <ShoppingBag className="size-4" aria-hidden />
-                      ) : action.isFile ? (
-                        <Download className="size-4" aria-hidden />
-                      ) : (
-                        <ArrowRight className="size-4" aria-hidden />
-                      )}
-                    </a>
+                    />
                   </div>
                 </div>
               </div>

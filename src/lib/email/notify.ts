@@ -1,5 +1,6 @@
 import { resend } from "@/lib/email/resend";
-import { adminAlertHtml, clientConfirmationHtml, esc } from "@/lib/email/templates";
+import { adminAlertHtml, clientConfirmationHtml } from "@/lib/email/templates";
+import { ADMIN_LOGIN_URL, button, detailsTable, emailShell, h2 } from "@/lib/email/layout";
 
 export const FROM = process.env.EMAIL_FROM || "TRACOLI Business <contact@tracolibusiness.com>";
 const SITE = "https://www.tracolibusiness.com";
@@ -14,8 +15,12 @@ const adminTo = () =>
 /** Un email qui échoue ne doit jamais faire échouer l'enregistrement. */
 async function safeSend(args: Parameters<typeof resend.emails.send>[0]) {
   try {
-    if (!process.env.RESEND_API_KEY) return;
-    await resend.emails.send(args);
+    if (!process.env.RESEND_API_KEY) {
+      console.error("[email] RESEND_API_KEY manquante — aucun email envoyé");
+      return;
+    }
+    const { error } = await resend.emails.send(args);
+    if (error) console.error("[email] refusé par Resend:", error);
   } catch (err) {
     console.error("[email] envoi échoué:", err);
   }
@@ -72,9 +77,14 @@ export async function notifyNewSubscriber(email: string, source: string) {
     from: FROM,
     to: adminTo(),
     subject: "Nouvel abonné newsletter",
-    html: `<div style="font-family:system-ui,sans-serif;font-size:14px;color:#374151">
-      <p><strong>${esc(email)}</strong> vient de s'inscrire (source : ${esc(source)}).</p>
-      <p><a href="${SITE}/admin/newsletter">Voir les inscrits</a></p></div>`,
+    html: emailShell({
+      admin: true,
+      preheader: `${email} vient de s'inscrire`,
+      body:
+        h2("Nouvel abonné newsletter") +
+        detailsTable([["Email", email], ["Source", source]]) +
+        button("Voir les inscrits", `${SITE}/admin/newsletter`, "#111827"),
+    }),
   });
 }
 
@@ -84,6 +94,59 @@ export async function notifyAdmin(subject: string, htmlBody: string) {
     from: FROM,
     to: adminTo(),
     subject,
-    html: `<div style="font-family:system-ui,sans-serif;font-size:14px;color:#374151">${htmlBody}</div>`,
+    html: emailShell({ admin: true, preheader: subject, body: htmlBody + button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#111827") }),
+  });
+}
+
+/* ── Limite anti-flood : au plus 6 alertes « action visiteur » par minute et par IP, 60 par heure au total ── */
+const hits = new Map<string, number[]>();
+let hourly: number[] = [];
+function allowed(ip: string): boolean {
+  const now = Date.now();
+  hourly = hourly.filter((t) => now - t < 3_600_000);
+  const mine = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
+  if (mine.length >= 6 || hourly.length >= 60) return false;
+  mine.push(now);
+  hourly.push(now);
+  hits.set(ip, mine);
+  if (hits.size > 500) hits.clear();
+  return true;
+}
+
+export interface VisitorAction {
+  type: string;
+  page?: string;
+  label?: string;
+  detail?: string;
+  ip?: string;
+}
+
+const ACTION_TITLES: Record<string, string> = {
+  whatsapp_click: "Clic WhatsApp",
+  resource_open: "Ressource ouverte",
+  tracking_search: "Recherche de suivi",
+};
+
+/** Alerte admin : un visiteur a fait une action sur le site. */
+export async function notifyVisitorAction(a: VisitorAction) {
+  if (!allowed(a.ip ?? "?")) return;
+  const title = ACTION_TITLES[a.type] ?? a.type;
+  await safeSend({
+    from: FROM,
+    to: adminTo(),
+    subject: `${title}${a.label ? ` — ${a.label.slice(0, 60)}` : ""}`,
+    html: emailShell({
+      admin: true,
+      preheader: `${title} sur ${a.page ?? "le site"}`,
+      body:
+        h2(title) +
+        detailsTable([
+          ["Page", a.page],
+          ["Détail", a.label],
+          ["Message", a.detail],
+          ["Heure", new Date().toLocaleString("fr-FR", { timeZone: "Africa/Bujumbura" })],
+        ]) +
+        button("Ouvrir l'espace admin", ADMIN_LOGIN_URL, "#111827"),
+    }),
   });
 }

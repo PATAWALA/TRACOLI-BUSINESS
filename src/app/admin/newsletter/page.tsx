@@ -2,7 +2,7 @@
 
 import { adminFetch } from "@/lib/admin-fetch";
 import { useEffect, useState } from "react";
-import { Mail, Download, Trash2, RefreshCw } from "lucide-react";
+import { Mail, Download, Trash2, RefreshCw, Send } from "lucide-react";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import ConfirmModal from "@/components/admin/ui/ConfirmModal";
 import type { EmailCapture } from "@/types/database.types";
@@ -12,6 +12,32 @@ export default function AdminNewsletterPage() {
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<EmailCapture | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [sendAll, setSendAll] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendMsg, setSendMsg] = useState("");
+  const [kind, setKind] = useState<"reco" | "services">("reco");
+  const kindLabel = kind === "reco" ? "Recommandez TRACOLI" : "Votre import de A à Z";
+
+  async function sendCampaign(mode: "test" | "all") {
+    setSending(true);
+    setSendMsg("");
+    try {
+      const res = await adminFetch("/api/newsletter/campaign", {
+        method: "POST",
+        body: JSON.stringify({ mode, kind }),
+      });
+      const d = await res.json();
+      setSendMsg(
+        !res.ok || d.error
+          ? `Échec : ${d.error ?? "erreur inconnue"}`
+          : `Envoyé : ${d.sent} email${d.sent > 1 ? "s" : ""}${d.failed ? ` (${d.failed} échec${d.failed > 1 ? "s" : ""})` : ""}.`,
+      );
+    } catch {
+      setSendMsg("Échec : connexion impossible.");
+    }
+    setSending(false);
+    setSendAll(false);
+  }
 
   useEffect(() => {
     loadEmails();
@@ -70,6 +96,16 @@ export default function AdminNewsletterPage() {
         onCancel={() => setDeleteTarget(null)}
       />
 
+      <ConfirmModal
+        open={sendAll}
+        title="Envoyer à tous les inscrits ?"
+        message={`L'email « ${kindLabel} » sera envoyé à ${emails.length} adresse${emails.length > 1 ? "s" : ""}. Cette action est définitive.`}
+        confirmLabel="Envoyer"
+        loading={sending}
+        onConfirm={() => sendCampaign("all")}
+        onCancel={() => setSendAll(false)}
+      />
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Newsletter"
@@ -83,6 +119,33 @@ export default function AdminNewsletterPage() {
             <RefreshCw className="size-4" />
             Actualiser
           </button>
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as "reco" | "services")}
+            className="rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-xs font-bold text-ink-700"
+            aria-label="Email à envoyer"
+          >
+            <option value="reco">Email 1 — Recommandation (le 1er)</option>
+            <option value="services">Email 2 — Nos services (le 15)</option>
+          </select>
+          <button
+            onClick={() => sendCampaign("test")}
+            disabled={sending}
+            className="inline-flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-xs font-bold text-ink-600 transition-all hover:bg-ink-50 disabled:opacity-50"
+          >
+            <Send className="size-4" />
+            Envoyer un test à moi
+          </button>
+          {emails.length > 0 && (
+            <button
+              onClick={() => setSendAll(true)}
+              disabled={sending}
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+            >
+              <Send className="size-4" />
+              Envoyer à tous
+            </button>
+          )}
           {emails.length > 0 && (
             <button
               onClick={exportCSV}
@@ -94,6 +157,10 @@ export default function AdminNewsletterPage() {
           )}
         </div>
       </div>
+
+      {sendMsg && (
+        <p className="rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm font-semibold text-ink-700">{sendMsg}</p>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center rounded-2xl border border-ink-200 bg-white py-16">

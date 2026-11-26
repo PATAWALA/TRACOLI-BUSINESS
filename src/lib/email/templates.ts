@@ -1,6 +1,6 @@
-/** Échappe le texte saisi par un visiteur avant de l'insérer dans un email HTML. */
-export const esc = (v: unknown): string =>
-  String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+import { ADMIN_LOGIN_URL, SITE, button, callout, detailsTable, emailShell, esc, h2, p } from "@/lib/email/layout";
+
+export { esc };
 
 interface LeadEmailData {
   reference?: string;
@@ -17,157 +17,114 @@ interface LeadEmailData {
   link?: string;
 }
 
-export function clientConfirmationHtml(data: LeadEmailData): string {
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
-    <div style="background:#E60000;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">TRACOLI BUSINESS</h1>
-    </div>
-    <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(data.name)}</strong>,</p>
-      <p style="margin:0 0 16px;font-size:15px;color:#374151">
-        Nous avons bien reçu votre demande de projet.
-      </p>
-      ${statusBlock(data)}
-      <p style="margin:0 0 8px;font-size:14px;color:#374151"><strong>Produit :</strong> ${esc(data.productName ?? "Non précisé")}</p>
-      ${data.message ? `<p style="margin:0 0 20px;font-size:14px;color:#374151"><strong>Message :</strong> ${esc(data.message)}</p>` : ""}
-      <p style="margin:0 0 4px;font-size:14px;color:#6b7280">
-        Notre équipe vous contactera sous 24h via WhatsApp.
-      </p>
-    </div>
-    <div style="background:#f9fafb;padding:16px 32px;text-align:center">
-      <p style="margin:0;font-size:12px;color:#9ca3af">&copy; TRACOLI Business — Trade Connectors Logistics International</p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-export function adminAlertHtml(data: LeadEmailData): string {
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
-    <div style="background:#111827;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">${data.hasPaid ? "Nouvelle demande — paiement soumis" : data.sourcing ? "Nouvelle demande de sourcing" : "Nouvelle demande"}</h1>
-    </div>
-    <div style="padding:32px">
-      <table style="width:100%;font-size:14px;color:#374151;border-collapse:collapse">
-        <tr><td style="padding:8px 0;font-weight:700">Nom</td><td style="padding:8px 0">${esc(data.name)}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">WhatsApp</td><td style="padding:8px 0">${esc(data.whatsapp)}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">Email</td><td style="padding:8px 0">${esc(data.email ?? "—")}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">Destination</td><td style="padding:8px 0">${esc(data.destination ?? "—")}</td></tr>
-        <tr><td style="padding:8px 0;font-weight:700">Produit</td><td style="padding:8px 0">${esc(data.productName ?? "—")}</td></tr>
-        ${data.message ? `<tr><td style="padding:8px 0;font-weight:700;vertical-align:top">Message</td><td style="padding:8px 0">${esc(data.message)}</td></tr>` : ""}
-      </table>
-    ${data.link ? `<p style="margin:24px 0 0"><a href="${data.link}" style="display:inline-block;background:#111827;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none">Ouvrir dans l'admin</a></p>` : ""}
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-export function paymentConfirmedHtml(
-  name: string,
-  reference: string,
-  trackingUrl: string,
-): string {
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
-    <div style="background:#E60000;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">Paiement confirmé ✓</h1>
-    </div>
-    <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(name)}</strong>,</p>
-      <p style="margin:0 0 16px;font-size:15px;color:#374151">
-        Votre paiement a été vérifié et confirmé. Voici votre code de suivi :
-      </p>
-      <div style="background:#fef2f2;border:2px solid #fecaca;border-radius:12px;padding:20px;text-align:center;margin:0 0 20px">
-        <span style="font-size:28px;font-weight:800;color:#E60000;letter-spacing:2px">${esc(reference)}</span>
-      </div>
-      <p style="margin:0 0 16px;font-size:14px;color:#374151">
-        Vous pouvez désormais suivre votre projet en temps réel :
-      </p>
-      <div style="text-align:center;margin:0 0 20px">
-        <a href="${trackingUrl}" style="display:inline-block;background:#E60000;color:#fff;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">
-          Suivre mon projet
-        </a>
-      </div>
-      <p style="margin:0;font-size:14px;color:#6b7280">
-        Conservez bien ce code. Notre équipe commence le travail sur votre projet immédiatement.
-      </p>
-    </div>
-    <div style="background:#f9fafb;padding:16px 32px;text-align:center">
-      <p style="margin:0;font-size:12px;color:#9ca3af">&copy; TRACOLI Business — Trade Connectors Logistics International</p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-export function statusChangeHtml(
-  name: string,
-  reference: string,
-  newStatus: string,
-): string {
-  const statusLabels: Record<string, string> = {
-    en_attente_paiement: "En attente de paiement",
-    paiement_soumis: "Paiement soumis — en cours de vérification",
-    confirme: "Paiement confirmé",
-    recherche: "Recherche fournisseur en cours",
-    devis: "Devis envoyé — vérifiez votre email",
-    achat: "Achat effectué auprès du fournisseur",
-    expedition: "Expédition en cours",
-    en_transit: "En transit vers votre destination",
-    douane: "Dédouanement en cours",
-    livre: "Livré — bonne réception !",
-    cloture: "Projet clôturé",
-  };
-
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#f9fafb">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
-    <div style="background:#E60000;padding:28px 32px">
-      <h1 style="margin:0;color:#fff;font-size:20px">Mise à jour — ${esc(reference)}</h1>
-    </div>
-    <div style="padding:32px">
-      <p style="margin:0 0 16px;font-size:15px;color:#111">Bonjour <strong>${esc(name)}</strong>,</p>
-      <p style="margin:0 0 20px;font-size:15px;color:#374151">
-        Le statut de votre projet <strong>${esc(reference)}</strong> a été mis à jour :
-      </p>
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;text-align:center;margin:0 0 20px">
-        <span style="font-size:18px;font-weight:700;color:#16a34a">${statusLabels[newStatus] ?? newStatus}</span>
-      </div>
-      <p style="margin:0;font-size:14px;color:#6b7280">
-        Pour toute question, contactez-nous sur WhatsApp.
-      </p>
-    </div>
-    <div style="background:#f9fafb;padding:16px 32px;text-align:center">
-      <p style="margin:0;font-size:12px;color:#9ca3af">&copy; TRACOLI Business</p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
+const firstName = (name: string) => name.trim().split(/\s+/)[0] || name;
 
 function statusBlock(d: LeadEmailData): string {
-  const [bg, border, title, text] = d.sourcing
-    ? ["#ecfdf5", "#a7f3d0", "#065f46", ["Demande enregistrée", "Un acheteur TRACOLI analyse votre demande et vous contacte sous 24h sur WhatsApp avec une cotation."]]
-    : d.hasPaid
-      ? ["#fffbeb", "#fde68a", "#92400e", ["En attente de vérification", "Notre équipe vérifie votre preuve de paiement. Vous recevrez votre code de suivi dès confirmation."]]
-      : ["#fffbeb", "#fde68a", "#92400e", ["En attente de paiement", "Envoyez votre preuve de paiement pour activer votre projet. Vous recevrez ensuite votre code de suivi."]];
-  return `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:16px;margin:0 0 20px">
-        <p style="margin:0;font-size:14px;font-weight:700;color:${title}">${text[0]}</p>
-        <p style="margin:8px 0 0;font-size:13px;color:${title}">${text[1]}</p>
-      </div>`;
+  if (d.sourcing) {
+    return callout(
+      "ok",
+      "Demande enregistrée",
+      "Un acheteur TRACOLI analyse votre demande et vous contacte sous 24h sur WhatsApp avec une cotation.",
+    );
+  }
+  if (d.hasPaid) {
+    return callout(
+      "warn",
+      "En attente de vérification",
+      "Notre équipe vérifie votre preuve de paiement. Vous recevrez votre code de suivi dès confirmation.",
+    );
+  }
+  return callout(
+    "warn",
+    "En attente de paiement",
+    "Envoyez votre preuve de paiement pour activer votre projet. Vous recevrez ensuite votre code de suivi.",
+  );
+}
+
+/** Confirmation envoyée au client après sa demande. */
+export function clientConfirmationHtml(data: LeadEmailData): string {
+  return emailShell({
+    preheader: "Nous avons bien reçu votre demande — réponse sous 24h sur WhatsApp.",
+    body:
+      h2(`Merci ${esc(firstName(data.name))}, c'est bien reçu ✓`) +
+      p("Nous avons bien enregistré votre demande de projet. Voici le récapitulatif :") +
+      statusBlock(data) +
+      detailsTable([
+        ["Produit", data.productName ?? "Non précisé"],
+        ["Destination", data.destination],
+        ["Message", data.message],
+      ]) +
+      p("Notre équipe vous contactera <strong>sous 24h via WhatsApp</strong>. Une question d'ici là ? Répondez simplement à cet email ou écrivez-nous.", "color:#6b7280;font-size:14px") +
+      button("Suivre mon projet", `${SITE}/suivre`),
+  });
+}
+
+/** Alerte envoyée à l'équipe pour chaque nouvelle demande. */
+export function adminAlertHtml(data: LeadEmailData): string {
+  const title = data.hasPaid
+    ? "Nouvelle demande — paiement soumis"
+    : data.sourcing
+      ? "Nouvelle demande de sourcing"
+      : "Nouvelle demande";
+  const wa = data.whatsapp.replace(/[^\d]/g, "");
+  return emailShell({
+    admin: true,
+    preheader: `${data.name} — ${data.productName ?? "nouvelle demande"}`,
+    body:
+      h2(title) +
+      detailsTable([
+        ["Nom", data.name],
+        ["WhatsApp", data.whatsapp],
+        ["Email", data.email],
+        ["Destination", data.destination],
+        ["Produit", data.productName],
+        ["Message", data.message],
+      ]) +
+      (wa ? button("Répondre sur WhatsApp", `https://wa.me/${wa}`, "#25D366") : "") +
+      button("Ouvrir la demande dans l'admin", data.link ?? ADMIN_LOGIN_URL, "#111827"),
+  });
+}
+
+/** Email envoyé au client quand son paiement est confirmé (avec son code de suivi). */
+export function paymentConfirmedHtml(name: string, reference: string, trackingUrl: string): string {
+  return emailShell({
+    preheader: `Paiement confirmé — votre code de suivi : ${reference}`,
+    body:
+      h2(`Paiement confirmé ✓`) +
+      p(`Bonjour <strong>${esc(firstName(name))}</strong>, votre paiement a été vérifié. Voici votre code de suivi :`) +
+      `<div style="background:#fef2f2;border:2px dashed #fecaca;border-radius:14px;padding:22px;text-align:center;margin:0 0 22px">
+        <span style="font-size:30px;font-weight:800;color:#E60000;letter-spacing:3px">${esc(reference)}</span>
+      </div>` +
+      p("Suivez l'avancement de votre projet en temps réel :") +
+      button("Suivre mon projet", trackingUrl) +
+      p("Conservez bien ce code. Notre équipe commence le travail sur votre projet immédiatement.", "color:#6b7280;font-size:14px"),
+  });
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  en_attente_paiement: "En attente de paiement",
+  paiement_soumis: "Paiement soumis — en cours de vérification",
+  confirme: "Paiement confirmé",
+  recherche: "Recherche fournisseur en cours",
+  devis: "Devis envoyé — vérifiez votre email",
+  achat: "Achat effectué auprès du fournisseur",
+  expedition: "Expédition en cours",
+  en_transit: "En transit vers votre destination",
+  douane: "Dédouanement en cours",
+  livre: "Livré — bonne réception !",
+  cloture: "Projet clôturé",
+};
+
+/** Email envoyé au client quand le statut de son projet change. */
+export function statusChangeHtml(name: string, reference: string, newStatus: string): string {
+  const label = STATUS_LABELS[newStatus] ?? newStatus;
+  return emailShell({
+    preheader: `${reference} : ${label}`,
+    body:
+      h2(`Mise à jour de votre projet`) +
+      p(`Bonjour <strong>${esc(firstName(name))}</strong>, le statut de votre projet <strong>${esc(reference)}</strong> vient de changer :`) +
+      callout("ok", esc(label)) +
+      button("Suivre mon projet", `${SITE}/suivre?ref=${encodeURIComponent(reference)}`) +
+      p("Pour toute question, contactez-nous sur WhatsApp : nous répondons vite.", "color:#6b7280;font-size:14px"),
+  });
 }

@@ -4,17 +4,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
-  const { email, source } = await req.json();
+  const { email: rawEmail, source } = await req.json();
 
-  if (!email || typeof email !== "string") {
+  if (!rawEmail || typeof rawEmail !== "string") {
     return NextResponse.json({ error: "Email requis." }, { status: 400 });
+  }
+
+  const email = rawEmail.trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    return NextResponse.json({ error: "Email invalide." }, { status: 400 });
   }
 
   const sb = createServerClient();
 
+  // Pas de doublon : si l'adresse existe déjà (quelle que soit la casse), on ne réinsère rien.
+  const { data: existing } = await sb
+    .from("email_captures")
+    .select("id")
+    .ilike("email", email.replace(/[\\%_]/g, "\\$&"))
+    .limit(1);
+  if (existing && existing.length > 0) {
+    return NextResponse.json({ error: "Cet email est déjà inscrit." }, { status: 409 });
+  }
+
   const { error } = await sb
     .from("email_captures")
-    .insert({ email: email.trim().toLowerCase(), source: source ?? "site" });
+    .insert({ email, source: typeof source === "string" ? source.slice(0, 100) : "site" });
 
   if (error) {
     if (error.code === "23505") {
@@ -29,7 +44,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  await notifyNewSubscriber(email.trim().toLowerCase(), source ?? "site");
+  await notifyNewSubscriber(email, typeof source === "string" ? source.slice(0, 100) : "site");
   return NextResponse.json({ ok: true });
 }
 

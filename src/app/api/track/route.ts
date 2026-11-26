@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { normalizeCode } from "@/lib/parcels";
+import { notifyVisitorAction } from "@/lib/email/notify";
 
 /** Masque le nom : le code de suivi seul ne doit pas révéler l'identité complète. */
 const mask = (name: string) =>
@@ -10,7 +11,7 @@ const mask = (name: string) =>
  * Suivi public. Accepte : code du colis (saisi par l'équipe), ancien code externe,
  * ou référence d'une demande (leads). Ne renvoie que des champs publics.
  */
-export async function GET(req: NextRequest) {
+async function lookup(req: NextRequest) {
   const code = normalizeCode(req.nextUrl.searchParams.get("code") ?? "");
   if (code.length < 4 || code.length > 60) {
     return NextResponse.json({ error: "Code invalide." }, { status: 400 });
@@ -113,4 +114,22 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ type: "not_found" });
+}
+
+/** Recherche de suivi + alerte admin (code cherché et résultat). */
+export async function GET(req: NextRequest) {
+  const res = await lookup(req);
+  try {
+    const type = res.status === 200 ? ((await res.clone().json()) as { type?: string }).type : "invalide";
+    await notifyVisitorAction({
+      type: "tracking_search",
+      page: "/suivre",
+      label: normalizeCode(req.nextUrl.searchParams.get("code") ?? ""),
+      detail: type === "not_found" ? "Code introuvable" : type === "invalide" ? "Code invalide" : "Trouvé (" + type + ")",
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+    });
+  } catch {
+    /* l'alerte ne doit jamais casser le suivi */
+  }
+  return res;
 }

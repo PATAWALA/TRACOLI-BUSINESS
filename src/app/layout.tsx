@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
+import ActionTracker from "@/components/ActionTracker";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -162,6 +163,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <MobileBottomNav />
+        <ActionTracker />
       </body>
     </html>
   );

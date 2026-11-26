@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
+import InstallAppPrompt from "@/components/admin/InstallAppPrompt";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -99,6 +100,8 @@ export default function AdminLoginPage() {
             {loading ? "Connexion…" : "Se connecter"}
           </button>
         </form>
+
+        <InstallAppPrompt />
       </div>
     </main>
   );

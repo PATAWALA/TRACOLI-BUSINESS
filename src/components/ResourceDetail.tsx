@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Download, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import ResourceCover from "@/components/shop/ResourceCover";
+import ResourceActionButton from "@/components/shop/ResourceActionButton";
 import { CONTACT, type Resource } from "@/data/content";
-import { TYPE_LABELS, getResourceAction, getResourceQuestionLink } from "@/lib/resource-actions";
+import { TYPE_LABELS, getResourceQuestionLink } from "@/lib/resource-actions";
 
 export default function ResourceDetail({
   resource,
@@ -12,7 +13,6 @@ export default function ResourceDetail({
   related: Resource[];
 }) {
   const isPremium = resource.access === "premium";
-  const action = getResourceAction(resource);
   const seller = resource.sellerName || CONTACT.brand;
   const meta = [resource.meta, resource.format].filter(Boolean).join(" · ");
 
@@ -53,29 +53,18 @@ export default function ResourceDetail({
                     </p>
                   </div>
 
-                  <a
-                    href={action.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
-                  >
-                    {action.label}
-                    {isPremium ? (
-                      <ShoppingBag className="size-4" aria-hidden />
-                    ) : action.isFile ? (
-                      <Download className="size-4" aria-hidden />
-                    ) : (
-                      <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-                    )}
-                  </a>
+                  <ResourceActionButton
+                    resource={resource}
+                    className="inline-flex min-h-[56px] items-center justify-center gap-2.5 rounded-2xl bg-tracoli-500 px-8 py-4 text-[15px] font-bold text-white shadow-[var(--shadow-red)] transition-colors duration-200 hover:bg-tracoli-600 active:scale-[0.98]"
+                  />
                 </div>
 
                 <p className="mt-4 border-t border-ink-200 pt-4 text-sm leading-relaxed text-ink-700">
                   {isPremium
-                    ? `En cliquant sur « Commander », WhatsApp s'ouvre avec ce livre déjà écrit dans le message pour ${seller}. Le paiement et l'envoi du PDF se font directement avec le vendeur.`
-                    : action.isFile
-                      ? "Le fichier s'ouvre dans un nouvel onglet. Aucun compte nécessaire."
-                      : `Cliquez pour demander ce guide à ${seller} sur WhatsApp : il vous l'envoie gratuitement.`}
+                    ? `Entrez votre e-mail, puis WhatsApp s'ouvre avec ce livre déjà écrit dans le message pour ${seller}. Le paiement et l'envoi du PDF se font directement avec le vendeur.`
+                    : resource.downloadUrl
+                      ? "Entrez votre e-mail, le fichier s'ouvre ensuite dans un nouvel onglet. Aucun compte nécessaire."
+                      : `Entrez votre e-mail, puis demandez ce guide à ${seller} sur WhatsApp : il vous l'envoie gratuitement.`}
                 </p>
               </div>
             </div>
